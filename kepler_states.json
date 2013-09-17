@@ -1,0 +1,26 @@
+{ 
+    "states" : [{
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Kepler planets",
+                    "caption" : "Vital statistics of Kepler planet candidates.",
+                    "colorAxis": "Discovery Quarter",
+                    "colorMap": "YlOrRd",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "Period",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "Teq",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "Discovery Quarter",
+                                    "selection" : {"xItems" : ["Q1"]}
+                                }
+                            ]
+                }]
+}
