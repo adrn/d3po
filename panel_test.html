@@ -47,11 +47,11 @@
             
             d3.csv("data/sample_data_cut.csv", function(error, data) {
               var domainByTrait = {},
-                  traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; });
+                  columnNames = d3.keys(data[0]).filter(function(d) { return d !== "species"; });
                   
-              var n = traits.length;
+              var n = columnNames.length;
             
-              traits.forEach(function(trait) {
+              columnNames.forEach(function(trait) {
                 domainByTrait[trait] = d3.extent(data, function(d) { return d[trait]; });
               });
             
@@ -76,21 +76,21 @@
                   .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
             
               svg.selectAll(".x.axis")
-                  .data(traits)
+                  .data(columnNames)
                   .enter().append("g")
                   .attr("class", "x axis")
                   .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * plot_size + ",0)"; })
                   .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
             
               svg.selectAll(".y.axis")
-                  .data(traits)
+                  .data(columnNames)
                 .enter().append("g")
                   .attr("class", "y axis")
                   .attr("transform", function(d, i) { return "translate(0," + i * plot_size + ")"; })
                   .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
             
               var cell = svg.selectAll(".cell")
-                  .data(cross(traits, traits))
+                  .data(cross(columnNames, columnNames))
                 .enter().append("g")
                   .attr("class", "cell")
                   .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * plot_size + "," + d.j * plot_size + ")"; })
@@ -163,5 +163,8 @@
             });
         
         </script>
+        
+        <p> sdghldkjfgh <g> </g> </p>
+        <p>lzdkjhgfdsl</p>
     </body>
 
