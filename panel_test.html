@@ -10,12 +10,21 @@
         <!-- Javscript dependencies -->
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
-        <!--<script src="js/d3.csv.js"></script>-->
         
     </head>
     
     <body>
         <script>
+            
+            // Read states JSON spec
+            d3.json("states.json", function(error, json_data) {
+                if (error) {
+                    console.warn(error);
+                }
+                
+                var states = json_data['states'];
+            });
+            
             // Specifies the relevant sizes
             // Why do we need Figure width?
             var figure_width = 960, // pixels - no used

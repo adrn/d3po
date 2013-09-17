@@ -24,8 +24,7 @@
                                 { 
                                     "gridPosition" : [0,3],
                                     "xAxis" : "spType"
-                                },
+                                }
                             ]
-                },
-         ],
+                }]
 }
