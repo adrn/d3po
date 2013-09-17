@@ -15,6 +15,16 @@
     
     <body>
         <script>
+            var current_state, 
+                plot_size = 300, // px
+                padding = 20; // px 
+            
+            // Scalers for x / y axes from data space to pixel space
+            var xScaler = d3.scale.linear()
+                .range([padding/2, plot_size - padding/2]);
+            
+            var yScaler = d3.scale.linear()
+                .range([plot_size - padding/2, padding/2]);
             
             // Read states JSON spec
             d3.json("states.json", function(error, json_data) {
@@ -22,153 +32,237 @@
                     console.warn(error);
                 }
                 
+                // Pull out the array of states from the json file
                 var states = json_data['states'];
+                current_state = states[0]; // set the current state
+                
             });
             
-            // Specifies the relevant sizes
-            // Why do we need Figure width?
-            var figure_width = 960, // pixels
-                plot_size = 150, // pixels
-                padding = 19.5; // pixels
-        
-            var x = d3.scale.linear()
-                .range([padding / 2, plot_size - padding / 2]);
-            
-            var y = d3.scale.linear()
-                .range([plot_size - padding / 2, padding / 2]);
-            
-            var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom")
-                .ticks(5);
-            
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient("left")
-                .ticks(5);
-            
-            var color = d3.scale.category10();
-            
-            //let's use colorbrewer in the future... https://github.com/mbostock/d3/tree/master/lib/colorbrewer
-            //var color = d3.scale.ordinal()
-            //    .domain(["foo", "bar", "baz"])
-            //    .range(colorbrewer.RdBu[9]);
-            
-            d3.csv("data/sample_data_cut.csv", function(error, data) {
-              var domainByTrait = {},
-                  traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; });
-                  
-              var n = traits.length;
-            
-              traits.forEach(function(trait) {
+            d3.csv("data/sample_data_cut.csv", function(error, csv_data) {
+                var nRows = current_state['grid']['nRows'],
+                    nCols = current_state['grid']['nColumns'];
+                    
+                var svg_height = nRows*(plot_size + padding),
+                    svg_width = nCols*(plot_size + padding);
+                
+                // Define an object to contain the domains (in data space) for each column
+                var domainByDataColumn = {},
+                    dataColumns = d3.keys(csv_data[0]);                
+                    
+                dataColumns.forEach(function(colName) {
+                    var domain = d3.extent(csv_data, function(d) { return parseFloat(d[colName]); });
+                    
+                    var size = domain[1]-domain[0];
+                    domainByDataColumn[colName] = [domain[0] - size/25., 
+                                                   domain[1] + size/25.];
+                });
+                
+                // Define the axis objects
+                var xAxis = d3.svg.axis()
+                            .scale(xScaler)
+                            .orient("bottom")
+                            .ticks(5);
+                        
+                var yAxis = d3.svg.axis()
+                            .scale(yScaler)
+                            .orient("left")
+                            .ticks(5);
+                
+                xAxis.tickSize(16);
+                yAxis.tickSize(16);
+                
+                // TODO: needs better names, brain dumping...
+                var d = [];
+                for (var ii=0; ii < current_state['plots'].length; ii++) {
+                    var this_plot = current_state['plots'][ii];
+                    
+                    d.push({ xColumnName : this_plot['xAxis'],
+                             yColumnName : this_plot['yAxis'],
+                             i : this_plot['gridPosition'][0],
+                             j : this_plot['gridPosition'][1]
+                           });
+                }
+                
+                // Define top level svg tag
+                var svg = d3.select("body").append("svg")
+                                .attr("width", svg_width)
+                                .attr("height", svg_height)
+                                .append("g")
+                                .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
+                
+                var cell = svg.selectAll(".cell")
+                              .data(d)
+                              .enter().append("g")
+                              .attr("class", "cell")
+                              .attr("transform", function(d) { 
+                                                    return "translate(" + d.j*(plot_size) + "," 
+                                                                        + (nRows - d.i - 1)*plot_size + ")"; 
+                                                }
+                                    )
+                              .each(plot);
+                
+                function plot(p) {
+                    var cell = d3.select(this);
+                    
+                    xScaler.domain(domainByDataColumn[p.xColumnName]);
+                    yScaler.domain(domainByDataColumn[p.yColumnName]);
+                    
+                    cell.append("rect")
+                        .attr("class", "frame")
+                        .attr("x", padding / 2)
+                        .attr("y", padding / 2)
+                        .attr("width", plot_size - padding)
+                        .attr("height", plot_size - padding);
+                    
+                    cell.selectAll("circle")
+                        .data(csv_data)
+                        .enter().append("circle")
+                        .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
+                        .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
+                        .attr("r", 3)
+                        .style("fill", function(d) { return "#333333"; }); // TODO: COLOR STUFF HERE
+                }
+                
+                
+                
+                
+                
+                
+                /*
+                
+                
+                
+                
+                
+                var domainByTrait = {},
+                //traits = d3.keys(data[0]).filter(function(d) { return d !== "species"; });
+                traits = ["J-H","H-K","J-K"];
+                
+                var n = traits.length;
+                
+                traits.forEach(function(trait) {
                 domainByTrait[trait] = d3.extent(data, function(d) { return d[trait]; });
-              });
-            
-            //  xAxis.tickSize(size * n);
-            //  yAxis.tickSize(-size * n);
-            
+                });
+                
+                //  xAxis.tickSize(size * n);
+                //  yAxis.tickSize(-size * n);
+                
                 xAxis.tickSize(8);
                 yAxis.tickSize(8);
-            
-            
-              var brush = d3.svg.brush()
-                  .x(x)
-                  .y(y)
-                  .on("brushstart", brushstart)
-                  .on("brush", brushmove)
-                  .on("brushend", brushend);
-            
-              var svg = d3.select("body").append("svg")
-                  .attr("width", plot_size * n + padding)
-                  .attr("height", plot_size * n + padding)
-                  .append("g")
-                  .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
-            
-              svg.selectAll(".x.axis")
-                  .data(traits)
-                  .enter().append("g")
-                  .attr("class", "x axis")
-                  .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * plot_size + ",0)"; })
-                  .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
-            
-              svg.selectAll(".y.axis")
-                  .data(traits)
+                
+                
+                var brush = d3.svg.brush()
+                .x(x)
+                .y(y)
+                .on("brushstart", brushstart)
+                .on("brush", brushmove)
+                .on("brushend", brushend);
+                
+                var svg = d3.select("body").append("svg")
+                .attr("width", plot_size * n + padding)
+                .attr("height", plot_size * n + padding)
+                .append("g")
+                .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
+                
+                svg.selectAll(".x.axis")
+                .data(traits)
                 .enter().append("g")
-                  .attr("class", "y axis")
-                  .attr("transform", function(d, i) { return "translate(0," + i * plot_size + ")"; })
-                  .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
-            
-              var cell = svg.selectAll(".cell")
-                  .data(cross(traits, traits))
+                .attr("class", "x axis")
+                .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * plot_size + ",0)"; })
+                .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
+                
+                svg.selectAll(".y.axis")
+                .data(traits)
                 .enter().append("g")
-                  .attr("class", "cell")
-                  .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * plot_size + "," + d.j * plot_size + ")"; })
-                  .each(plot);
-            
-              // Titles for the diagonal.
-              cell.filter(function(d) { return d.i === d.j; }).append("text")
-                  .attr("x", padding)
-                  .attr("y", padding)
-                  .attr("dy", ".71em")
-                  .text(function(d) { return d.x; });
-            
-              cell.call(brush);
-            
-              function plot(p) {
-                var cell = d3.select(this);
-            
-                x.domain(domainByTrait[p.x]);
-                y.domain(domainByTrait[p.y]);
-            
-                cell.append("rect")
+                .attr("class", "y axis")
+                .attr("transform", function(d, i) { return "translate(0," + i * plot_size + ")"; })
+                .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
+                
+                var cell = svg.selectAll(".cell")
+                .data(cross(traits, traits))
+                .enter().append("g")
+                .attr("class", "cell")
+                .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * plot_size + "," + d.j * plot_size + ")"; })
+                .each(plot);
+                
+                // Titles for the diagonal.
+                cell.filter(function(d) { return d.i === d.j; }).append("text")
+                .attr("x", padding)
+                .attr("y", padding)
+                .attr("dy", ".71em")
+                .text(function(d) { return d.x; });
+                
+                cell.call(brush);
+                
+                function plot(p) {
+                    var cell = d3.select(this);
+                    
+                    x.domain(domainByTrait[p.x]);
+                    y.domain(domainByTrait[p.y]);
+                    
+                    cell.append("rect")
                     .attr("class", "frame")
                     .attr("x", padding / 2)
                     .attr("y", padding / 2)
                     .attr("width", plot_size - padding)
                     .attr("height", plot_size - padding);
-            
-                cell.selectAll("circle")
+                    
+                    cell.selectAll("circle")
                     .data(data)
-                  .enter().append("circle")
+                    .enter().append("circle")
                     .attr("cx", function(d) { return x(d[p.x]); })
                     .attr("cy", function(d) { return y(d[p.y]); })
                     .attr("r", 3)
                     .style("fill", function(d) { return color(d.species); });
-              }
-            
-              var brushCell;
-            
-              // Clear the previously-active brush, if any.
-              function brushstart(p) {
-                if (brushCell !== this) {
-                  d3.select(brushCell).call(brush.clear());
-                  x.domain(domainByTrait[p.x]);
-                  y.domain(domainByTrait[p.y]);
-                  brushCell = this;
                 }
-              }
-            
-              // Highlight the selected circles.
-              function brushmove(p) {
+                
+                var brushCell;
+                
+                // Clear the previously-active brush, if any.
+                function brushstart(p) {
+                if (brushCell !== this) {
+                d3.select(brushCell).call(brush.clear());
+                x.domain(domainByTrait[p.x]);
+                y.domain(domainByTrait[p.y]);
+                brushCell = this;
+                }
+                }
+                
+                // Highlight the selected circles.
+                function brushmove(p) {
                 var e = brush.extent();
                 svg.selectAll("circle").classed("hidden", function(d) {
-                  return e[0][0] > d[p.x] || d[p.x] > e[1][0]
-                      || e[0][1] > d[p.y] || d[p.y] > e[1][1];
+                return e[0][0] > d[p.x] || d[p.x] > e[1][0]
+                || e[0][1] > d[p.y] || d[p.y] > e[1][1];
                 });
-              }
-            
-              // If the brush is empty, select all circles.
-              function brushend() {
+                }
+                
+                // If the brush is empty, select all circles.
+                function brushend() {
                 if (brush.empty()) svg.selectAll(".hidden").classed("hidden", false);
-              }
-            
-              function cross(a, b) {
-                var c = [], n = a.length, m = b.length, i, j;
-                for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
-                return c;
-              }
-            
-              d3.select(self.frameElement).style("height", plot_size * n + padding + 20 + "px");
+                }
+                
+                function cross(a, b) {
+                    var c = [], 
+                        n = a.length, 
+                        m = b.length, 
+                        i, j;
+                    
+                    for (i = -1; ++i < n;) {
+                        for (j = -1; ++j < m;) {
+                            c.push({ x : a[i], 
+                                     i : i, 
+                                     y : b[j], 
+                                     j : j
+                                   });
+                        }
+                    }
+                    
+                    return c;
+                }
+                
+                d3.select(self.frameElement).style("height", plot_size * n + padding + 20 + "px");
+                */
             });
         
         </script>
