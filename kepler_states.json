@@ -4,7 +4,7 @@
                                "nColumns" : 3},
                     "name" : "Kepler planets",
                     "caption" : "Vital statistics of Kepler planet candidates.",
-                    "colorAxis": "Discovery Quarter",
+                    "colorAxis": "KOI count",
                     "colorMap": "YlOrRd",
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
