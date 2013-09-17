@@ -20,10 +20,6 @@
                                     "gridPosition" : [0,2],
                                     "xAxis" : "J-K",
                                     "yAxis" : "J-H"
-                                },
-                                { 
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : "spType"
                                 }
                             ]
                 }]

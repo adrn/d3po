@@ -42,6 +42,9 @@
             var yScaler = d3.scale.linear()
                 .range([plot_size - padding/2, padding/2]);
             
+            var xOrdinalScaler = d3.scale.ordinal()
+                .range([padding/2, plot_size - padding/2]);
+            
             // Read states JSON spec
             d3.json("states.json", function(error, json_data) {
                 if (error) {
@@ -74,11 +77,13 @@
                         csv_data.map(function(d) {
                             this_col.push(d[colName]);
                         });
-                        domain = this_col.unique();
+                        
+                        domainByDataColumn[colName] = this_col.unique();
+                    } else {
+                        var size = domain[1]-domain[0];
+                        domainByDataColumn[colName] = [domain[0] - size/25., 
+                                                       domain[1] + size/25.];
                     }
-                    var size = domain[1]-domain[0];
-                    domainByDataColumn[colName] = [domain[0] - size/25., 
-                                                   domain[1] + size/25.];
                 });
                 
                 // Define the axis objects
@@ -165,6 +170,15 @@
                 function plot(p) {
                     var cell = d3.select(this);
                     
+                    /* need to do something fancy for histogram here?
+                    if (domainByDataColumn[p.xColumnName].length > 2) {
+                        // e.g., ordinal domain
+                        xScaler = xOrdinalScaler;
+                        xScaler.domain(domainByDataColumn[p.xColumnName]);
+                    } else {
+                        xScaler.domain(domainByDataColumn[p.xColumnName]);
+                    }
+                    */
                     xScaler.domain(domainByDataColumn[p.xColumnName]);
                     yScaler.domain(domainByDataColumn[p.yColumnName]);
                     
