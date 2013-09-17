@@ -1,0 +1,31 @@
+{ 
+    "states" : [{
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Figure 1a",
+                    "caption" : "This shows that Adrian and Josh are the coolest dudes.",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "H-K",
+                                    "selection" : {"xRange" : [3, 10],
+                                                   "yRange" : [6, 40]}
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "H-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,3],
+                                    "xAxis" : "spType"
+                                },
+                            ]
+                },
+         ],
+}
