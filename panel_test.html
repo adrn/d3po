@@ -8,21 +8,24 @@
         <link rel="stylesheet" type="text/css" href="css/style.css">
         
         <!-- Javscript dependencies -->
-        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
+        <script src="js/d3.v3.min.js"></script>
+        <!--<script src="js/d3.csv.js"></script>-->
         
     </head>
     
     <body>
         <script>
-            var width = 960,
-                size = 150,
-                padding = 19.5;
+            // Specifies the relevant sizes
+            var figure_width = 960, // pixels
+                plot_size = 150, // pixels
+                padding = 19.5; // pixels
             
             var x = d3.scale.linear()
-                .range([padding / 2, size - padding / 2]);
+                .range([padding / 2, plot_size - padding / 2]);
             
             var y = d3.scale.linear()
-                .range([size - padding / 2, padding / 2]);
+                .range([plot_size - padding / 2, padding / 2]);
             
             var xAxis = d3.svg.axis()
                 .scale(x)
@@ -66,8 +69,8 @@
                   .on("brushend", brushend);
             
               var svg = d3.select("body").append("svg")
-                  .attr("width", size * n + padding)
-                  .attr("height", size * n + padding)
+                  .attr("width", plot_size * n + padding)
+                  .attr("height", plot_size * n + padding)
                   .append("g")
                   .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
             
@@ -75,21 +78,21 @@
                   .data(traits)
                   .enter().append("g")
                   .attr("class", "x axis")
-                  .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * size + ",0)"; })
+                  .attr("transform", function(d, i) { return "translate(" + (n - i - 1) * plot_size + ",0)"; })
                   .each(function(d) { x.domain(domainByTrait[d]); d3.select(this).call(xAxis); });
             
               svg.selectAll(".y.axis")
                   .data(traits)
                 .enter().append("g")
                   .attr("class", "y axis")
-                  .attr("transform", function(d, i) { return "translate(0," + i * size + ")"; })
+                  .attr("transform", function(d, i) { return "translate(0," + i * plot_size + ")"; })
                   .each(function(d) { y.domain(domainByTrait[d]); d3.select(this).call(yAxis); });
             
               var cell = svg.selectAll(".cell")
                   .data(cross(traits, traits))
                 .enter().append("g")
                   .attr("class", "cell")
-                  .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")"; })
+                  .attr("transform", function(d) { return "translate(" + (n - d.i - 1) * plot_size + "," + d.j * plot_size + ")"; })
                   .each(plot);
             
               // Titles for the diagonal.
@@ -111,8 +114,8 @@
                     .attr("class", "frame")
                     .attr("x", padding / 2)
                     .attr("y", padding / 2)
-                    .attr("width", size - padding)
-                    .attr("height", size - padding);
+                    .attr("width", plot_size - padding)
+                    .attr("height", plot_size - padding);
             
                 cell.selectAll("circle")
                     .data(data)
@@ -155,7 +158,7 @@
                 return c;
               }
             
-              d3.select(self.frameElement).style("height", size * n + padding + 20 + "px");
+              d3.select(self.frameElement).style("height", plot_size * n + padding + 20 + "px");
             });
         
         </script>
