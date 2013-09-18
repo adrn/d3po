@@ -24,9 +24,10 @@
                                 { 
                                     "gridPosition" : [0,3],
                                     "xAxis" : "J-H",
-                                    "yAxis" : "J-H"
+                                    "yAxis" : "[Fe/H]"
                                 }
-                            ]
+                            ],
+                    "colorAxis" : "[Fe/H]"
                 },
                 {
                     "grid" : { "nRows" : 1,

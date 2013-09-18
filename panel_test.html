@@ -6,14 +6,14 @@
         
         <!-- CSS / Styling -->
         <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Telex:200,300,400,700' rel='stylesheet' type='text/css'>
+        <!-- not to be confused with Planet Telex -->
         
         <!-- Javscript dependencies -->
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
         <script src="js/util.js"></script>
         <script src="http://code.jquery.com/jquery.min.js"></script>
-        
-        <link href='http://fonts.googleapis.com/css?family=Telex:200,300,400,700' rel='stylesheet' type='text/css'>
         
     </head>
     
@@ -65,7 +65,8 @@
                     svg_width = nCols*plot_size + padding;
                     
                 var tickSize = 16,
-                    brushCell;
+                    brushCell,
+                    color_scale = d3.scale.linear();
                 
                 // Define an object to contain the domains (in data space) for each column
                 var domainByDataColumn = {},
@@ -102,6 +103,13 @@
                 
                 xAxis.tickSize(tickSize);
                 yAxis.tickSize(tickSize);
+                
+                if (typeof state['colorAxis'] != 'undefined') {
+                    console.log(state['colorAxis']);
+                    color_scale.domain(domainByDataColumn[state['colorAxis']]);
+                    color_scale.range(["red","green","blue"]);
+                    color_scale(-1.0);
+                }
                 
                 // TODO: needs better names, brain dumping...
                 var d = [];
@@ -212,15 +220,6 @@
                 function plot(p) {
                     var cell = d3.select(this);
                     
-                    /* need to do something fancy for histogram here?
-                    if (domainByDataColumn[p.xColumnName].length > 2) {
-                        // e.g., ordinal domain
-                        xScaler = xOrdinalScaler;
-                        xScaler.domain(domainByDataColumn[p.xColumnName]);
-                    } else {
-                        xScaler.domain(domainByDataColumn[p.xColumnName]);
-                    }
-                    */
                     xScaler.domain(domainByDataColumn[p.xColumnName]);
                     yScaler.domain(domainByDataColumn[p.yColumnName]);
                     
@@ -237,7 +236,7 @@
                         .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
                         .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
                         .attr("r", 2)
-                        .style("fill", function(d) { return "#333333"; }); // TODO: COLOR STUFF HERE
+                        .style("fill", function(d) { return color_scale(d[state['colorAxis']]) || "#333333"; }); 
                 }
             }
             
