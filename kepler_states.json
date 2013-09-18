@@ -19,7 +19,8 @@
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "Discovery Quarter",
-                                    "selection" : {"xItems" : ["Q1"]}
+                                    "yAxis" : "r/R",
+                                    "selection" : {"xRange" : ["Q1", "Q1"]}
                                 }
                             ]
                 },
