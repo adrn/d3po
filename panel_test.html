@@ -33,7 +33,7 @@
                 .range([plot_size - padding/2, padding/2]);
             
             // Read states JSON spec
-            d3.json("states.json", function(error, json_data) {
+            d3.json("sample_states.json", function(error, json_data) {
                 if (error) {
                     console.warn(error);
                 }
@@ -42,7 +42,7 @@
                 states = json_data['states'];
             });
             
-            d3.csv("data/sample_data_cut.csv", function(error, data) {
+            d3.csv("data/sample_data.csv", function(error, data) {
                 csv_data = data;
                 update_state(states[0]);
                 
