@@ -49,9 +49,9 @@
                                 { 
                                     "gridPosition" : [0,3],
                                     "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index" , 
-                                    "selection" : {"xRange" : [0.9, 1.2],
-                                                   "yRange" : [0.9, 1.2]}
+                                    "yAxis" : "H2OK2 Index", 
+                                    "selection" : {"xRange" : [0.5, 1.2],
+                                                   "yRange" : [0.5, 1.2]}
                                }
                             ]
                 },
