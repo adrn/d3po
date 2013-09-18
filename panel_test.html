@@ -13,6 +13,7 @@
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
         <script src="js/util.js"></script>
+        <script src="colorbrewer/colorbrewer.js"></script>
         <script src="http://code.jquery.com/jquery.min.js"></script>
         
     </head>
@@ -107,8 +108,7 @@
                 if (typeof state['colorAxis'] != 'undefined') {
                     console.log(state['colorAxis']);
                     color_scale.domain(domainByDataColumn[state['colorAxis']]);
-                    color_scale.range(["red","green","blue"]);
-                    color_scale(-1.0);
+                    color_scale.range(["red", "blue"]);
                 }
                 
                 // TODO: needs better names, brain dumping...
