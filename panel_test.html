@@ -6,7 +6,7 @@
         
         <!-- CSS / Styling -->
         <link rel="stylesheet" type="text/css" href="css/style.css">
-        <link href='http://fonts.googleapis.com/css?family=Telex:200,300,400,700' rel='stylesheet' type='text/css'>
+        <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:100,200,300,400,700' rel='stylesheet' type='text/css'>
         <!-- not to be confused with Planet Telex -->
         
         <!-- Javscript dependencies -->
@@ -26,8 +26,8 @@
                 csv_data,
                 plot_size = 300; // px
             
-            var figPadding = {"top" : 0, "left" : 20, "right" : 20, "bottom" : 20},
-                plotSpacing = {"vertical" : 40, "horizontal" : 40};
+            var figPadding = {"top" : 0, "left" : 40, "right" : 20, "bottom" : 35},
+                plotSpacing = {"vertical" : 40, "horizontal" : 60};
             
             // Scalers for x / y axes from data space to pixel space
             var xScaler = d3.scale.linear()
@@ -194,6 +194,24 @@
                   .each(function(d) { yScaler.domain(domainByDataColumn[d.yColumnName]); 
                                       d3.select(this).call(yAxis); 
                         });
+                
+                // add axis labels
+                svg.selectAll(".x-label")
+                  .data(d)
+                  .enter().append("text")
+                  .text(function(d,i) { return d.xColumnName; })
+                  .attr("class", "axis-label")
+                  .attr("x", function(d, i) { return x_translate(d.j) + plot_size/2. - $(this).width()/2.; })
+                  .attr("y", function(d, i) { return (plot_size-plotSpacing['vertical']/2-y_translate(d.i)+50); });
+                
+                svg.selectAll(".y-label")
+                  .data(d)
+                  .enter().append("text")
+                  .text(function(d,i) { return d.yColumnName; })
+                  .attr("class", "axis-label") 
+                  .attr("x", function(d, i) { return x_translate(d.j)-15; })
+                  .attr("y", function(d, i) { return (plotSpacing['vertical']/2-y_translate(d.i)) + plot_size/2. + $(this).width()/2.-10; })
+                  .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
                 
                 // If state has a 'selection':
                 state['plots'].forEach(function(p,i) {

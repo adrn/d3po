@@ -4,15 +4,20 @@ html, body, svg {
 }
 
 svg {
-    font: 15px sans-serif;
-    font-family: "Telex";
-    font-weight: 200;
+    font: 12pt sans-serif;
+    font-family: "Source Sans Pro";
+    font-weight: 100;
     padding: 10px;
     background: #f7f5f0;
     margin: 0 auto;
     display: block;
     border: 1px solid #bbb;
     border-radius: 8px;
+}
+
+.axis-label {
+    font-weight: 300;
+    font-size: 18pt;
 }
 
 .axis,
@@ -62,8 +67,8 @@ circle.hidden {
 
 #caption{
 	word-wrap: normal;
-	font: 18px sans-serif;
-    font-family: "Telex";
+	font: 20px sans-serif;
+    font-family: "Source Sans Pro";
     width: 60%;
     margin: 0 auto;
 }
