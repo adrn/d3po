@@ -13,63 +13,39 @@
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
         <script src="js/util.js"></script>
-        <script src="colorbrewer/colorbrewer.js"></script>
         <script src="http://code.jquery.com/jquery.min.js"></script>
-        
+        <script src="js/d3po.js"></script>
     </head>
     
     <body>
     
         <script>
-			var current_state,
-                states, 
-                csv_data,
-                plot_size = 250; // px
-            
-            var figPadding = {"top" : 0, "left" : 40, "right" : 20, "bottom" : 35},
-                plotSpacing = {"vertical" : 40, "horizontal" : 60};
-            
-            // Scalers for x / y axes from data space to pixel space
-            var xScaler = d3.scale.linear()
-                .range([plotSpacing['horizontal']/2, plot_size - plotSpacing['horizontal']/2]);
-            
-            var yScaler = d3.scale.linear()
-                .range([plot_size - plotSpacing['vertical']/2, plotSpacing['vertical']/2]);
+            // todo:
+            var jsonFilename = "data/sample_states.json";
             
             // Read states JSON spec
-            d3.json("data/sample_states.json", function(error, json_data) {
+            d3.json(jsonFilename, function(error, data) {
                 if (error) {
                     console.warn(error);
                 }
                 
-                // Pull out the array of states from the json file
-                states = json_data['states'];
-            });
-            
-            d3.csv("data/sample_data.csv", function(error, data) {
-                csv_data = data;
-                update_state(states[0]);
-                
-                d3.select("#controls").selectAll("button").data(states)
-                    .enter().append("button")
-                    .html(function(d, i){ return d['name']; })
-                    .on("click", function(e,i) {
-                        update_state(states[i]);
-                    });
+                // Pull out the data into a global container
+                jsonData = data;
+                readD3POCSV(jsonData["filename"]);                
             });
             
             function update_state(state) {
                 // Just delete the svg, recreate
-                current_state = state
+                currentState = state
                 d3.select("svg").remove();
                 d3.select("p").remove();
                 
                 var nRows = state['grid']['nRows'],
                     nCols = state['grid']['nColumns'];
                 
-                var svg_height = nRows*plot_size + plotSpacing['vertical']/2*(nRows-1) + 
+                var svg_height = nRows*plotSize + plotSpacing['vertical']/2*(nRows-1) + 
                                  figPadding['top'] + figPadding['bottom'],
-                    svg_width = nCols*plot_size + plotSpacing['horizontal']/2*(nCols-1) + 
+                    svg_width = nCols*plotSize + plotSpacing['horizontal']/2*(nCols-1) + 
                                  figPadding['left'] + figPadding['right'];
                     
                 var tickSize = 16,
@@ -78,15 +54,15 @@
                 
                 // Define an object to contain the domains (in data space) for each column
                 var domainByDataColumn = {},
-                    dataColumns = d3.keys(csv_data[0]);                
+                    dataColumns = d3.keys(csvData[0]);                
                     
                 dataColumns.forEach(function(colName) {
-                    var domain = d3.extent(csv_data, function(d) { return parseFloat(d[colName]); });
+                    var domain = d3.extent(csvData, function(d) { return parseFloat(d[colName]); });
                     
                     // if parseFloat failed, probably string values in the column
                     if (isNaN(domain[0]) || isNaN(domain[1])){
                         var this_col = [];
-                        csv_data.map(function(d) {
+                        csvData.map(function(d) {
                             this_col.push(d[colName]);
                         });
                         
@@ -131,14 +107,14 @@
                                 .attr("transform", "translate(" + figPadding["left"] + "," + figPadding["top"] + ")");
                 
 				d3.select("#caption")
-					    .text(current_state.caption)
+					    .text(currentState.caption)
                 
                 function x_translate(j) {
-                    return j*(plot_size + plotSpacing['horizontal']/2.);
+                    return j*(plotSize + plotSpacing['horizontal']/2.);
                 }
                 
                 function y_translate(i) {
-                    return (nRows - i - 1)*(plot_size + plotSpacing['vertical']/2.);
+                    return (nRows - i - 1)*(plotSize + plotSpacing['vertical']/2.);
                 }
                 
                 var cell = svg.selectAll(".cell")
@@ -181,7 +157,7 @@
                   .enter().append("g")
                   .attr("class", "x axis")
                   .attr("transform", function(d, i) { return "translate(" + x_translate(d.j) + "," 
-                                                                + (plot_size-plotSpacing['vertical']/2-y_translate(d.i)-10) + ")"; })
+                                                                + (plotSize-plotSpacing['vertical']/2-y_translate(d.i)-10) + ")"; })
                   .each(function(d) { xScaler.domain(domainByDataColumn[d.xColumnName]); 
                                       d3.select(this).call(xAxis); 
                         });
@@ -202,8 +178,8 @@
                   .enter().append("text")
                   .text(function(d,i) { return d.xColumnName; })
                   .attr("class", "axis-label")
-                  .attr("x", function(d, i) { return x_translate(d.j) + plot_size/2. - $(this).width()/2.; })
-                  .attr("y", function(d, i) { return (plot_size-plotSpacing['vertical']/2-y_translate(d.i)+50); });
+                  .attr("x", function(d, i) { return x_translate(d.j) + plotSize/2. - $(this).width()/2.; })
+                  .attr("y", function(d, i) { return (plotSize-plotSpacing['vertical']/2-y_translate(d.i)+50); });
                 
                 svg.selectAll(".y-label")
                   .data(d)
@@ -211,7 +187,7 @@
                   .text(function(d,i) { return d.yColumnName; })
                   .attr("class", "axis-label") 
                   .attr("x", function(d, i) { return x_translate(d.j)-15; })
-                  .attr("y", function(d, i) { return (plotSpacing['vertical']/2-y_translate(d.i)) + plot_size/2. + $(this).width()/2.-10; })
+                  .attr("y", function(d, i) { return (plotSpacing['vertical']/2-y_translate(d.i)) + plotSize/2. + $(this).width()/2.-10; })
                   .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
                 
                 // If state has a 'selection':
@@ -278,11 +254,11 @@
                         .attr("class", "frame")
                         .attr("x", plotSpacing['horizontal'] / 2)
                         .attr("y", plotSpacing['vertical'] / 2)
-                        .attr("width", plot_size - plotSpacing['horizontal'])
-                        .attr("height", plot_size - plotSpacing['vertical']);
+                        .attr("width", plotSize - plotSpacing['horizontal'])
+                        .attr("height", plotSize - plotSpacing['vertical']);
                     
                     cell.selectAll("circle")
-                        .data(csv_data)
+                        .data(csvData)
                         .enter().append("circle")
                         .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
                         .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })

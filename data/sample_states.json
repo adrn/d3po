@@ -1,4 +1,5 @@
 {
+    "filename" : "data/sample_data.csv",
     "title" : "Something about M dwarfs",
     "states" : [{
                     "grid" : { "nRows" : 1,
