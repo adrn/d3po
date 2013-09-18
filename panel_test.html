@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+miutiutil<!DOCTYPE html>
 
 <html>
     <head>
@@ -10,22 +10,7 @@
         <!-- Javscript dependencies -->
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
-        
-        <script type="text/javascript">
-        
-            // Return a unique version of an array
-            Array.prototype.unique = function(){
-               var u = {}, a = [];
-               for(var i = 0, l = this.length; i < l; ++i){
-                  if(u.hasOwnProperty(this[i])) {
-                     continue;
-                  }
-                  a.push(this[i]);
-                  u[this[i]] = 1;
-               }
-               return a;
-            }
-        </script>
+        <script src="js/util.js"></script>
         
     </head>
     
@@ -63,7 +48,7 @@
                 var svg_height = nRows*plot_size + padding,
                     svg_width = nCols*plot_size + padding;
                     
-                var tickSize = 16;
+                var tickSize = 12;
                 
                 // Define an object to contain the domains (in data space) for each column
                 var domainByDataColumn = {},
