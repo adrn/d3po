@@ -100,7 +100,7 @@
                 
                 if (typeof state['colorAxis'] != 'undefined') {
                     color_scale.domain(domainByDataColumn[state['colorAxis']]);
-                    color_scale.range(["red", "blue"]);
+                    color_scale.range(state['colorMap'] || ["red","blue"]);
                 }
                 
                 // TODO: needs better names, brain dumping...
