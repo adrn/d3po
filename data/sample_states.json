@@ -8,7 +8,9 @@
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
                                     "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
+                                    "yAxis" : "H-K",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 3}
                                 },
                                 { 
                                     "gridPosition" : [0,1],

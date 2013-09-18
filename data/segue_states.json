@@ -9,7 +9,9 @@
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
                                     "xAxis" : "TEFF_ADOP",
-                                    "yAxis" : "LOGG_ADOP"
+                                    "yAxis" : "LOGG_ADOP",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 1}
                                 },
                                 { 
                                     "gridPosition" : [0,1],
