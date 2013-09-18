@@ -136,14 +136,13 @@
                               .on("brushstart", brushstart)
                               .on("brush", brushmove)
                               .on("brushend", brushend);
-                console.log(brush);
+
                 cell.call(brush);
                 
                 var brushCell;
 
                 // Clear the previously-active brush, if any.
                 function brushstart(p) {
-                    console.log(p);
                     if (brushCell !== this) {
                         d3.select(brushCell).call(brush.clear());
                         xScaler.domain(domainByDataColumn[p.xColumnName]);
