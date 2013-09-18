@@ -24,8 +24,8 @@
 			var current_state,
                 states, 
                 csv_data,
-                plot_size = 350, // px
-                padding = 50; // px 
+                plot_size = 300, // px
+                padding = 60; // px 
             
             // Scalers for x / y axes from data space to pixel space
             var xScaler = d3.scale.linear()
@@ -109,7 +109,6 @@
                 yAxis.tickSize(tickSize);
                 
                 if (typeof state['colorAxis'] != 'undefined') {
-                    console.log(state['colorAxis']);
                     color_scale.domain(domainByDataColumn[state['colorAxis']]);
                     color_scale.range(["red", "blue"]);
                 }
@@ -146,7 +145,7 @@
                   .data(xColumnNames)
                   .enter().append("g")
                   .attr("class", "x axis")
-                  .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize/2) + ")"; })
+                  .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize) + ")"; })
                   .each(function(d) { xScaler.domain(domainByDataColumn[d]); 
                                       d3.select(this).call(xAxis); 
                         });
@@ -157,7 +156,7 @@
                   .data(yColumnNames)
                   .enter().append("g")
                   .attr("class", "y axis")
-                  .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize/2) + "," + 0 + ")"; })
+                  .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize) + "," + 0 + ")"; })
                   .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
                                       d3.select(this).call(yAxis); 
                         });
