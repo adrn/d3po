@@ -24,15 +24,17 @@
 			var current_state,
                 states, 
                 csv_data,
-                plot_size = 300, // px
-                padding = 60; // px 
+                plot_size = 300; // px
+            
+            var figPadding = {"top" : 0, "left" : 20, "right" : 20, "bottom" : 20},
+                plotSpacing = {"vertical" : 40, "horizontal" : 40};
             
             // Scalers for x / y axes from data space to pixel space
             var xScaler = d3.scale.linear()
-                .range([padding/2, plot_size - padding/2]);
+                .range([plotSpacing['horizontal']/2, plot_size - plotSpacing['horizontal']/2]);
             
             var yScaler = d3.scale.linear()
-                .range([plot_size - padding/2, padding/2]);
+                .range([plot_size - plotSpacing['vertical']/2, plotSpacing['vertical']/2]);
             
             // Read states JSON spec
             d3.json("sample_states.json", function(error, json_data) {
@@ -65,8 +67,10 @@
                 var nRows = state['grid']['nRows'],
                     nCols = state['grid']['nColumns'];
                 
-                var svg_height = nRows*plot_size + padding,
-                    svg_width = nCols*plot_size + padding;
+                var svg_height = nRows*plot_size + plotSpacing['vertical']/2*(nRows-1) + 
+                                 figPadding['top'] + figPadding['bottom'],
+                    svg_width = nCols*plot_size + plotSpacing['horizontal']/2*(nCols-1) + 
+                                 figPadding['left'] + figPadding['right'];
                     
                 var tickSize = 16,
                     brushCell,
@@ -123,18 +127,26 @@
                 var svg = d3.select("#svg").append("svg").attr("width", svg_width)
                                 .attr("height", svg_height)
                                 .append("g")
-                                .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
+                                .attr("transform", "translate(" + figPadding["left"] + "," + figPadding["top"] + ")");
                 
 				d3.select("#caption")
 					    .text(current_state.caption)
+                
+                function x_translate(j) {
+                    return j*(plot_size + plotSpacing['horizontal']/2.);
+                }
+                
+                function y_translate(i) {
+                    return (nRows - i - 1)*(plot_size + plotSpacing['vertical']/2.);
+                }
                 
                 var cell = svg.selectAll(".cell")
                               .data(d)
                               .enter().append("g")
                               .attr("class", "cell")
                               .attr("transform", function(d) { 
-                                                    return "translate(" + d.j*(plot_size) + "," 
-                                                                        + (nRows - d.i - 1)*plot_size + ")"; 
+                                                    return "translate(" + x_translate(d.j) + "," 
+                                                                        + y_translate(d.i) + ")"; 
                                                 })
                               .each(plot);
                 
@@ -162,23 +174,24 @@
                 xAxis.tickSize(tickSize);
                 yAxis.tickSize(tickSize);
                 
+                // TODO: fix the axes here. should really pass in full data info, so i know about grid position, etc...
                 svg.selectAll(".x.axis")
-                  .data(xColumnNames)
+                  .data(d)
                   .enter().append("g")
                   .attr("class", "x axis")
-                  .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize) + ")"; })
-                  .each(function(d) { xScaler.domain(domainByDataColumn[d]); 
+                  .attr("transform", function(d, i) { return "translate(" + x_translate(d.j) + "," 
+                                                                + (plot_size-plotSpacing['vertical']/2-y_translate(d.i)-10) + ")"; })
+                  .each(function(d) { xScaler.domain(domainByDataColumn[d.xColumnName]); 
                                       d3.select(this).call(xAxis); 
                         });
-                        
-
-                
+                    
                 svg.selectAll(".y.axis")
-                  .data(yColumnNames)
+                  .data(d)
                   .enter().append("g")
                   .attr("class", "y axis")
-                  .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize) + "," + 0 + ")"; })
-                  .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
+                  .attr("transform", function(d, i) { return "translate(" + (x_translate(d.j)+plotSpacing['horizontal']/2+10) + "," 
+                                                                + y_translate(d.i) + ")"; })
+                  .each(function(d) { yScaler.domain(domainByDataColumn[d.yColumnName]); 
                                       d3.select(this).call(yAxis); 
                         });
                 
@@ -234,10 +247,10 @@
                     
                     cell.append("rect")
                         .attr("class", "frame")
-                        .attr("x", padding / 2)
-                        .attr("y", padding / 2)
-                        .attr("width", plot_size - padding)
-                        .attr("height", plot_size - padding);
+                        .attr("x", plotSpacing['horizontal'] / 2)
+                        .attr("y", plotSpacing['vertical'] / 2)
+                        .attr("width", plot_size - plotSpacing['horizontal'])
+                        .attr("height", plot_size - plotSpacing['vertical']);
                     
                     cell.selectAll("circle")
                         .data(csv_data)
