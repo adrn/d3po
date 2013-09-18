@@ -52,6 +52,8 @@
             });
             
             function update_state(state) { 
+                d3.select("svg").remove();
+                
                 var nRows = state['grid']['nRows'],
                     nCols = state['grid']['nColumns'];
                 
@@ -117,8 +119,7 @@
                     });
                 
                 // Define top level svg tag
-                var svg = d3.select("body").append("svg")
-                                .attr("width", svg_width)
+                var svg = d3.select("body").append("svg").attr("width", svg_width)
                                 .attr("height", svg_height)
                                 .append("g")
                                 .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
