@@ -36,15 +36,16 @@
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
                                     "xAxis" : "H-K",
-                                    "yAxis" : "H-K",
+                                    "yAxis" : "H-K"
                                 },
                                 { 
                                     "gridPosition" : [0,1],
                                     "xAxis" : "J-H",
-                                    "yAxis" : "H-K"
+                                    "yAxis" : "H-K",
                                     "selection" : {"xRange" : [3, 10],
                                                    "yRange" : [6, 40]}
                                 }
                             ]
-                }]
+                }
+            ]
 }
