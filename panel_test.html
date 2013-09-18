@@ -153,6 +153,19 @@
                                                 })
                               .each(plot);
                 
+                // If state has a 'selection':
+                state['plots'].forEach(function(p) {
+                    if (typeof p['selection'] != 'undefined') {
+                        svg.selectAll("circle").classed("hidden", function(d) {
+                            var idx = p['selection']['xRange'][0] > d[p.xAxis] || 
+                                      d[p.xAxis] > p['selection']['xRange'][1] ||
+                                      p['selection']['yRange'][0] > d[p.yAxis] ||
+                                      d[p.yAxis] > p['selection']['yRange'][1];
+                            return idx;
+                        });
+                    }
+                });
+                
                 // Define the brush object
                 var brush = d3.svg.brush()
                               .x(xScaler)

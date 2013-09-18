@@ -6,10 +6,10 @@
                     "caption" : "This shows that Adrian and Josh are the coolest dudes.",
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
+                                    "xAxis" : "H-K",
                                     "yAxis" : "H-K",
-                                    "selection" : {"xRange" : [3, 10],
-                                                   "yRange" : [6, 40]}
+                                    "selection" : {"xRange" : [1, 2],
+                                                   "yRange" : [1, 2]}
                                 },
                                 { 
                                     "gridPosition" : [0,1],
@@ -42,8 +42,8 @@
                                     "gridPosition" : [0,1],
                                     "xAxis" : "J-H",
                                     "yAxis" : "H-K",
-                                    "selection" : {"xRange" : [3, 10],
-                                                   "yRange" : [6, 40]}
+                                    "selection" : {"xRange" : [0.4, 0.6],
+                                                   "yRange" : [0.5, 2.0]}
                                 }
                             ]
                 }
