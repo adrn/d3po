@@ -205,7 +205,7 @@
                                   }
                             ]
                 },
-                           	{
+                {
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
                     "name" : "...and finally the late M dwarfs and their Na EW.",
@@ -235,7 +235,39 @@
                                                    "yRange" : [0.1, 0.83]}
                                   }
                             ]
+                },
+                {
+                    "grid" : { "nRows" : 2,
+                               "nColumns" : 2},
+                    "name" : "grid",
+                    "colorAxis" : "EW NA",
+                    "colorMap" : ["blue", "red"],
+                    "caption" : "Late M and iron abundance",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "H-K"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "H-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [1,0],
+               	                     "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [1,1],
+                                    "xAxis" : "H2OK2 Index",
+                                    "yAxis" : "H2OK2 Index",
+                                    "selection" : {"xRange" : [0.1, 0.83],
+                                                   "yRange" : [0.1, 0.83]}
+                                  }
+                            ]
                 }
+
 
             
             ]
