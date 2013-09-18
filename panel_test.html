@@ -47,7 +47,7 @@
                 csv_data = data;
                 update_state(states[0]);
                 
-                d3.selectAll("body button").data(states)
+                d3.selectAll("#content button").data(states)
                     .enter().append("button")
                     .html(function(d, i){ return d['name']; })
                     .on("click", function(e,i) {
@@ -131,7 +131,7 @@
                     });
                 
                 // Define top level svg tag
-                var svg = d3.select("body").append("svg").attr("width", svg_width)
+                var svg = d3.select("#svg").append("svg").attr("width", svg_width)
                                 .attr("height", svg_height)
                                 .append("g")
                                 .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
@@ -246,6 +246,9 @@
             }
             
         </script>
+        
+        <div id="svg"></div>
+        <div id="content"></div>
         
     </body>
 
