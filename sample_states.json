@@ -59,7 +59,7 @@
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
                     "name" : "All the stars and their iron abundances",
-                    "colorAxis" : "EW Na",
+                    "colorAxis" : "[Fe/H]",
                     "colorMap" : ["blue", "red"],
                     "caption" : "In this plot, the near-infrared colors of the M dwarfs remain the same. However, now the stars are colored by their iron abundance, [Fe/H]. The [Fe/H] of each star was inferred following the methods described in Newton et al. (2013), which use the equivalent width of the Na line near 2.2 microns as a proxy for metallicity. You can see that a metal-rich star is seen to have a different color than a more metal-poor star of the same spectral type. This allowed us to calibrate a relation for iron abundance using 2MASS photometry.",
                     "plots" : [ { 
