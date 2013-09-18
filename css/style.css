@@ -1,6 +1,9 @@
 svg {
   font: 20px sans-serif;
+  font-family: "Telex";
+  font-weight: 200;
   padding: 10px;
+  background: #f7f5f0;
 }
 
 .axis,
@@ -78,4 +81,16 @@ circle.hidden {
 }.:active {
 	position:relative;
 	top:1px;
+}
+
+
+#content { 
+	width:780px;
+	min-height:100px; /* for modern browsers */
+	height:auto !important; /* for modern browsers */
+	height:450px; /* for IE5.x and IE6 */
+	background-color:#FFFFFF;
+	margin-top:5px;
+	border:10px solid #000000;
+	padding:10px;
 }
