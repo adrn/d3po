@@ -34,7 +34,7 @@
                 .range([plot_size - padding/2, padding/2]);
             
             // Read states JSON spec
-            d3.json("states.json", function(error, json_data) {
+            d3.json("sample_states.json", function(error, json_data) {
                 if (error) {
                     console.warn(error);
                 }
@@ -43,7 +43,7 @@
                 states = json_data['states'];
             });
             
-            d3.csv("data/sample_data_cut.csv", function(error, data) {
+            d3.csv("data/sample_data.csv", function(error, data) {
                 csv_data = data;
                 update_state(states[0]);
                 
@@ -137,19 +137,22 @@
                                 .append("g")
                                 .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
                 
+                
                 // Add axes to the plots
                 svg.selectAll(".x.axis")
                   .data(xColumnNames)
-                .enter().append("g")
+                  .enter().append("g")
                   .attr("class", "x axis")
                   .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize/2) + ")"; })
                   .each(function(d) { xScaler.domain(domainByDataColumn[d]); 
                                       d3.select(this).call(xAxis); 
                         });
+                        
+
                 
                 svg.selectAll(".y.axis")
                   .data(yColumnNames)
-                .enter().append("g")
+                  .enter().append("g")
                   .attr("class", "y axis")
                   .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize/2) + "," + 0 + ")"; })
                   .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
