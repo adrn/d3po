@@ -1,0 +1,123 @@
+{ 
+    "states" : [{
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Kepler planets",
+                    "caption" : "Kepler planets discovered in the first 43 days (Borucki et al. 2011a,b).",
+                    "colorAxis": "KOI count",
+                    "colorMap": "YlOrRd",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "Period",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "Teq",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "Discovery Quarter",
+                                    "selection" : {"xItems" : ["Q1"]}
+                                }
+                            ]
+                },
+                {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Kepler planets",
+                    "caption" : "Kepler planets discovered in the first 13 months (Borucki et al. 2011b).",
+                    "colorAxis": "KOI count",
+                    "colorMap": "YlOrRd",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "Period",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "Teq",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "Discovery Quarter",
+                                    "selection" : {"xItems" : ["Q1", "Q5"]}
+                                }
+                            ]
+                },
+                {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Kepler planets",
+                    "caption" : "Kepler planets discovered in the first 16 months (Batalha et al. 2013).",
+                    "colorAxis": "KOI count",
+                    "colorMap": "YlOrRd",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "Period",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "Teq",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "Discovery Quarter",
+                                    "selection" : {"xItems" : ["Q1", "Q5", "Q6"]}
+                                }
+                            ]
+                },
+                {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Kepler planets",
+                    "caption" : "Kepler planets discovered to date (Downloaded from MAST Sep 17th, 2013).",
+                    "colorAxis": "KOI count",
+                    "colorMap": "YlOrRd",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "Period",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "Teq",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "Discovery Quarter",
+                                    "selection" : {"xItems" : ["Q1", "Q5", "Q6", "MAST"]}
+                                }
+                            ]
+                },
+                {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Kepler planets",
+                    "caption" : "Kepler planets in the (optimistic) habitable zone defined by Kasting (2011b) using the planetary and stellar properties listed in MAST.",
+                    "colorAxis": "KOI count",
+                    "colorMap": "YlOrRd",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "Period",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "Teq",
+                                    "yAxis" : "Planet Radius",
+                                    "xRange" : [185,303],
+                                    "selection" : {"xRange" : [185,303]}
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "Discovery Quarter"
+                                }
+                            ]
+                }]
+}
