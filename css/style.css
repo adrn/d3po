@@ -11,6 +11,12 @@ svg {
   shape-rendering: crispEdges;
 }
 
+.caption{
+	word-wrap: normal;
+	font: 15px sans-serif;
+    font-family: "Telex";
+}
+
 .axis line {
   stroke: #ddd;
 }
