@@ -30,7 +30,7 @@
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
                     "name" : "Early M dwarfs",
-                    "caption" : "",
+                    "caption" : "This just shows the early M dwarfs.",
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
                                     "xAxis" : "J-K",
@@ -55,11 +55,69 @@
                                }
                             ]
                 },
-              	{
+                            {
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
-                    "name" : "All the stars and their iron abundances",
-                    "colorAxis" : "[Fe/H]",
+                    "name" : "Mid M dwarfs",
+                    "caption" : "Now we just show the mid M dwarfs",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "H-K"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "H-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,3],
+                                    "xAxis" : "H2OK2 Index",
+                                    "yAxis" : "H2OK2 Index" , 
+                                    "selection" : {"xRange" : [0.83, 0.9],
+                                                   "yRange" : [0.83, 0.9]}
+                               }
+                            ]
+                },
+                             {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 4},
+                    "name" : "Late M dwarfs",
+                    "caption" : "Now we just show the late M dwarfs",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "H-K"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "H-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,3],
+                                    "xAxis" : "H2OK2 Index",
+                                    "yAxis" : "H2OK2 Index" , 
+                                    "selection" : {"xRange" : [0.65, 0.83],
+                                                   "yRange" : [0.65, 0.83]}
+                               }
+                            ]
+                },
+            	{
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 4},
+                    "name" : "All the stars and their [Fe/H]",
+                    "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "In this plot, the near-infrared colors of the M dwarfs remain the same. However, now the stars are colored by their iron abundance, [Fe/H]. The [Fe/H] of each star was inferred following the methods described in Newton et al. (2013), which use the equivalent width of the Na line near 2.2 microns as a proxy for metallicity. You can see that a metal-rich star is seen to have a different color than a more metal-poor star of the same spectral type. This allowed us to calibrate a relation for iron abundance using 2MASS photometry.",
                     "plots" : [ { 
@@ -82,6 +140,99 @@
                                     "xAxis" : "H2OK2 Index",
                                     "yAxis" : "H2OK2 Index"
                                 }
+                            ]
+                },
+                            	{
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 4},
+                    "name" : "Early M dwarfs and their [Fe/H]",
+                    "colorAxis" : "EW NA",
+                    "colorMap" : ["blue", "red"],
+                    "caption" : "Early M and iron abundance",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "H-K"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "H-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+               	                     "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,3],
+                                    "xAxis" : "H2OK2 Index",
+                                    "yAxis" : "H2OK2 Index",
+                                    "selection" : {"xRange" : [0.9, 1.2],
+                                                   "yRange" : [0.9, 1.2]}
+                                  }
+                            ]
+                },
+                            	{
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 4},
+                    "name" : "Mid M dwarfs and their iron abundances",
+                    "colorAxis" : "EW NA",
+                    "colorMap" : ["blue", "red"],
+                    "caption" : "Mid M and their [Fe/H]",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "H-K"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "H-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+               	                     "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,3],
+                                    "xAxis" : "H2OK2 Index",
+                                    "yAxis" : "H2OK2 Index",
+                                    "selection" : {"xRange" : [0.83, 0.9],
+                                                   "yRange" : [0.83, 0.9]}
+                                  }
+                            ]
+                },
+                           	{
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 4},
+                    "name" : "Late M dwarfs and their [Fe/H]",
+                    "colorAxis" : "EW NA",
+                    "colorMap" : ["blue", "red"],
+                    "caption" : "Late M and iron abundance",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "H-K"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "H-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+               	                     "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,3],
+                                    "xAxis" : "H2OK2 Index",
+                                    "yAxis" : "H2OK2 Index",
+                                    "selection" : {"xRange" : [0.1, 0.83],
+                                                   "yRange" : [0.1, 0.83]}
+                                  }
                             ]
                 }
 

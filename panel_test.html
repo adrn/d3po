@@ -21,7 +21,8 @@
     <body>
     
         <script>
-            var states, 
+			var current_state,
+                states, 
                 csv_data,
                 plot_size = 300, // px
                 padding = 60; // px 
@@ -57,7 +58,9 @@
             
             function update_state(state) {
                 // Just delete the svg, recreate
+                current_state = state
                 d3.select("svg").remove();
+                d3.select("p").remove();
                 
                 var nRows = state['grid']['nRows'],
                     nCols = state['grid']['nColumns'];
@@ -157,6 +160,9 @@
                   .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
                                       d3.select(this).call(yAxis); 
                         });
+                
+                
+					d3.select("body").append("p").attr("class", "caption").text(current_state.caption)
                 
                 var cell = svg.selectAll(".cell")
                               .data(d)
