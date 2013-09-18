@@ -4,24 +4,20 @@ html, body {
 }
 
 svg {
-  font: 15px sans-serif;
-  font-family: "Telex";
-  font-weight: 200;
-  padding: 10px;
-  background: #eeeeee;
-  margin: 0 auto;
-  display: block;
+    font: 15px sans-serif;
+    font-family: "Telex";
+    font-weight: 200;
+    padding: 10px;
+    background: #f7f5f0;
+    margin: 0 auto;
+    display: block;
+    border: 1px solid #bbb;
+    border-radius: 8px;
 }
 
 .axis,
 .frame {
   shape-rendering: crispEdges;
-}
-
-.caption{
-	word-wrap: normal;
-	font: 15px sans-serif;
-    font-family: "Telex";
 }
 
 .axis line {
@@ -33,8 +29,9 @@ svg {
 }
 
 .frame {
-  fill: none;
+  fill: #fff;
   stroke: #aaa;
+  zorder: -1;
 }
 
 circle {
@@ -51,53 +48,22 @@ circle.hidden {
   stroke: #fff;
 }
 
-.button {
-	-moz-box-shadow:inset 0px 1px 0px 0px #ffffff;
-	-webkit-box-shadow:inset 0px 1px 0px 0px #ffffff;
-	box-shadow:inset 0px 1px 0px 0px #ffffff;
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #dfdfdf) );
-	background:-moz-linear-gradient( center top, #ededed 5%, #dfdfdf 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#dfdfdf');
-	background-color:#ededed;
-	-webkit-border-top-left-radius:15px;
-	-moz-border-radius-topleft:15px;
-	border-top-left-radius:15px;
-	-webkit-border-top-right-radius:15px;
-	-moz-border-radius-topright:15px;
-	border-top-right-radius:15px;
-	-webkit-border-bottom-right-radius:15px;
-	-moz-border-radius-bottomright:15px;
-	border-bottom-right-radius:15px;
-	-webkit-border-bottom-left-radius:15px;
-	-moz-border-radius-bottomleft:15px;
-	border-bottom-left-radius:15px;
-	text-indent:0px;
-	border:1px solid #dcdcdc;
-	display:inline-block;
-	color:#777777;
-	font-family:Impact;
-	font-size:15px;
-	font-weight:bold;
-	font-style:normal;
-	height:33px;
-	line-height:33px;
-	width:54px;
-	text-decoration:none;
-	text-align:center;
-	text-shadow:1px 0px 0px #ffffff;
-}
-.:hover {
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #dfdfdf), color-stop(1, #ededed) );
-	background:-moz-linear-gradient( center top, #dfdfdf 5%, #ededed 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#dfdfdf', endColorstr='#ededed');
-	background-color:#dfdfdf;
-}.:active {
-	position:relative;
-	top:1px;
+#controls {
+    margin: 0 auto;
+    text-align: center;
 }
 
-#content {
-    display: block;
+#controls button {
+    margin: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 30px;
+}
+
+#caption{
+	word-wrap: normal;
+	font: 18px sans-serif;
+    font-family: "Telex";
+    width: 60%;
     margin: 0 auto;
-    background: #ff0000;
 }

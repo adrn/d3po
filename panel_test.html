@@ -48,7 +48,7 @@
                 csv_data = data;
                 update_state(states[0]);
                 
-                d3.selectAll("#content button").data(states)
+                d3.select("#controls").selectAll("button").data(states)
                     .enter().append("button")
                     .html(function(d, i){ return d['name']; })
                     .on("click", function(e,i) {
@@ -94,20 +94,6 @@
                     }
                 });
                 
-                // Define the axis objects
-                var xAxis = d3.svg.axis()
-                            .scale(xScaler)
-                            .orient("bottom")
-                            .ticks(5);
-                        
-                var yAxis = d3.svg.axis()
-                            .scale(yScaler)
-                            .orient("left")
-                            .ticks(5);
-                
-                xAxis.tickSize(tickSize);
-                yAxis.tickSize(tickSize);
-                
                 if (typeof state['colorAxis'] != 'undefined') {
                     color_scale.domain(domainByDataColumn[state['colorAxis']]);
                     color_scale.range(["red", "blue"]);
@@ -139,30 +125,8 @@
                                 .append("g")
                                 .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
                 
-                
-                // Add axes to the plots
-                svg.selectAll(".x.axis")
-                  .data(xColumnNames)
-                  .enter().append("g")
-                  .attr("class", "x axis")
-                  .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize) + ")"; })
-                  .each(function(d) { xScaler.domain(domainByDataColumn[d]); 
-                                      d3.select(this).call(xAxis); 
-                        });
-                        
-
-                
-                svg.selectAll(".y.axis")
-                  .data(yColumnNames)
-                  .enter().append("g")
-                  .attr("class", "y axis")
-                  .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize) + "," + 0 + ")"; })
-                  .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
-                                      d3.select(this).call(yAxis); 
-                        });
-                
-                
-					d3.select("body").append("p").attr("class", "caption").text(current_state.caption)
+				d3.select("#caption")
+					    .text(current_state.caption)
                 
                 var cell = svg.selectAll(".cell")
                               .data(d)
@@ -183,6 +147,40 @@
                               .on("brushend", brushend);
                 
                 cell.call(brush);
+                
+                // Add axes to the plots
+                var xAxis = d3.svg.axis()
+                            .scale(xScaler)
+                            .orient("bottom")
+                            .ticks(5);
+                        
+                var yAxis = d3.svg.axis()
+                            .scale(yScaler)
+                            .orient("left")
+                            .ticks(5);
+                
+                xAxis.tickSize(tickSize);
+                yAxis.tickSize(tickSize);
+                
+                svg.selectAll(".x.axis")
+                  .data(xColumnNames)
+                  .enter().append("g")
+                  .attr("class", "x axis")
+                  .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize) + ")"; })
+                  .each(function(d) { xScaler.domain(domainByDataColumn[d]); 
+                                      d3.select(this).call(xAxis); 
+                        });
+                        
+
+                
+                svg.selectAll(".y.axis")
+                  .data(yColumnNames)
+                  .enter().append("g")
+                  .attr("class", "y axis")
+                  .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize) + "," + 0 + ")"; })
+                  .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
+                                      d3.select(this).call(yAxis); 
+                        });
                 
                 // If state has a 'selection':
                 state['plots'].forEach(function(p,i) {
@@ -254,7 +252,8 @@
         </script>
         
         <div id="svg"></div>
-        <div id="content"></div>
+        <div id="controls"></div>
+        <div id="caption"></div>
         
     </body>
 
