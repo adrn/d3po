@@ -1,9 +1,16 @@
+html, body { 
+    margin: 0px;
+    padding: 0px;
+}
+
 svg {
   font: 15px sans-serif;
   font-family: "Telex";
   font-weight: 200;
   padding: 10px;
-  background: #f7f5f0;
+  background: #eeeeee;
+  margin: 0 auto;
+  display: block;
 }
 
 .axis,
@@ -83,14 +90,8 @@ circle.hidden {
 	top:1px;
 }
 
-
-#content { 
-	width:780px;
-	min-height:100px; /* for modern browsers */
-	height:auto !important; /* for modern browsers */
-	height:450px; /* for IE5.x and IE6 */
-	background-color:#FFFFFF;
-	margin-top:5px;
-	border:10px solid #000000;
-	padding:10px;
+#content {
+    display: block;
+    margin: 0 auto;
+    background: #ff0000;
 }
