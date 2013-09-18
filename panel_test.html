@@ -43,6 +43,10 @@
                 csv_data = data;
                 update_state(states[0]);
             });
+
+           d3.select("body").data(states).enter().append("a").attr("class", "button").html(function(d, i){return i+1})
+            
+            //<a href="#" class="button">b1</a>
             
             function update_state(state) { 
                 var nRows = state['grid']['nRows'],
