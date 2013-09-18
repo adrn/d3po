@@ -1,4 +1,4 @@
-miutiutil<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html>
     <head>
@@ -11,12 +11,14 @@ miutiutil<!DOCTYPE html>
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
         <script src="js/util.js"></script>
+        <script src="http://code.jquery.com/jquery.min.js"></script>
         
     </head>
     
     <body>
         <script>
-            var current_state, 
+            var states, 
+                csv_data,
                 plot_size = 350, // px
                 padding = 50; // px 
             
@@ -34,21 +36,22 @@ miutiutil<!DOCTYPE html>
                 }
                 
                 // Pull out the array of states from the json file
-                var states = json_data['states'];
-                current_state = states[0]; // set the current state
-                console.log(states); 
+                states = json_data['states'];
             });
             
-            d3.csv("data/sample_data_cut.csv", function(error, csv_data) {
-                var nRows = current_state['grid']['nRows'],
-                    nCols = current_state['grid']['nColumns'];
-                
-                console.log(nCols);
+            d3.csv("data/sample_data_cut.csv", function(error, data) {
+                csv_data = data;
+                update_state(states[0]);
+            });
+            
+            function update_state(state) { 
+                var nRows = state['grid']['nRows'],
+                    nCols = state['grid']['nColumns'];
                 
                 var svg_height = nRows*plot_size + padding,
                     svg_width = nCols*plot_size + padding;
                     
-                var tickSize = 12;
+                var tickSize = 16;
                 
                 // Define an object to contain the domains (in data space) for each column
                 var domainByDataColumn = {},
@@ -88,8 +91,8 @@ miutiutil<!DOCTYPE html>
                 
                 // TODO: needs better names, brain dumping...
                 var d = [];
-                for (var ii=0; ii < current_state['plots'].length; ii++) {
-                    var this_plot = current_state['plots'][ii];
+                for (var ii=0; ii < state['plots'].length; ii++) {
+                    var this_plot = state['plots'][ii];
                     
                     d.push({ xColumnName : this_plot['xAxis'],
                              yColumnName : this_plot['yAxis'],
@@ -209,9 +212,8 @@ miutiutil<!DOCTYPE html>
                         .attr("r", 2)
                         .style("fill", function(d) { return "#333333"; }); // TODO: COLOR STUFF HERE
                 }
-                
-            });
-        
+            }
+            
         </script>
     </body>
 
