@@ -57,11 +57,12 @@
                 
             });
             
-<<<<<<< HEAD
             d3.csv("data/sample_data_cut.csv", function(error, csv_data) {
                 var nRows = current_state['grid']['nRows'],
                     nCols = current_state['grid']['nColumns'];
-                    
+                
+                console.log(csv_data[0]);
+                
                 var svg_height = nRows*(plot_size + padding),
                     svg_width = nCols*(plot_size + padding);
                 
@@ -201,8 +202,6 @@
             });
         
         </script>
-        
-        <p> sdghldkjfgh <g> </g> </p>
-        <p>lzdkjhgfdsl</p>
     </body>
 
+</html>
