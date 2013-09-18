@@ -54,7 +54,8 @@
                     });
             });
             
-            function update_state(state) { 
+            function update_state(state) {
+                // Just delete the svg, recreate
                 d3.select("svg").remove();
                 
                 var nRows = state['grid']['nRows'],
@@ -63,7 +64,8 @@
                 var svg_height = nRows*plot_size + padding,
                     svg_width = nCols*plot_size + padding;
                     
-                var tickSize = 16;
+                var tickSize = 16,
+                    brushCell;
                 
                 // Define an object to contain the domains (in data space) for each column
                 var domainByDataColumn = {},
@@ -156,19 +158,6 @@
                                                 })
                               .each(plot);
                 
-                // If state has a 'selection':
-                state['plots'].forEach(function(p) {
-                    if (typeof p['selection'] != 'undefined') {
-                        svg.selectAll("circle").classed("hidden", function(d) {
-                            var idx = p['selection']['xRange'][0] > d[p.xAxis] || 
-                                      d[p.xAxis] > p['selection']['xRange'][1] ||
-                                      p['selection']['yRange'][0] > d[p.yAxis] ||
-                                      d[p.yAxis] > p['selection']['yRange'][1];
-                            return idx;
-                        });
-                    }
-                });
-                
                 // Define the brush object
                 var brush = d3.svg.brush()
                               .x(xScaler)
@@ -176,10 +165,18 @@
                               .on("brushstart", brushstart)
                               .on("brush", brushmove)
                               .on("brushend", brushend);
-
+                
                 cell.call(brush);
                 
-                var brushCell;
+                // If state has a 'selection':
+                state['plots'].forEach(function(p,i) {
+                    if (typeof p['selection'] != 'undefined') {
+                        var extent = [[p['selection']['xRange'][0],p['selection']['yRange'][0]],
+                                      [p['selection']['xRange'][1],p['selection']['yRange'][1]]];
+                        brush.extent(extent);
+                        brushmove(p);
+                    }
+                });
 
                 // Clear the previously-active brush, if any.
                 function brushstart(p) {
@@ -193,10 +190,13 @@
                 
                 // Highlight the selected circles.
                 function brushmove(p) {
-                    var e = brush.extent();
+                    var e = brush.extent(),
+                        xCol = p.xColumnName || p.xAxis,
+                        yCol = p.yColumnName || p.yAxis;
+                    
                     svg.selectAll("circle").classed("hidden", function(d) {
-                          return e[0][0] > d[p.xColumnName] || d[p.xColumnName] > e[1][0]
-                                  || e[0][1] > d[p.yColumnName] || d[p.yColumnName] > e[1][1];
+                          return e[0][0] > d[xCol] || d[xCol] > e[1][0]
+                                  || e[0][1] > d[yCol] || d[yCol] > e[1][1];
                     });
                 }
                 
