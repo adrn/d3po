@@ -6,14 +6,14 @@
         
         <!-- CSS / Styling -->
         <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Telex:200,300,400,700' rel='stylesheet' type='text/css'>
+        <!-- not to be confused with Planet Telex -->
         
         <!-- Javscript dependencies -->
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
         <script src="js/util.js"></script>
         <script src="http://code.jquery.com/jquery.min.js"></script>
-        
-        <link href='http://fonts.googleapis.com/css?family=Telex:200,300,400,700' rel='stylesheet' type='text/css'>
         
     </head>
     
@@ -54,7 +54,8 @@
                     });
             });
             
-            function update_state(state) { 
+            function update_state(state) {
+                // Just delete the svg, recreate
                 d3.select("svg").remove();
                 
                 var nRows = state['grid']['nRows'],
@@ -63,7 +64,9 @@
                 var svg_height = nRows*plot_size + padding,
                     svg_width = nCols*plot_size + padding;
                     
-                var tickSize = 16;
+                var tickSize = 16,
+                    brushCell,
+                    color_scale = d3.scale.linear();
                 
                 // Define an object to contain the domains (in data space) for each column
                 var domainByDataColumn = {},
@@ -101,6 +104,13 @@
                 xAxis.tickSize(tickSize);
                 yAxis.tickSize(tickSize);
                 
+                if (typeof state['colorAxis'] != 'undefined') {
+                    console.log(state['colorAxis']);
+                    color_scale.domain(domainByDataColumn[state['colorAxis']]);
+                    color_scale.range(["red","green","blue"]);
+                    color_scale(-1.0);
+                }
+                
                 // TODO: needs better names, brain dumping...
                 var d = [];
                 for (var ii=0; ii < state['plots'].length; ii++) {
@@ -127,19 +137,22 @@
                                 .append("g")
                                 .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
                 
+                
                 // Add axes to the plots
                 svg.selectAll(".x.axis")
                   .data(xColumnNames)
-                .enter().append("g")
+                  .enter().append("g")
                   .attr("class", "x axis")
                   .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize/2) + ")"; })
                   .each(function(d) { xScaler.domain(domainByDataColumn[d]); 
                                       d3.select(this).call(xAxis); 
                         });
+                        
+
                 
                 svg.selectAll(".y.axis")
                   .data(yColumnNames)
-                .enter().append("g")
+                  .enter().append("g")
                   .attr("class", "y axis")
                   .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize/2) + "," + 0 + ")"; })
                   .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
@@ -156,19 +169,6 @@
                                                 })
                               .each(plot);
                 
-                // If state has a 'selection':
-                state['plots'].forEach(function(p) {
-                    if (typeof p['selection'] != 'undefined') {
-                        svg.selectAll("circle").classed("hidden", function(d) {
-                            var idx = p['selection']['xRange'][0] > d[p.xAxis] || 
-                                      d[p.xAxis] > p['selection']['xRange'][1] ||
-                                      p['selection']['yRange'][0] > d[p.yAxis] ||
-                                      d[p.yAxis] > p['selection']['yRange'][1];
-                            return idx;
-                        });
-                    }
-                });
-                
                 // Define the brush object
                 var brush = d3.svg.brush()
                               .x(xScaler)
@@ -176,10 +176,18 @@
                               .on("brushstart", brushstart)
                               .on("brush", brushmove)
                               .on("brushend", brushend);
-
+                
                 cell.call(brush);
                 
-                var brushCell;
+                // If state has a 'selection':
+                state['plots'].forEach(function(p,i) {
+                    if (typeof p['selection'] != 'undefined') {
+                        var extent = [[p['selection']['xRange'][0],p['selection']['yRange'][0]],
+                                      [p['selection']['xRange'][1],p['selection']['yRange'][1]]];
+                        brush.extent(extent);
+                        brushmove(p);
+                    }
+                });
 
                 // Clear the previously-active brush, if any.
                 function brushstart(p) {
@@ -193,10 +201,13 @@
                 
                 // Highlight the selected circles.
                 function brushmove(p) {
-                    var e = brush.extent();
+                    var e = brush.extent(),
+                        xCol = p.xColumnName || p.xAxis,
+                        yCol = p.yColumnName || p.yAxis;
+                    
                     svg.selectAll("circle").classed("hidden", function(d) {
-                          return e[0][0] > d[p.xColumnName] || d[p.xColumnName] > e[1][0]
-                                  || e[0][1] > d[p.yColumnName] || d[p.yColumnName] > e[1][1];
+                          return e[0][0] > d[xCol] || d[xCol] > e[1][0]
+                                  || e[0][1] > d[yCol] || d[yCol] > e[1][1];
                     });
                 }
                 
@@ -209,15 +220,6 @@
                 function plot(p) {
                     var cell = d3.select(this);
                     
-                    /* need to do something fancy for histogram here?
-                    if (domainByDataColumn[p.xColumnName].length > 2) {
-                        // e.g., ordinal domain
-                        xScaler = xOrdinalScaler;
-                        xScaler.domain(domainByDataColumn[p.xColumnName]);
-                    } else {
-                        xScaler.domain(domainByDataColumn[p.xColumnName]);
-                    }
-                    */
                     xScaler.domain(domainByDataColumn[p.xColumnName]);
                     yScaler.domain(domainByDataColumn[p.yColumnName]);
                     
@@ -234,7 +236,7 @@
                         .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
                         .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
                         .attr("r", 2)
-                        .style("fill", function(d) { return "#333333"; }); // TODO: COLOR STUFF HERE
+                        .style("fill", function(d) { return color_scale(d[state['colorAxis']]) || "#333333"; }); 
                 }
             }
             

@@ -22,7 +22,8 @@
                                 { 
                                     "gridPosition" : [0,3],
                                     "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index"                                }
+                                    "yAxis" : "H2OK2 Index"
+                                }
                             ]
                 },
                 {
@@ -48,7 +49,10 @@
                                 { 
                                     "gridPosition" : [0,3],
                                     "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index"                                }
+                                    "yAxis" : "H2OK2 Index" , 
+                                    "selection" : {"xRange" : [0.9, 1.2],
+                                                   "yRange" : [0.9, 1.2]}
+                               }
                             ]
                 },
               	{
@@ -70,13 +74,15 @@
                                 },
                                 { 
                                     "gridPosition" : [0,2],
-                                    "xAxis" : "J-K",
+               	                     "xAxis" : "J-K",
                                     "yAxis" : "J-H"
                                 },
                                 { 
                                     "gridPosition" : [0,3],
                                     "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index"                                }
+                                    "yAxis" : "H2OK2 Index",                                                               			
+                                    "selection" : {"xRange" : [0.9, 1.2],
+                                                   "yRange" : [0.9, 1.2]}}
                             ]
                 }
 

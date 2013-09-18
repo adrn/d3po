@@ -24,9 +24,10 @@
                                 { 
                                     "gridPosition" : [0,3],
                                     "xAxis" : "J-H",
-                                    "yAxis" : "J-H"
+                                    "yAxis" : "[Fe/H]"
                                 }
-                            ]
+                            ],
+                    "colorAxis" : "[Fe/H]"
                 },
                 {
                     "grid" : { "nRows" : 1,
@@ -44,6 +45,33 @@
                                     "yAxis" : "H-K",
                                     "selection" : {"xRange" : [0.4, 0.6],
                                                    "yRange" : [0.5, 2.0]}
+                                }
+                            ]
+                },
+                {
+                    "grid" : { "nRows" : 2,
+                               "nColumns" : 2},
+                    "name" : "Figure 1c",
+                    "caption" : "This shit's whack.",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "J-H",
+                                    "yAxis" : "H-K"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "H-K"
+                                },
+                                { 
+                                    "gridPosition" : [1,0],
+                                    "xAxis" : "J-H",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [1,1],
+                                    "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
                                 }
                             ]
                 }
