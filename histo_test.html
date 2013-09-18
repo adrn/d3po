@@ -33,6 +33,7 @@ body {
 <body>
 <script src="http://d3js.org/d3.v2.min.js?2.10.0"></script>
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="js/util.js"></script>
 <script>
 
 // Generate an Irwin–Hall distribution of 10 random variables.
@@ -46,17 +47,28 @@ var margin = {top: 10, right: 30, bottom: 30, left: 30},
     height = 500 - margin.top - margin.bottom;
 
 var animals = ['cat', 'cat', 'dog', 'mouse','cat', 'cat', 'dog', 'mouse','cat', 'cat', 'dog', 'mouse','dog', 'mouse','cat', 'cat','dog', 'mouse','cat', 'cat']
+var unq_animals = animals.unique();
+var scale = d3.scale.ordinal()
+			  .domain(unq_animals)
+			  .range(d3.range(0, unq_animals.length));
+var inv_scale = d3.scale.ordinal()
+			  .domain(d3.range(0, unq_animals.length))
+			  .range(unq_animals);
 
+var animal_values = [];
+animals.forEach(function(d) { animal_values.push( scale(d)) })
 
+console.log(scale('cat'));
+console.log(inv_scale(2));
 
 var x = d3.scale.linear()
-    .domain([0, 1])
+    .domain([0, 3])
     .range([0, width]);
 
 // Generate a histogram using twenty uniformly-spaced bins.
 var data = d3.layout.histogram()
-    .bins(x.ticks(20))
-    (values);
+    .bins(x.ticks(3))
+    (animal_values);
 
 var y = d3.scale.linear()
     .domain([0, d3.max(data, function(d) { return d.y; })])
