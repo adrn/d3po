@@ -1,7 +1,7 @@
 { 
     "states" : [{
                     "grid" : { "nRows" : 1,
-                               "nColumns" : 3},
+                               "nColumns" : 4},
                     "name" : "Figure 1a",
                     "caption" : "This shows that Adrian and Josh are the coolest dudes.",
                     "plots" : [ { 
@@ -19,6 +19,11 @@
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "J-K",
+                                    "yAxis" : "J-H"
+                                },
+                                { 
+                                    "gridPosition" : [0,3],
+                                    "xAxis" : "J-H",
                                     "yAxis" : "J-H"
                                 }
                             ]

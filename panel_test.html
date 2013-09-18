@@ -32,8 +32,8 @@
     <body>
         <script>
             var current_state, 
-                plot_size = 300, // px
-                padding = 20; // px 
+                plot_size = 350, // px
+                padding = 50; // px 
             
             // Scalers for x / y axes from data space to pixel space
             var xScaler = d3.scale.linear()
@@ -41,9 +41,6 @@
             
             var yScaler = d3.scale.linear()
                 .range([plot_size - padding/2, padding/2]);
-            
-            var xOrdinalScaler = d3.scale.ordinal()
-                .range([padding/2, plot_size - padding/2]);
             
             // Read states JSON spec
             d3.json("states.json", function(error, json_data) {
@@ -54,17 +51,19 @@
                 // Pull out the array of states from the json file
                 var states = json_data['states'];
                 current_state = states[0]; // set the current state
-                
+                console.log(states); 
             });
             
             d3.csv("data/sample_data_cut.csv", function(error, csv_data) {
                 var nRows = current_state['grid']['nRows'],
                     nCols = current_state['grid']['nColumns'];
                 
-                console.log(csv_data[0]);
+                console.log(nCols);
                 
-                var svg_height = nRows*(plot_size + padding),
-                    svg_width = nCols*(plot_size + padding);
+                var svg_height = nRows*plot_size + padding,
+                    svg_width = nCols*plot_size + padding;
+                    
+                var tickSize = 16;
                 
                 // Define an object to contain the domains (in data space) for each column
                 var domainByDataColumn = {},
@@ -99,8 +98,8 @@
                             .orient("left")
                             .ticks(5);
                 
-                xAxis.tickSize(16);
-                yAxis.tickSize(16);
+                xAxis.tickSize(tickSize);
+                yAxis.tickSize(tickSize);
                 
                 // TODO: needs better names, brain dumping...
                 var d = [];
@@ -114,12 +113,39 @@
                            });
                 }
                 
+                var xColumnNames = [],
+                    yColumnNames = [];
+                
+                d.map(function(dd) {
+                        xColumnNames.push(dd.xColumnName);
+                        yColumnNames.push(dd.yColumnName);
+                    });
+                
                 // Define top level svg tag
                 var svg = d3.select("body").append("svg")
                                 .attr("width", svg_width)
                                 .attr("height", svg_height)
                                 .append("g")
                                 .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
+                
+                // Add axes to the plots
+                svg.selectAll(".x.axis")
+                  .data(xColumnNames)
+                .enter().append("g")
+                  .attr("class", "x axis")
+                  .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize/2) + ")"; })
+                  .each(function(d) { xScaler.domain(domainByDataColumn[d]); 
+                                      d3.select(this).call(xAxis); 
+                        });
+                
+                svg.selectAll(".y.axis")
+                  .data(yColumnNames)
+                .enter().append("g")
+                  .attr("class", "y axis")
+                  .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize/2) + "," + 0 + ")"; })
+                  .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
+                                      d3.select(this).call(yAxis); 
+                        });
                 
                 var cell = svg.selectAll(".cell")
                               .data(d)
@@ -195,7 +221,7 @@
                         .enter().append("circle")
                         .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
                         .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
-                        .attr("r", 3)
+                        .attr("r", 2)
                         .style("fill", function(d) { return "#333333"; }); // TODO: COLOR STUFF HERE
                 }
                 
