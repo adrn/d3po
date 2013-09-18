@@ -45,7 +45,10 @@
                 
                 d3.selectAll("body button").data(states)
                     .enter().append("button")
-                    .html(function(d, i){ return d['name']; });
+                    .html(function(d, i){ return d['name']; })
+                    .on("click", function(e,i) {
+                        update_state(states[i]);
+                    });
             });
             
             function update_state(state) { 
