@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8" />
+        
+        <!-- CSS / Styling -->
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:100,200,300,400,700' rel='stylesheet' type='text/css'>
+        <!-- not to be confused with Planet Telex -->
+        
+        <!-- Javscript dependencies -->
+        <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
+        <script src="js/d3.v3.min.js"></script>
+        <script src="js/util.js"></script>
+        <script src="colorbrewer/colorbrewer.js"></script>
+        <script src="http://code.jquery.com/jquery.min.js"></script>
+        
+    </head>
+    
+    <body>
+    
+        <script>
+			var current_state,
+                states, 
+                csv_data,
+                plot_size = 250; // px
+            
+            var figPadding = {"top" : 0, "left" : 40, "right" : 20, "bottom" : 35},
+                plotSpacing = {"vertical" : 40, "horizontal" : 60};
+            
+            // Scalers for x / y axes from data space to pixel space
+            var xScaler = d3.scale.linear()
+                .range([plotSpacing['horizontal']/2, plot_size - plotSpacing['horizontal']/2]);
+            
+            var yScaler = d3.scale.linear()
+                .range([plot_size - plotSpacing['vertical']/2, plotSpacing['vertical']/2]);
+            
+            // Read states JSON spec
+            d3.json("kepler_states.json", function(error, json_data) {
+                if (error) {
+                    console.warn(error);
+                }
+                
+                // Pull out the array of states from the json file
+                states = json_data['states'];
+            });
+            
+            d3.csv("data/kepler_cand.csv", function(error, data) {
+                csv_data = data;
+                update_state(states[0]);
+                
+                d3.select("#controls").selectAll("button").data(states)
+                    .enter().append("button")
+                    .html(function(d, i){ return d['name']; })
+                    .on("click", function(e,i) {
+                        update_state(states[i]);
+                    });
+            });
+            
+            function update_state(state) {
+                // Just delete the svg, recreate
+                current_state = state
+                d3.select("svg").remove();
+                d3.select("p").remove();
+                
+                var nRows = state['grid']['nRows'],
+                    nCols = state['grid']['nColumns'];
+                
+                var svg_height = nRows*plot_size + plotSpacing['vertical']/2*(nRows-1) + 
+                                 figPadding['top'] + figPadding['bottom'],
+                    svg_width = nCols*plot_size + plotSpacing['horizontal']/2*(nCols-1) + 
+                                 figPadding['left'] + figPadding['right'];
+                    
+                var tickSize = 16,
+                    brushCell,
+                    color_scale = d3.scale.linear();
+                
+                // Define an object to contain the domains (in data space) for each column
+                var domainByDataColumn = {},
+                    dataColumns = d3.keys(csv_data[0]);                
+                    
+                dataColumns.forEach(function(colName) {
+                    var domain = d3.extent(csv_data, function(d) { return parseFloat(d[colName]); });
+                    
+                    // if parseFloat failed, probably string values in the column
+                    if (isNaN(domain[0]) || isNaN(domain[1])){
+                        var this_col = [];
+                        csv_data.map(function(d) {
+                            this_col.push(d[colName]);
+                        });
+                        
+                        domainByDataColumn[colName] = this_col.unique();
+                    } else {
+                        var size = domain[1]-domain[0];
+                        domainByDataColumn[colName] = [domain[0] - size/25., 
+                                                       domain[1] + size/25.];
+                    }
+                });
+                
+                if (typeof state['colorAxis'] != 'undefined') {
+                    color_scale.domain(domainByDataColumn[state['colorAxis']]);
+                    color_scale.range(["red", "blue"]);
+                }
+                
+                // TODO: needs better names, brain dumping...
+                var d = [];
+                for (var ii=0; ii < state['plots'].length; ii++) {
+                    var this_plot = state['plots'][ii];
+                    
+                    d.push({ xColumnName : this_plot['xAxis'],
+                             yColumnName : this_plot['yAxis'],
+                             i : this_plot['gridPosition'][0],
+                             j : this_plot['gridPosition'][1]
+                           });
+                }
+                
+                var xColumnNames = [],
+                    yColumnNames = [];
+                
+                d.map(function(dd) {
+                        xColumnNames.push(dd.xColumnName);
+                        yColumnNames.push(dd.yColumnName);
+                    });
+                
+                // Define top level svg tag
+                var svg = d3.select("#svg").append("svg").attr("width", svg_width)
+                                .attr("height", svg_height)
+                                .append("g")
+                                .attr("transform", "translate(" + figPadding["left"] + "," + figPadding["top"] + ")");
+                
+				d3.select("#caption")
+					    .text(current_state.caption)
+                
+                function x_translate(j) {
+                    return j*(plot_size + plotSpacing['horizontal']/2.);
+                }
+                
+                function y_translate(i) {
+                    return (nRows - i - 1)*(plot_size + plotSpacing['vertical']/2.);
+                }
+                
+                var cell = svg.selectAll(".cell")
+                              .data(d)
+                              .enter().append("g")
+                              .attr("class", "cell")
+                              .attr("transform", function(d) { 
+                                                    return "translate(" + x_translate(d.j) + "," 
+                                                                        + y_translate(d.i) + ")"; 
+                                                })
+                              .each(plot);
+                
+                // Define the brush object
+                var brush = d3.svg.brush()
+                              .x(xScaler)
+                              .y(yScaler)
+                              .on("brushstart", brushstart)
+                              .on("brush", brushmove)
+                              .on("brushend", brushend);
+                
+                cell.call(brush);
+                
+                // Add axes to the plots
+                var xAxis = d3.svg.axis()
+                            .scale(xScaler)
+                            .orient("bottom")
+                            .ticks(5);
+                        
+                var yAxis = d3.svg.axis()
+                            .scale(yScaler)
+                            .orient("left")
+                            .ticks(5);
+                
+                xAxis.tickSize(tickSize);
+                yAxis.tickSize(tickSize);
+                
+                // TODO: fix the axes here. should really pass in full data info, so i know about grid position, etc...
+                svg.selectAll(".x.axis")
+                  .data(d)
+                  .enter().append("g")
+                  .attr("class", "x axis")
+                  .attr("transform", function(d, i) { return "translate(" + x_translate(d.j) + "," 
+                                                                + (plot_size-plotSpacing['vertical']/2-y_translate(d.i)-10) + ")"; })
+                  .each(function(d) { xScaler.domain(domainByDataColumn[d.xColumnName]); 
+                                      d3.select(this).call(xAxis); 
+                        });
+                    
+                svg.selectAll(".y.axis")
+                  .data(d)
+                  .enter().append("g")
+                  .attr("class", "y axis")
+                  .attr("transform", function(d, i) { return "translate(" + (x_translate(d.j)+plotSpacing['horizontal']/2+10) + "," 
+                                                                + y_translate(d.i) + ")"; })
+                  .each(function(d) { yScaler.domain(domainByDataColumn[d.yColumnName]); 
+                                      d3.select(this).call(yAxis); 
+                        });
+                
+                // add axis labels
+                svg.selectAll(".x-label")
+                  .data(d)
+                  .enter().append("text")
+                  .text(function(d,i) { return d.xColumnName; })
+                  .attr("class", "axis-label")
+                  .attr("x", function(d, i) { return x_translate(d.j) + plot_size/2. - $(this).width()/2.; })
+                  .attr("y", function(d, i) { return (plot_size-plotSpacing['vertical']/2-y_translate(d.i)+50); });
+                
+                svg.selectAll(".y-label")
+                  .data(d)
+                  .enter().append("text")
+                  .text(function(d,i) { return d.yColumnName; })
+                  .attr("class", "axis-label") 
+                  .attr("x", function(d, i) { return x_translate(d.j)-15; })
+                  .attr("y", function(d, i) { return (plotSpacing['vertical']/2-y_translate(d.i)) + plot_size/2. + $(this).width()/2.-10; })
+                  .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
+                
+                // If state has a 'selection':
+                state['plots'].forEach(function(p,i) {
+                    if (typeof p['selection'] != 'undefined') {
+                        var e = [[p['selection']['xRange'][0],p['selection']['yRange'][0]],
+                                      [p['selection']['xRange'][1],p['selection']['yRange'][1]]];
+                        //brush.extent(extent);
+                        //brushmove(p);
+                        var xCol = p.xColumnName || p.xAxis,
+                            yCol = p.yColumnName || p.yAxis;
+                        svg.selectAll("circle").classed("hidden", function(d) {
+                              return e[0][0] > d[xCol] || d[xCol] > e[1][0]
+                                      || e[0][1] > d[yCol] || d[yCol] > e[1][1];
+                        });
+                    }
+                });
+
+                // Clear the previously-active brush, if any.
+                function brushstart(p) {
+                    if (brushCell !== this) {
+                        d3.select(brushCell).call(brush.clear());
+                        xScaler.domain(domainByDataColumn[p.xColumnName]);
+                        yScaler.domain(domainByDataColumn[p.yColumnName]);
+                        brushCell = this;
+                    }
+                }
+                
+                // Highlight the selected circles.
+                function brushmove(p) {
+                    var e = brush.extent(),
+                        xCol = p.xColumnName || p.xAxis,
+                        yCol = p.yColumnName || p.yAxis;
+                    
+                    svg.selectAll("circle").classed("hidden", function(d) {
+                          return e[0][0] > d[xCol] || d[xCol] > e[1][0]
+                                  || e[0][1] > d[yCol] || d[yCol] > e[1][1];
+                    });
+                }
+                
+                // If the brush is empty, select all circles.
+                function brushend() {
+                    if (brush.empty()) svg.selectAll(".hidden").classed("hidden", false);
+                }
+                
+                // TODO: wtf
+                function plot(p) {
+                    var cell = d3.select(this);
+                    
+                    xScaler.domain(domainByDataColumn[p.xColumnName]);
+                    yScaler.domain(domainByDataColumn[p.yColumnName]);
+                    
+                    cell.append("rect")
+                        .attr("class", "frame")
+                        .attr("x", plotSpacing['horizontal'] / 2)
+                        .attr("y", plotSpacing['vertical'] / 2)
+                        .attr("width", plot_size - plotSpacing['horizontal'])
+                        .attr("height", plot_size - plotSpacing['vertical']);
+                    
+                    cell.selectAll("circle")
+                        .data(csv_data)
+                        .enter().append("circle")
+                        .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
+                        .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
+                        .attr("r", 3)
+                        .attr("opacity", 0.75)
+                        .style("fill", function(d) { return color_scale(d[state['colorAxis']]) || "#333333"; }); 
+                }
+            }
+            
+        </script>
+        
+        <div id="svg"></div>
+        <div id="controls"></div>
+        <div id="caption"></div>
+        
+        <div id="footer">
+            <a href="http://adrian.pw">A. M. Price-Whelan</a> // 
+            <a href="http://www.astro.columbia.edu/~jpeek/">J. E. G. Peek</a> // 
+            <a href="https://www.cfa.harvard.edu/~enewton/">E. R. Newton</a> // 
+            <a href="http://people.seas.harvard.edu/~borkin/">M. Borkin</a> // 
+            <a href="http://www.physics.usyd.edu.au/~jallen/">J. Allen</a> // 
+            <a href="http://www.ruthangus.co.uk/">R. Angus</a> // 
+            <a href="">D. Muna</a> // 
+            <a href="http://www.ast.cam.ac.uk/~ts337/">T. Staley</a> // 
+        </div>
+        
+        <a href="https://github.com/adrn/d3po"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
+        
+    </body>
+
+</html>
