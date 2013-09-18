@@ -127,19 +127,22 @@
                                 .append("g")
                                 .attr("transform", "translate(" + padding/2. + "," + padding/2. + ")");
                 
+                
                 // Add axes to the plots
                 svg.selectAll(".x.axis")
                   .data(xColumnNames)
-                .enter().append("g")
+                  .enter().append("g")
                   .attr("class", "x axis")
                   .attr("transform", function(d, i) { return "translate(" + i*plot_size + "," + (plot_size-padding+tickSize/2) + ")"; })
                   .each(function(d) { xScaler.domain(domainByDataColumn[d]); 
                                       d3.select(this).call(xAxis); 
                         });
+                        
+
                 
                 svg.selectAll(".y.axis")
                   .data(yColumnNames)
-                .enter().append("g")
+                  .enter().append("g")
                   .attr("class", "y axis")
                   .attr("transform", function(d, i) { return "translate(" + (i*plot_size+padding-tickSize/2) + "," + 0 + ")"; })
                   .each(function(d) { yScaler.domain(domainByDataColumn[d]); 
