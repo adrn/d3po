@@ -27,5 +27,24 @@
                                     "yAxis" : "J-H"
                                 }
                             ]
+                },
+                {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 2},
+                    "name" : "Figure 1b",
+                    "caption" : "This shit's whack.",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "H-K",
+                                    "yAxis" : "H-K",
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "J-H",
+                                    "yAxis" : "H-K"
+                                    "selection" : {"xRange" : [3, 10],
+                                                   "yRange" : [6, 40]}
+                                }
+                            ]
                 }]
 }
