@@ -19,7 +19,7 @@
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "Discovery Quarter",
-                                    "yAxis" : "Planet Radius"
+                                    "yAxis" : "r/R"
                                 }
                             ]
                 },
@@ -43,7 +43,7 @@
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "Discovery Quarter",
-                                    "selection" : {"xRange" : [0.5,1.5]}
+                                    "yAxis" : "r/R"
                                 }
                             ]
                 },
@@ -67,7 +67,7 @@
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "Discovery Quarter",
-                                    "selection" : {"xItems" : ["Q1", "Q5", "Q6"]}
+                                    "yAxis" : "r/R"
                                 }
                             ]
                 },
@@ -91,7 +91,7 @@
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "Discovery Quarter",
-                                    "selection" : {"xItems" : ["Q1", "Q5", "Q6", "MAST"]}
+                                    "yAxis" : "r/R"
                                 }
                             ]
                 },
@@ -116,8 +116,9 @@
                                 },
                                 { 
                                     "gridPosition" : [0,2],
-                                    "xAxis" : "Discovery Quarter"
-                                }
+                                    "xAxis" : "Discovery Quarter",
+                                      "yAxis" : "r/R"
+                              }
                             ]
                 }]
 }
