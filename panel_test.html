@@ -244,7 +244,8 @@
                         .enter().append("circle")
                         .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
                         .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
-                        .attr("r", 2)
+                        .attr("r", 3)
+                        .attr("opacity", 0.75)
                         .style("fill", function(d) { return color_scale(d[state['colorAxis']]) || "#333333"; }); 
                 }
             }
