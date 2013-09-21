@@ -1,0 +1,31 @@
+{ 
+    "states" : [{
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Segue",
+                    "caption" : "Something about Segue data",
+                    "colorAxis": "RV_ADOP",
+                    "colorMap": ["Red","Blue"],
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "TEFF_ADOP",
+                                    "yAxis" : "LOGG_ADOP",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 1}
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "RV_ADOP",
+                                    "yAxis" : "LOGG_ADOP"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "FEH_ADOP",
+                                    "yAxis" : "LOGG_ADOP",
+                                    "selection" : {"xRange" : [-1.5, -0.5],
+                                                   "yRange" : [3,4]}
+                                }
+                            ]
+                }
+               ]
+}
