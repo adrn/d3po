@@ -13,8 +13,10 @@
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
         <script src="js/util.js"></script>
-        <script src="http://code.jquery.com/jquery.min.js"></script>
+        <!--<script src="http://code.jquery.com/jquery.min.js"></script>-->
+        <script src="js/jquery.min.js"></script>
         <script src="js/d3po.js"></script>
+        <script src="js/d3po.init.js"></script>
         <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -52,9 +54,9 @@
                 var nRows = state['grid']['nRows'],
                     nCols = state['grid']['nColumns'];
                 
-                var svg_height = nRows*plotSize + plotSpacing['vertical']/2*(nRows-1) + 
+                var svg_height = nRows*(plotSize['height'] + plotSpacing['vertical']) + 
                                  figPadding['top'] + figPadding['bottom'],
-                    svg_width = nCols*plotSize + plotSpacing['horizontal']/2*(nCols-1) + 
+                    svg_width = nCols*(plotSize['width'] + plotSpacing['horizontal']) + 
                                  figPadding['left'] + figPadding['right'];
                     
                 var tickSize = 16,
@@ -119,11 +121,11 @@
 					    .text(currentState.caption)
                 
                 function x_translate(j) {
-                    return j*(plotSize + plotSpacing['horizontal']/2.);
+                    return j*(plotSize['width'] + plotSpacing['horizontal']);
                 }
                 
                 function y_translate(i) {
-                    return (nRows - i - 1)*(plotSize + plotSpacing['vertical']/2.);
+                    return (nRows - i - 1)*(plotSize['height'] + plotSpacing['vertical']);
                 }
                 
                 var cell = svg.selectAll(".cell")
@@ -166,7 +168,7 @@
                   .enter().append("g")
                   .attr("class", "x axis")
                   .attr("transform", function(d, i) { return "translate(" + x_translate(d.j) + "," 
-                                                                + (plotSize-plotSpacing['vertical']/2-y_translate(d.i)-10) + ")"; })
+                                                                + (y_translate(d.i) + plotSize['height'] + 15) + ")"; })
                   .each(function(d) { xScaler.domain(domainByDataColumn[d.xColumnName]); 
                                       d3.select(this).call(xAxis); 
                         });
@@ -175,7 +177,7 @@
                   .data(d)
                   .enter().append("g")
                   .attr("class", "y axis")
-                  .attr("transform", function(d, i) { return "translate(" + (x_translate(d.j)+plotSpacing['horizontal']/2+10) + "," 
+                  .attr("transform", function(d, i) { return "translate(" + (x_translate(d.j) + plotSpacing['horizontal']/2 + 10) + "," 
                                                                 + y_translate(d.i) + ")"; })
                   .each(function(d) { yScaler.domain(domainByDataColumn[d.yColumnName]); 
                                       d3.select(this).call(yAxis); 
@@ -187,16 +189,16 @@
                   .enter().append("text")
                   .text(function(d,i) { return d.xColumnName; })
                   .attr("class", "axis-label")
-                  .attr("x", function(d, i) { return x_translate(d.j) + plotSize/2. - $(this).width()/2.; })
-                  .attr("y", function(d, i) { return (plotSize-plotSpacing['vertical']/2-y_translate(d.i)+50); });
+                  .attr("x", function(d, i) { return x_translate(d.j) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
+                  .attr("y", function(d, i) { return y_translate(d.i) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
                 
                 svg.selectAll(".y-label")
                   .data(d)
                   .enter().append("text")
                   .text(function(d,i) { return d.yColumnName; })
                   .attr("class", "axis-label") 
-                  .attr("x", function(d, i) { return x_translate(d.j)-15; })
-                  .attr("y", function(d, i) { return (plotSpacing['vertical']/2-y_translate(d.i)) + plotSize/2. + $(this).width()/2.-10; })
+                  .attr("x", function(d, i) { return x_translate(d.j); })
+                  .attr("y", function(d, i) { return (plotSpacing['vertical']/2-y_translate(d.i)) + plotSize['height']/2. + $(this).width()/2.; })
                   .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
                 
                 // If state has a 'selection':
@@ -263,8 +265,8 @@
                         .attr("class", "frame")
                         .attr("x", plotSpacing['horizontal'] / 2)
                         .attr("y", plotSpacing['vertical'] / 2)
-                        .attr("width", plotSize - plotSpacing['horizontal'])
-                        .attr("height", plotSize - plotSpacing['vertical']);
+                        .attr("width", plotSize['width'])
+                        .attr("height", plotSize['height']);
                     
                     cell.selectAll("circle")
                         .data(csvData)
@@ -280,7 +282,10 @@
         </script>
         
         <div id="svg"></div>
-        <div id="controls"></div>
+        <div id="controls">
+            <!--<ul class="navigation">
+            </ul>-->
+        </div>
         <div id="caption"></div>
         
         <div id="footer">
