@@ -21,7 +21,7 @@
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "FEH_ADOP",
-                                    "yAxis" : "LOGG_ADOP",
+                                    "yAxis" : "RV_ADOP",
                                     "selection" : {"xRange" : [-1.5, -0.5],
                                                    "yRange" : [3,4]}
                                 }
