@@ -6,12 +6,16 @@ function readD3POCSV(filename) {
         csvData = data;
         update_state(jsonData['states'][0]);
         
-        d3.select("#controls").selectAll("button")
+        d3.select("#controls .navigation").selectAll("li")
             .data(jsonData['states'])
-            .enter().append("button")
+            .enter().append("li")
             .text(function(d, i){ return d['name']; })
             .on("click", function(e,i) {
                 update_state(jsonData['states'][i]);
+                $(".navigation li").removeClass("selected");
+                $(this).addClass("selected");
             });
+
+        $(".navigation li:first-of-type").addClass("selected");
     });
 }

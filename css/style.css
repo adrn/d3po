@@ -4,6 +4,10 @@ html, body, svg, div {
     font-family: "Source Sans Pro";
 }
 
+div {
+  padding: 10px;
+}
+
 svg {
     font: 12pt sans-serif;
     font-family: "Source Sans Pro";
@@ -54,18 +58,6 @@ circle.hidden {
   stroke: #fff;
 }
 
-#controls {
-    margin: 0 auto;
-    text-align: center;
-}
-
-#controls button {
-    margin: 5px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    height: 30px;
-}
-
 #caption{
 	word-wrap: normal;
 	font: 20px sans-serif;
@@ -92,4 +84,43 @@ circle.hidden {
 #footer a:hover {
     color: #000;
     text-decoration: underline;
+}
+
+#controls {
+    margin: 0 auto;
+    text-align: center;
+    border-top: solid 1px #DDD;
+}
+
+.navigation {
+    list-style: none;
+    display: inline;
+}
+.navigation li {
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 10px 18px;
+  border-top: solid 1px #CCC;
+  border-bottom: solid 1px #CCC;
+  border-left: solid 1px #CCC;
+  background: #f9f9f9;
+  margin: 0 0;
+  white-space: nowrap;
+  display:inline-block;
+}
+
+.navigation li:first-of-type{
+  border-radius: 4px 0 0 4px;
+}
+.navigation li:last-of-type{
+
+  border-right: solid 1px #CCC;
+  border-radius: 0 4px 4px 0;
+}
+.navigation li.selected {
+  color: #000;
+  background: #e9e9e9;
+  border-color: #AAA;
+  box-shadow: inset 0px 0px 4px rgba(0,0,0,0.2);
 }
