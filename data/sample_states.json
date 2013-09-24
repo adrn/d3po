@@ -4,7 +4,7 @@
     "states" : [{
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
-                    "name" : "All the stars",
+                    "name" : "All stars",
                     "caption" : "This plot shows the near-infrared 2MASS colors of M dwarfs observed by Newton et al. (2013). One color is plotted on the x-axis and another color is plotted on the y-axis. The stars trace out a main sequence, with some scatter.",
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
@@ -16,83 +16,31 @@
                                 { 
                                     "gridPosition" : [0,1],
                                     "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
+                                    "yAxis" : "J-H",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 3}
                                 },
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
+                                    "yAxis" : "J-H",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 3}
                                 },
                                 { 
                                     "gridPosition" : [0,3],
                                     "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index"
+                                    "yAxis" : "H2OK2 Index",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 3}
                                 }
                             ]
                 },
                 {
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
-                    "name" : "Early M dwarfs",
-                    "caption" : "Now we highlight the early M dwarfs...",
-                    "plots" : [ { 
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
-                                },
-                                { 
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
-                                },
-                                { 
-                                    "gridPosition" : [0,2],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
-                                },
-                                { 
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index", 
-                                    "selection" : {"xRange" : [0.5, 1.2],
-                                                   "yRange" : [0.5, 1.2]}
-                               }
-                            ]
-                },
-                            {
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "Mid M dwarfs",
-                    "caption" : "...and the mid M dwarfs...",
-                    "plots" : [ { 
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
-                                },
-                                { 
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
-                                },
-                                { 
-                                    "gridPosition" : [0,2],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
-                                },
-                                { 
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index" , 
-                                    "selection" : {"xRange" : [0.83, 0.9],
-                                                   "yRange" : [0.83, 0.9]}
-                               }
-                            ]
-                },
-                             {
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
                     "name" : "Late M dwarfs",
-                    "caption" : "...and finally the late M dwarfs",
+                    "caption" : "Late M dwarfs",
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
                                     "xAxis" : "J-K",
@@ -120,7 +68,7 @@
             	{
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
-                    "name" : "All the stars and their Na abundance",
+                    "name" : "Colored by Na abundance",
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "In this plot, the near-infrared colors of the M dwarfs remain the same. However, now the stars are colored by their Na abundance, which we calibrated as a proxy for metallicity. You can see that a metal-rich star is seen to have a different color than a more metal-poor star of the same spectral type. This allowed us to calibrate a relation for Na abundance (and therefore iron abundance) using 2MASS photometry.",
@@ -149,7 +97,7 @@
                             	{
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
-                    "name" : "Early M dwarfs and their Na EW",
+                    "name" : "Early M dwarfs colored by Na EW",
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "First we highlight the early M dwarfs, coloring each data point by its Na abundance...",
@@ -180,7 +128,7 @@
                             	{
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
-                    "name" : "Mid M dwarfs and their Na EW",
+                    "name" : "Mid M dwarfs colored by Na EW",
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "...and the mid M and their EW Na...",
@@ -211,7 +159,7 @@
                 {
                     "grid" : { "nRows" : 1,
                                "nColumns" : 4},
-                    "name" : "...and finally the late M dwarfs and their Na EW.",
+                    "name" : "Late M dwarfs colored by Na EW",
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "Late M and iron abundance",
