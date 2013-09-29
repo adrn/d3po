@@ -321,7 +321,7 @@ function drawState(state) {
             .attr("cx", function(d) { return xScaler(d[p['xAxis']]); })
             .attr("cy", function(d) { return yScaler(d[p['yAxis']]); })
             .attr("r", size)
-            .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || "#333333"; })
+            .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || dMarkerFill; })
             .attr("opacity", function (d) {
                 if (!($.isEmptyObject(selection))) {
                     var xr = selection['xRange'],
@@ -333,13 +333,13 @@ function drawState(state) {
                         yCol = selection['yAxis'];
 
                     if (e[0][0] > d[xCol] || d[xCol] > e[1][0] || e[0][1] > d[yCol] || d[yCol] > e[1][1]) {
-                        return dOpacity;
+                        return dMarkerOpacity;
                     } else {
                         return 0.1;
                     };
 
                 } else {
-                    return dOpacity;
+                    return dMarkerOpacity;
                 }
             });
     }
