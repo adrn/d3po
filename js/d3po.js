@@ -102,7 +102,7 @@ function drawState(state) {
     // plot spacing, and figure padding.
     var svg_height = nRows*(plotSize['height'] + plotSpacing['vertical']) + 
                      figPadding['top'] + figPadding['bottom'],
-        svg_width = nCols*(plotSize['width'] + plotSpacing['horizontal']) + 
+        svg_width = nCols*(plotSize['width'] + plotSpacing['horizontal']) + plotSpacing['horizontal']
                      figPadding['left'] + figPadding['right'];
 
     // Define top level svg tag
@@ -129,7 +129,7 @@ function drawState(state) {
     // Functions to compute the amount to translate the individual plots by
     xPlotTranslator = function (plot) { 
         index = plot["gridPosition"][1];
-        return index*(plotSize['width'] + plotSpacing['horizontal']); 
+        return index*(plotSize['width'] + plotSpacing['horizontal']) + plotSpacing['horizontal']/2.; 
     }
     yPlotTranslator = function (plot) { 
         index = plot["gridPosition"][0];
@@ -143,6 +143,18 @@ function drawState(state) {
     if (typeof state['colorAxis'] != 'undefined') {
         cScaler.domain(columnDomains[state['colorAxis']]);
         cScaler.range(state['colorMap'] || dColorMap);
+    }
+
+    // set up the selection object if some points are highlighted
+    var selection = {};
+    for (var ii=0; ii < state['plots'].length; ii++) {
+        var p = state['plots'][ii];
+        if (typeof p['selection'] != 'undefined') {
+            selection['xAxis'] = p['xAxis'],
+            selection['yAxis'] = p['yAxis'],
+            selection['xRange'] = p['selection']['xRange'],
+            selection['yRange'] = p['selection']['yRange'];
+        }
     }
     
     // Set up a cell group for each plot window, to then draw points and rectangle over
@@ -208,28 +220,26 @@ function drawState(state) {
             d3.select(this).call(yAxisD3); 
         });
 
-    // add axis labels
+    // Add axis labels
     var xLabel = svg.selectAll(".x-label")
                     .data(state["plots"]);
     xLabel.enter().append("text")
           .attr("class", "axis-label x-label");
     xLabel.exit().remove();
-    xLabel.transition().duration(500).ease('quad-out')
-          .text(function(p, i) { return p['xAxis']; })
-          .attr("x", function(p, i) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
-          .attr("y", function(p, i) { return yPlotTranslator(p) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
+    xLabel.text(function(p, i) { return p['xAxis']; });
+    xLabel.attr("x", function(p) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; }) 
+          .attr("y", function(p) { return yPlotTranslator(p) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
     
     var yLabel = svg.selectAll(".y-label")
                     .data(state["plots"]);
     yLabel.enter().append("text")
           .attr("class", "axis-label y-label");
     yLabel.exit().remove();
-    yLabel.text(function(p,i) { return p['yAxis']; })
-          .attr("x", function(p, i) { return xPlotTranslator(p); })
-          .attr("y", function(p, i) { return (plotSpacing['vertical']/2-yPlotTranslator(p)) + plotSize['height']/2. + $(this).width()/2.; })
-          .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
-    
-    // If state has a 'selection', highlight points in that selection box
+    yLabel.text(function(p,i) { return p['yAxis']; });
+    yLabel.attr("x", function(p) { return -((plotSpacing['vertical']/2-yPlotTranslator(p)) + plotSize['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
+          .attr("y", function(p) { return xPlotTranslator(p); });
+
+    /*
     state['plots'].forEach(function(p,i) {
         if (typeof p['selection'] != 'undefined') {
             var e = [[p['selection']['xRange'][0],p['selection']['yRange'][0]],
@@ -238,15 +248,18 @@ function drawState(state) {
             //brushmove(p);
             var xCol = p.xColumnName || p.xAxis,
                 yCol = p.yColumnName || p.yAxis;
-            svg.selectAll("circle").classed("hidden", function(d) {
+            circle.classed("hidden", function(d) {
                   return e[0][0] > d[xCol] || d[xCol] > e[1][0]
                           || e[0][1] > d[yCol] || d[yCol] > e[1][1];
             });
+        } else {
+            svg.selectAll("circle")
+                .classed("hidden", false);
         }
     });
+    */
 
     var brushCell;
-
     // Clear the previously-active brush, if any.
     function brushstart(p) {
         if (brushCell !== this) {
@@ -310,6 +323,25 @@ function drawState(state) {
             .attr("r", size)
             .attr("opacity", opacity)
             .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || "#333333"; }); 
+
+        if (!($.isEmptyObject(selection))) {
+            var xr = selection['xRange'],
+                yr = selection['yRange'];
+            var e = [[xr[0],yr[0]],
+                     [xr[1],yr[1]]];
+
+            var xCol = selection['xAxis'],
+                yCol = selection['yAxis'];
+
+            circ.transition().duration(500).ease("quad-out")
+                .classed("hidden", function(d) {
+                  return e[0][0] > d[xCol] || d[xCol] > e[1][0]
+                          || e[0][1] > d[yCol] || d[yCol] > e[1][1];
+            });            
+        } else {
+            circ.classed("hidden", false);
+        }
+
     }
 
     // Finally, update caption
