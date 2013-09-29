@@ -17,13 +17,6 @@ var figPadding = figureSpec["figurePadding"],
     plotSpacing = figureSpec["plotSpacing"],
     plotSize = figureSpec["plotSize"]; 
 
-/*
-    These are some global variables we use below
-*/
-var currentState, 
-    jsonData, 
-    csvData;
-
 // Scalers for x / y axes from data space to pixel space
 var xScaler = d3.scale.linear()
                 .range([plotSpacing['horizontal']/2, 
@@ -32,3 +25,7 @@ var xScaler = d3.scale.linear()
 var yScaler = d3.scale.linear()
                 .range([plotSize['height'] + plotSpacing['vertical']/2,
                         plotSpacing['vertical']/2]);
+
+// Default plot parameters
+var dTickSize = 16,
+    dColorMap = ["red", "blue"];
