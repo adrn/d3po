@@ -86,6 +86,27 @@ function domains(data, columns) {
     return domainByDataColumn;
 }
 
+function isSelected (selection, d) {
+    if (!($.isEmptyObject(selection))) {
+        var xr = selection['xRange'],
+            yr = selection['yRange'];
+        var e = [[xr[0],yr[0]],
+                 [xr[1],yr[1]]];
+
+        var xCol = selection['xAxis'],
+            yCol = selection['yAxis'];
+
+        if (e[0][0] > d[xCol] || d[xCol] > e[1][0] || e[0][1] > d[yCol] || d[yCol] > e[1][1]) {
+            return true;
+        } else {
+            return false;
+        };
+
+    } else {
+        return true;
+    }
+}
+
 function drawState(state) {
 /*
     TODO
@@ -276,7 +297,10 @@ function drawState(state) {
             xCol = p['xAxis'],
             yCol = p['yAxis'];
         
-        svg.selectAll("circle").classed("hidden", function(d) {
+        svg.selectAll("circle")
+           .style("fill", function (d) { return cScaler(d[state['colorAxis']]) || dMarkerFill; })
+           .attr("opacity", function (d) { return dMarkerOpacity; })
+           .classed("hidden", function(d) {
               return e[0][0] > d[xCol] || d[xCol] > e[1][0]
                       || e[0][1] > d[yCol] || d[yCol] > e[1][1];
         });
@@ -284,7 +308,7 @@ function drawState(state) {
     
     // If the brush is empty, select all circles.
     function brushend() {
-        if (brush.empty()) svg.selectAll(".hidden").classed("hidden", false);
+        if (brush.empty()) svg.selectAll("circle").classed("hidden", false);
     }
     
     // TODO: wtf
@@ -297,11 +321,13 @@ function drawState(state) {
         var marker = p['marker'];
         
         if (typeof marker != 'undefined') {
-            opacity = marker['opacity'];
-            size = marker['size'];
+            opacity = marker['opacity'] || dMarkerOpacity;
+            size = marker['size'] || dMarkerSize;
+            fill = marker['fill'] || dMarkerFill;
         } else {
-            opacity = 0.75;
-            size = 3;
+            opacity = dMarkerOpacity;
+            size = dMarkerSize;
+            fill = dMarkerFill;
         }
         
         var rect = cell.selectAll("rect.frame").data([1]);
@@ -321,25 +347,18 @@ function drawState(state) {
             .attr("cx", function(d) { return xScaler(d[p['xAxis']]); })
             .attr("cy", function(d) { return yScaler(d[p['yAxis']]); })
             .attr("r", size)
-            .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || dMarkerFill; })
-            .attr("opacity", function (d) {
-                if (!($.isEmptyObject(selection))) {
-                    var xr = selection['xRange'],
-                        yr = selection['yRange'];
-                    var e = [[xr[0],yr[0]],
-                             [xr[1],yr[1]]];
-
-                    var xCol = selection['xAxis'],
-                        yCol = selection['yAxis'];
-
-                    if (e[0][0] > d[xCol] || d[xCol] > e[1][0] || e[0][1] > d[yCol] || d[yCol] > e[1][1]) {
-                        return dMarkerOpacity;
-                    } else {
-                        return 0.1;
-                    };
-
+            .style("fill", function (d) { 
+                if (isSelected(selection, d)) {
+                    return cScaler(d[state['colorAxis']]) || fill; 
                 } else {
-                    return dMarkerOpacity;
+                    return "#cccccc";
+                }
+            })
+            .attr("opacity", function (d) {
+                if (isSelected(selection, d)) {
+                    return opacity;
+                } else {
+                    return 0.5;
                 }
             });
     }

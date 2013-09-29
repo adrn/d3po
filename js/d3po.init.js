@@ -16,5 +16,6 @@ var dFigureSpec = {  "figurePadding" : { "top" : 0,
 // Default plot parameters
 var dTickSize = 16,
     dColorMap = ["red", "blue"],
-    dMarkerOpacity = 0.75,
-    dMarkerFill = "#333333";
+    dMarkerOpacity = 0.5,
+    dMarkerFill = "#333333",
+    dMarkerSize = 3;
