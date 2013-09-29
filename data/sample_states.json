@@ -41,6 +41,15 @@
                                "nColumns" : 4},
                     "name" : "Late M dwarfs",
                     "caption" : "Late M dwarfs",
+                    "figure" : {"figurePadding" : { "top" : 0, 
+                                                      "left" : 50, 
+                                                      "right" : 10, 
+                                                      "bottom" : 40},
+                                "plotSpacing" : { "vertical" : 50,
+                                                  "horizontal" : 100},
+                                "plotSize" : {"width" : 100,
+                                              "height" : 100}
+                    },
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
                                     "xAxis" : "J-K",
