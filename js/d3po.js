@@ -179,11 +179,11 @@ function drawState(state) {
                 .ticks(5)
                 .tickSize(dTickSize);
     
-    // TODO: fix the axes here. should really pass in full data info, so i know about grid position, etc...
+    // Draw / update axes
     var xAxis = d3.select("svg").selectAll(".x.axis")
                   .data(state["plots"]);
     xAxis.enter().append("g")
-         .attr("class", "x axis")
+         .attr("class", "x axis");
     xAxis.exit().remove();
     xAxis.transition().duration(500).ease('quad-out')
          .attr("transform", function(p, i) { 
@@ -197,7 +197,7 @@ function drawState(state) {
     var yAxis = d3.select("svg").selectAll(".y.axis")
                   .data(state["plots"]);
     yAxis.enter().append("g")
-         .attr("class", "y axis")
+         .attr("class", "y axis");
     yAxis.exit().remove();
     yAxis.transition().duration(500).ease('quad-out')
          .attr("transform", function(p, i) { 
@@ -209,24 +209,27 @@ function drawState(state) {
         });
 
     // add axis labels
-    svg.selectAll(".x-label")
-      .data(state["plots"])
-      .enter().append("text")
-      .text(function(p,i) { return p['xAxis']; })
-      .attr("class", "axis-label")
-      .attr("x", function(p, i) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
-      .attr("y", function(p, i) { return yPlotTranslator(p) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
+    var xLabel = svg.selectAll(".x-label")
+                    .data(state["plots"]);
+    xLabel.enter().append("text")
+          .attr("class", "axis-label x-label");
+    xLabel.exit().remove();
+    xLabel.transition().duration(500).ease('quad-out')
+          .text(function(p, i) { return p['xAxis']; })
+          .attr("x", function(p, i) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
+          .attr("y", function(p, i) { return yPlotTranslator(p) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
     
-    svg.selectAll(".y-label")
-      .data(state["plots"])
-      .enter().append("text")
-      .text(function(p,i) { return p['yAxis']; })
-      .attr("class", "axis-label") 
-      .attr("x", function(p, i) { return xPlotTranslator(p); })
-      .attr("y", function(p, i) { return (plotSpacing['vertical']/2-yPlotTranslator(p)) + plotSize['height']/2. + $(this).width()/2.; })
-      .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
+    var yLabel = svg.selectAll(".y-label")
+                    .data(state["plots"]);
+    yLabel.enter().append("text")
+          .attr("class", "axis-label y-label");
+    yLabel.exit().remove();
+    yLabel.text(function(p,i) { return p['yAxis']; })
+          .attr("x", function(p, i) { return xPlotTranslator(p); })
+          .attr("y", function(p, i) { return (plotSpacing['vertical']/2-yPlotTranslator(p)) + plotSize['height']/2. + $(this).width()/2.; })
+          .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
     
-    // If state has a 'selection':
+    // If state has a 'selection', highlight points in that selection box
     state['plots'].forEach(function(p,i) {
         if (typeof p['selection'] != 'undefined') {
             var e = [[p['selection']['xRange'][0],p['selection']['yRange'][0]],
