@@ -32,24 +32,24 @@
     
         <script>
             // todo:
-            var jsonFilename = "data/sample_states.json";
-            
-            // Read states JSON spec
-            d3.json(jsonFilename, function(error, data) {
-                if (error) {
-                    console.warn(error);
-                }
-                
-                // Pull out the data into a global container
-                jsonData = data;
-                readD3POCSV(jsonData["filename"]);                
-            });
+            var jsonFilename;
+            function initialize(jsonFilename) {
+                // Read states JSON spec
+                d3.json(jsonFilename, function(error, data) {
+                    if (error) {
+                        console.warn(error);
+                    }
+                    
+                    // Pull out the data into a global container
+                    jsonData = data;
+                    readD3POCSV(jsonData["filename"]);                
+                });
+            }
             
             function update_state(state) {
                 // Just delete the svg, recreate
                 currentState = state
                 d3.select("svg").remove();
-                d3.select("p").remove();
                 
                 var nRows = state['grid']['nRows'],
                     nCols = state['grid']['nColumns'];
@@ -289,6 +289,10 @@
         <div id="caption"></div>
         
         <div id="footer">
+            <select id="dataSource" onChange="initialize(this.value);">
+                <option value="data/sample_states.json" selected="selected">M-dwarfs</option>
+                <option value="data/kepler_states.json">Kepler</option>
+            </select>
             <a href="http://adrian.pw">A. M. Price-Whelan</a> // 
             <a href="http://www.astro.columbia.edu/~jpeek/">J. E. G. Peek</a> // 
             <a href="https://www.cfa.harvard.edu/~enewton/">E. R. Newton</a> // 
@@ -301,6 +305,11 @@
         
         <a href="https://github.com/adrn/d3po"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
 
+        <script type="text/javascript">
+            $(document).ready(function() {
+                initialize("data/sample_states.json");
+            });
+        </script>
     </body>
 
 </html>
