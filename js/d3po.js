@@ -127,9 +127,16 @@ function drawState(state) {
         cScaler = d3.scale.linear();
 
     // Functions to compute the amount to translate the individual plots by
-    xTranslator = function (index) { return index*(plotSize['width'] + plotSpacing['horizontal']); }
-    yTranslator = function (index) { return (nRows - index - 1)*(plotSize['height'] + plotSpacing['vertical']); }
+    xPlotTranslator = function (plot) { 
+        index = plot["gridPosition"][1];
+        return index*(plotSize['width'] + plotSpacing['horizontal']); 
+    }
+    yPlotTranslator = function (plot) { 
+        index = plot["gridPosition"][0];
+        return (nRows - index - 1)*(plotSize['height'] + plotSpacing['vertical']); 
+    }
 
+    // Get the domains in data units for each column in the data file
     var columnDomains = domains(allPlotData, columnNames);
 
     // if this plot has a color-by axis, set the domain and range of the color scaler
@@ -137,39 +144,18 @@ function drawState(state) {
         cScaler.domain(columnDomains[state['colorAxis']]);
         cScaler.range(state['colorMap'] || dColorMap);
     }
-
-    var brushCell;
     
-    // TODO: needs better names, brain dumping...
-    var d = [];
-    for (var ii=0; ii < state['plots'].length; ii++) {
-        var this_plot = state['plots'][ii];
-        
-        d.push({ xColumnName : this_plot['xAxis'],
-                 yColumnName : this_plot['yAxis'],
-                 i : this_plot['gridPosition'][0],
-                 j : this_plot['gridPosition'][1],
-                 plotIndex : ii
-               });
-    }
-    
-    var xColumnNames = [],
-        yColumnNames = [];
-    
-    d.map(function(dd) {
-            xColumnNames.push(dd.xColumnName);
-            yColumnNames.push(dd.yColumnName);
-        });
-    
-    var cell = svg.selectAll(".cell")
-                  .data(d)
-                  .enter().append("g")
-                  .attr("class", "cell")
-                  .attr("transform", function(d) { 
-                                        return "translate(" + xTranslator(d.j) + "," 
-                                                            + yTranslator(d.i) + ")"; 
-                                    })
-                  .each(plot);
+    // Set up a cell group for each plot window, to then draw points and rectangle over
+    var cells = d3.select("svg").selectAll("g.cell").data(state["plots"]);
+    cells.enter().append("g")
+         .attr("class", "cell");
+    cells.exit().remove();
+    cells.transition()
+         .duration(500)
+         .ease('quad-out')
+         .attr("transform", function(p) { return "translate(" + xPlotTranslator(p) + "," 
+                                                              + yPlotTranslator(p) + ")"; })
+         .each(plot);
     
     // Define the brush object
     var brush = d3.svg.brush()
@@ -179,7 +165,7 @@ function drawState(state) {
                   .on("brush", brushmove)
                   .on("brushend", brushend);
     
-    cell.call(brush);
+    cells.call(brush);
     
     // Add axes to the plots
     var xAxis = d3.svg.axis()
@@ -197,41 +183,41 @@ function drawState(state) {
     
     // TODO: fix the axes here. should really pass in full data info, so i know about grid position, etc...
     svg.selectAll(".x.axis")
-      .data(d)
+      .data(state["plots"])
       .enter().append("g")
       .attr("class", "x axis")
-      .attr("transform", function(d, i) { return "translate(" + xTranslator(d.j) + "," 
-                                                    + (yTranslator(d.i) + plotSize['height'] + 15) + ")"; })
-      .each(function(d) { xScaler.domain(columnDomains[d.xColumnName]); 
+      .attr("transform", function(p, i) { return "translate(" + xPlotTranslator(p) + "," 
+                                                + (yPlotTranslator(p) + plotSize['height'] + 15) + ")"; })
+      .each(function(p) { xScaler.domain(columnDomains[p['xAxis']]); 
                           d3.select(this).call(xAxis); 
             });
         
     svg.selectAll(".y.axis")
-      .data(d)
+      .data(state["plots"])
       .enter().append("g")
       .attr("class", "y axis")
-      .attr("transform", function(d, i) { return "translate(" + (xTranslator(d.j) + plotSpacing['horizontal']/2 + 10) + "," 
-                                                    + yTranslator(d.i) + ")"; })
-      .each(function(d) { yScaler.domain(columnDomains[d.yColumnName]); 
+      .attr("transform", function(p, i) { return "translate(" + (xPlotTranslator(p) + plotSpacing['horizontal']/2 + 10) + "," 
+                                                    + yPlotTranslator(p) + ")"; })
+      .each(function(p) { yScaler.domain(columnDomains[p['yAxis']]); 
                           d3.select(this).call(yAxis); 
             });
     
     // add axis labels
     svg.selectAll(".x-label")
-      .data(d)
+      .data(state["plots"])
       .enter().append("text")
-      .text(function(d,i) { return d.xColumnName; })
+      .text(function(p,i) { return p['xAxis']; })
       .attr("class", "axis-label")
-      .attr("x", function(d, i) { return xTranslator(d.j) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
-      .attr("y", function(d, i) { return yTranslator(d.i) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
+      .attr("x", function(p, i) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
+      .attr("y", function(p, i) { return yPlotTranslator(p) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
     
     svg.selectAll(".y-label")
-      .data(d)
+      .data(state["plots"])
       .enter().append("text")
-      .text(function(d,i) { return d.yColumnName; })
+      .text(function(p,i) { return p['yAxis']; })
       .attr("class", "axis-label") 
-      .attr("x", function(d, i) { return xTranslator(d.j); })
-      .attr("y", function(d, i) { return (plotSpacing['vertical']/2-yTranslator(d.i)) + plotSize['height']/2. + $(this).width()/2.; })
+      .attr("x", function(p, i) { return xPlotTranslator(p); })
+      .attr("y", function(p, i) { return (plotSpacing['vertical']/2-yPlotTranslator(p)) + plotSize['height']/2. + $(this).width()/2.; })
       .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
     
     // If state has a 'selection':
@@ -250,12 +236,14 @@ function drawState(state) {
         }
     });
 
+    var brushCell;
+
     // Clear the previously-active brush, if any.
     function brushstart(p) {
         if (brushCell !== this) {
             d3.select(brushCell).call(brush.clear());
-            xScaler.domain(columnDomains[p.xColumnName]);
-            yScaler.domain(columnDomains[p.yColumnName]);
+            xScaler.domain(columnDomains[p['xAxis']]);
+            yScaler.domain(columnDomains[p['yAxis']]);
             brushCell = this;
         }
     }
@@ -263,8 +251,8 @@ function drawState(state) {
     // Highlight the selected circles.
     function brushmove(p) {
         var e = brush.extent(),
-            xCol = p.xColumnName || p.xAxis,
-            yCol = p.yColumnName || p.yAxis;
+            xCol = p['xAxis'],
+            yCol = p['yAxis'];
         
         svg.selectAll("circle").classed("hidden", function(d) {
               return e[0][0] > d[xCol] || d[xCol] > e[1][0]
@@ -281,10 +269,10 @@ function drawState(state) {
     function plot(p) {
         var cell = d3.select(this);
         
-        xScaler.domain(columnDomains[p.xColumnName]);
-        yScaler.domain(columnDomains[p.yColumnName]);
+        xScaler.domain(columnDomains[p['xAxis']]);
+        yScaler.domain(columnDomains[p['yAxis']]);
         
-        var marker = state['plots'][p['plotIndex']]['marker'];
+        var marker = p['marker'];
         
         if (typeof marker != 'undefined') {
             opacity = marker['opacity'];
@@ -294,18 +282,22 @@ function drawState(state) {
             size = 3;
         }
         
-        cell.append("rect")
+        var rect = cell.selectAll("rect.frame").data([1]);
+        rect.enter().append("rect");
+        rect.exit().remove();
+        rect.transition().duration(500).ease("quad-out")
             .attr("class", "frame")
             .attr("x", plotSpacing['horizontal'] / 2)
             .attr("y", plotSpacing['vertical'] / 2)
             .attr("width", plotSize['width'])
             .attr("height", plotSize['height']);
         
-        cell.selectAll("circle")
-            .data(allPlotData)
-            .enter().append("circle")
-            .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
-            .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
+        var circ = cell.selectAll("circle").data(allPlotData)
+        circ.enter().append("circle");
+        circ.exit().remove();
+        circ.transition().duration(500).ease("quad-out")
+            .attr("cx", function(d) { return xScaler(d[p['xAxis']]); })
+            .attr("cy", function(d) { return yScaler(d[p['yAxis']]); })
             .attr("r", size)
             .attr("opacity", opacity)
             .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || "#333333"; }); 
@@ -313,5 +305,9 @@ function drawState(state) {
 
     // Finally, update caption
     var caption = d3.select("#caption")
-                    .text(state.caption || "");
+                    .style('opacity', 0)
+                    .text(state.caption || "")
+                    .transition()
+                    .duration(1000)
+                    .style('opacity', 1);
 }
