@@ -321,27 +321,27 @@ function drawState(state) {
             .attr("cx", function(d) { return xScaler(d[p['xAxis']]); })
             .attr("cy", function(d) { return yScaler(d[p['yAxis']]); })
             .attr("r", size)
-            .attr("opacity", opacity)
-            .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || "#333333"; }); 
+            .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || "#333333"; })
+            .attr("opacity", function (d) {
+                if (!($.isEmptyObject(selection))) {
+                    var xr = selection['xRange'],
+                        yr = selection['yRange'];
+                    var e = [[xr[0],yr[0]],
+                             [xr[1],yr[1]]];
 
-        if (!($.isEmptyObject(selection))) {
-            var xr = selection['xRange'],
-                yr = selection['yRange'];
-            var e = [[xr[0],yr[0]],
-                     [xr[1],yr[1]]];
+                    var xCol = selection['xAxis'],
+                        yCol = selection['yAxis'];
 
-            var xCol = selection['xAxis'],
-                yCol = selection['yAxis'];
+                    if (e[0][0] > d[xCol] || d[xCol] > e[1][0] || e[0][1] > d[yCol] || d[yCol] > e[1][1]) {
+                        return dOpacity;
+                    } else {
+                        return 0.1;
+                    };
 
-            circ.transition().duration(500).ease("quad-out")
-                .classed("hidden", function(d) {
-                  return e[0][0] > d[xCol] || d[xCol] > e[1][0]
-                          || e[0][1] > d[yCol] || d[yCol] > e[1][1];
-            });            
-        } else {
-            circ.classed("hidden", false);
-        }
-
+                } else {
+                    return dOpacity;
+                }
+            });
     }
 
     // Finally, update caption
