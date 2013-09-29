@@ -4,8 +4,8 @@
 
 // all size / padding parameters are specified in pixels
 var dFigureSpec = {  "figurePadding" : { "top" : 0, 
-                                        "left" : 50, 
-                                        "right" : 10, 
+                                        "left" : 0, 
+                                        "right" : 0, 
                                         "bottom" : 40},
                     "plotSpacing" : { "vertical" : 50,
                                       "horizontal" : 100},
