@@ -104,7 +104,7 @@ function drawState(state) {
                      figPadding['top'] + figPadding['bottom'],
         svg_width = nCols*(plotSize['width'] + plotSpacing['horizontal']) + 
                      figPadding['left'] + figPadding['right'];
-        
+
     // Define top level svg tag
     svg = d3.select("#svg svg");
     svg.transition()
@@ -125,6 +125,10 @@ function drawState(state) {
                     .range([plotSize['height'] + plotSpacing['vertical']/2,
                             plotSpacing['vertical']/2]),
         cScaler = d3.scale.linear();
+
+    // Functions to compute the amount to translate the individual plots by
+    xTranslator = function (index) { return index*(plotSize['width'] + plotSpacing['horizontal']); }
+    yTranslator = function (index) { return (nRows - index - 1)*(plotSize['height'] + plotSpacing['vertical']); }
 
     var columnDomains = domains(allPlotData, columnNames);
 
@@ -157,24 +161,13 @@ function drawState(state) {
             yColumnNames.push(dd.yColumnName);
         });
     
-    d3.select("#caption")
-            .text(state.caption)
-    
-    function x_translate(j) {
-        return j*(plotSize['width'] + plotSpacing['horizontal']);
-    }
-    
-    function y_translate(i) {
-        return (nRows - i - 1)*(plotSize['height'] + plotSpacing['vertical']);
-    }
-    
     var cell = svg.selectAll(".cell")
                   .data(d)
                   .enter().append("g")
                   .attr("class", "cell")
                   .attr("transform", function(d) { 
-                                        return "translate(" + x_translate(d.j) + "," 
-                                                            + y_translate(d.i) + ")"; 
+                                        return "translate(" + xTranslator(d.j) + "," 
+                                                            + yTranslator(d.i) + ")"; 
                                     })
                   .each(plot);
     
@@ -207,8 +200,8 @@ function drawState(state) {
       .data(d)
       .enter().append("g")
       .attr("class", "x axis")
-      .attr("transform", function(d, i) { return "translate(" + x_translate(d.j) + "," 
-                                                    + (y_translate(d.i) + plotSize['height'] + 15) + ")"; })
+      .attr("transform", function(d, i) { return "translate(" + xTranslator(d.j) + "," 
+                                                    + (yTranslator(d.i) + plotSize['height'] + 15) + ")"; })
       .each(function(d) { xScaler.domain(columnDomains[d.xColumnName]); 
                           d3.select(this).call(xAxis); 
             });
@@ -217,8 +210,8 @@ function drawState(state) {
       .data(d)
       .enter().append("g")
       .attr("class", "y axis")
-      .attr("transform", function(d, i) { return "translate(" + (x_translate(d.j) + plotSpacing['horizontal']/2 + 10) + "," 
-                                                    + y_translate(d.i) + ")"; })
+      .attr("transform", function(d, i) { return "translate(" + (xTranslator(d.j) + plotSpacing['horizontal']/2 + 10) + "," 
+                                                    + yTranslator(d.i) + ")"; })
       .each(function(d) { yScaler.domain(columnDomains[d.yColumnName]); 
                           d3.select(this).call(yAxis); 
             });
@@ -229,16 +222,16 @@ function drawState(state) {
       .enter().append("text")
       .text(function(d,i) { return d.xColumnName; })
       .attr("class", "axis-label")
-      .attr("x", function(d, i) { return x_translate(d.j) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
-      .attr("y", function(d, i) { return y_translate(d.i) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
+      .attr("x", function(d, i) { return xTranslator(d.j) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
+      .attr("y", function(d, i) { return yTranslator(d.i) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
     
     svg.selectAll(".y-label")
       .data(d)
       .enter().append("text")
       .text(function(d,i) { return d.yColumnName; })
       .attr("class", "axis-label") 
-      .attr("x", function(d, i) { return x_translate(d.j); })
-      .attr("y", function(d, i) { return (plotSpacing['vertical']/2-y_translate(d.i)) + plotSize['height']/2. + $(this).width()/2.; })
+      .attr("x", function(d, i) { return xTranslator(d.j); })
+      .attr("y", function(d, i) { return (plotSpacing['vertical']/2-yTranslator(d.i)) + plotSize['height']/2. + $(this).width()/2.; })
       .attr("transform", function (d,i) { return "rotate(-90," + $(this).attr('x') + "," + $(this).attr('y') + ")"; });
     
     // If state has a 'selection':
@@ -317,4 +310,8 @@ function drawState(state) {
             .attr("opacity", opacity)
             .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || "#333333"; }); 
     }
+
+    // Finally, update caption
+    var caption = d3.select("#caption")
+                    .text(state.caption || "");
 }
