@@ -7,7 +7,7 @@ dev
 ---
 If you're interested in checking out the code and running it yourself, the easiest way is to:
 
-1) clone this repository,
-2) change your current directory to the cloned repository,
-3) start a simple web server with Python: `python -m SimpleHTTPServer`,
-4) point your browser to `http://0.0.0.0:8000`.
+1. clone this repository,
+2. change your current directory to the cloned repository,
+3. start a simple web server with Python: `python -m SimpleHTTPServer`,
+4. point your browser to `http://0.0.0.0:8000`.
