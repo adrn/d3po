@@ -260,26 +260,6 @@ function drawState(state) {
     yLabel.attr("x", function(p) { return -((plotSpacing['vertical']/2-yPlotTranslator(p)) + plotSize['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
           .attr("y", function(p) { return xPlotTranslator(p); });
 
-    /*
-    state['plots'].forEach(function(p,i) {
-        if (typeof p['selection'] != 'undefined') {
-            var e = [[p['selection']['xRange'][0],p['selection']['yRange'][0]],
-                          [p['selection']['xRange'][1],p['selection']['yRange'][1]]];
-            //brush.extent(extent);
-            //brushmove(p);
-            var xCol = p.xColumnName || p.xAxis,
-                yCol = p.yColumnName || p.yAxis;
-            circle.classed("hidden", function(d) {
-                  return e[0][0] > d[xCol] || d[xCol] > e[1][0]
-                          || e[0][1] > d[yCol] || d[yCol] > e[1][1];
-            });
-        } else {
-            svg.selectAll("circle")
-                .classed("hidden", false);
-        }
-    });
-    */
-
     var brushCell;
     // Clear the previously-active brush, if any.
     function brushstart(p) {
