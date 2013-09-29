@@ -123,3 +123,8 @@ circle.hidden {
   border-color: #AAA;
   box-shadow: inset 0px 0px 4px rgba(0,0,0,0.2);
 }
+
+.y-label {
+  -webkit-transform: rotate(-90deg); 
+  -moz-transform: rotate(-90deg); 
+}
