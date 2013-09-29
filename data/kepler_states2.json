@@ -1,13 +1,13 @@
-{
+{ 
     "filename" : "data/kepler_data.csv",
     "title" : "Something about M dwarfs",
     "states" : [{
                     "grid" : { "nRows" : 1,
                                "nColumns" : 3},
-                    "name" : "First quarter",
+                    "name" : "Kepler planets",
                     "caption" : "Kepler planets discovered in the first 43 days (Borucki et al. 2011a,b).",
-                    "colorAxis": "Planet Radius",
-                    "colorMap": ["orange","green"],
+                    "colorAxis": "KOI count",
+                    "colorMap": "YlOrRd",
                     "plots" : [ { 
                                     "gridPosition" : [0,0],
                                     "xAxis" : "Period",
@@ -30,7 +30,7 @@
                 {
                     "grid" : { "nRows" : 1,
                                "nColumns" : 3},
-                    "name" : "First 13 months",
+                    "name" : "Kepler planets",
                     "caption" : "Kepler planets discovered in the first 13 months (Borucki et al. 2011b).",
                     "colorAxis": "KOI count",
                     "colorMap": "YlOrRd",
@@ -56,7 +56,7 @@
                 {
                     "grid" : { "nRows" : 1,
                                "nColumns" : 3},
-                    "name" : "First 16 months",
+                    "name" : "Kepler planets",
                     "caption" : "Kepler planets discovered in the first 16 months (Batalha et al. 2013).",
                     "colorAxis": "KOI count",
                     "colorMap": "YlOrRd",
@@ -77,6 +77,56 @@
                                    "selection" : {"xRange" : [0.5, 6.5],
                                                    "yRange" : [0, 1000]}
                                  }
+                            ]
+                },
+                {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Kepler planets",
+                    "caption" : "Kepler planets discovered to date (Downloaded from MAST Sep 17th, 2013).",
+                    "colorAxis": "KOI count",
+                    "colorMap": "YlOrRd",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "Period",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "Teq",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "Discovery Quarter",
+                                    "yAxis" : "r/R"
+                                }
+                            ]
+                },
+                {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 3},
+                    "name" : "Kepler planets",
+                    "caption" : "Kepler planets in the (optimistic) habitable zone defined by Kasting (2011b) using the planetary and stellar properties listed in MAST.",
+                    "colorAxis": "KOI count",
+                    "colorMap": "YlOrRd",
+                    "plots" : [ { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "Period",
+                                    "yAxis" : "Planet Radius"
+                                },
+                                { 
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : "Teq",
+                                    "yAxis" : "Planet Radius",
+                                    "xRange" : [185,303],
+                                    "selection" : {"xRange" : [185,303]}
+                                },
+                                { 
+                                    "gridPosition" : [0,2],
+                                    "xAxis" : "Discovery Quarter",
+                                      "yAxis" : "r/R"
+                              }
                             ]
                 }]
 }
