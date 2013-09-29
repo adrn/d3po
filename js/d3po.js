@@ -1,7 +1,8 @@
 // Globals
 var jsonFilename, 
     jsonData,
-    allPlotData;
+    allPlotData,
+    columnNames;
 
 var svg;
 
@@ -31,6 +32,7 @@ function loadJSON(jsonFilename) {
                 alert('Unable to read/parse file "' + jsonData["filename"] + '"');
             }
             allPlotData = _tmp;
+            columnNames = d3.keys(allPlotData[0]);
 
             // draw the first state
             drawState(jsonData['states'][0]);
@@ -53,6 +55,35 @@ function loadJSON(jsonFilename) {
     });
 
     //
+}
+
+function domains(data, columns) {
+    /* 
+        Get the domains (min, max) for each column in the plot data.
+    */
+
+    // Define an object to contain the domains (in data space) for each column
+    var domainByDataColumn = {};
+        
+    columnNames.forEach(function(colName) {
+        var domain = d3.extent(data, function(d) { return parseFloat(d[colName]); });
+        
+        // if parseFloat failed, probably string values in the column
+        if (isNaN(domain[0]) || isNaN(domain[1])){
+            var this_col = [];
+            data.map(function(d) {
+                this_col.push(d[colName]);
+            });
+            
+            domainByDataColumn[colName] = this_col.unique();
+        } else {
+            var size = domain[1]-domain[0];
+            domainByDataColumn[colName] = [domain[0] - size/25., 
+                                           domain[1] + size/25.];
+        }
+    });
+
+    return domainByDataColumn;
 }
 
 function drawState(state) {
@@ -89,42 +120,21 @@ function drawState(state) {
     //       axes are log, which are linear, etc.
     var xScaler = d3.scale.linear()
                     .range([plotSpacing['horizontal']/2, 
-                            plotSize['width'] + plotSpacing['horizontal']/2]);
-
-    var yScaler = d3.scale.linear()
+                            plotSize['width'] + plotSpacing['horizontal']/2]),
+        yScaler = d3.scale.linear()
                     .range([plotSize['height'] + plotSpacing['vertical']/2,
-                            plotSpacing['vertical']/2]);
+                            plotSpacing['vertical']/2]),
+        cScaler = d3.scale.linear();
 
+    var columnDomains = domains(allPlotData, columnNames);
 
-    var brushCell,
-        color_scale = d3.scale.linear();
-
-    // Define an object to contain the domains (in data space) for each column
-    var domainByDataColumn = {},
-        dataColumns = d3.keys(allPlotData[0]);                
-        
-    dataColumns.forEach(function(colName) {
-        var domain = d3.extent(allPlotData, function(d) { return parseFloat(d[colName]); });
-        
-        // if parseFloat failed, probably string values in the column
-        if (isNaN(domain[0]) || isNaN(domain[1])){
-            var this_col = [];
-            allPlotData.map(function(d) {
-                this_col.push(d[colName]);
-            });
-            
-            domainByDataColumn[colName] = this_col.unique();
-        } else {
-            var size = domain[1]-domain[0];
-            domainByDataColumn[colName] = [domain[0] - size/25., 
-                                           domain[1] + size/25.];
-        }
-    });
-    
+    // if this plot has a color-by axis, set the domain and range of the color scaler
     if (typeof state['colorAxis'] != 'undefined') {
-        color_scale.domain(domainByDataColumn[state['colorAxis']]);
-        color_scale.range(state['colorMap'] || dColorMap);
+        cScaler.domain(columnDomains[state['colorAxis']]);
+        cScaler.range(state['colorMap'] || dColorMap);
     }
+
+    var brushCell;
     
     // TODO: needs better names, brain dumping...
     var d = [];
@@ -199,7 +209,7 @@ function drawState(state) {
       .attr("class", "x axis")
       .attr("transform", function(d, i) { return "translate(" + x_translate(d.j) + "," 
                                                     + (y_translate(d.i) + plotSize['height'] + 15) + ")"; })
-      .each(function(d) { xScaler.domain(domainByDataColumn[d.xColumnName]); 
+      .each(function(d) { xScaler.domain(columnDomains[d.xColumnName]); 
                           d3.select(this).call(xAxis); 
             });
         
@@ -209,7 +219,7 @@ function drawState(state) {
       .attr("class", "y axis")
       .attr("transform", function(d, i) { return "translate(" + (x_translate(d.j) + plotSpacing['horizontal']/2 + 10) + "," 
                                                     + y_translate(d.i) + ")"; })
-      .each(function(d) { yScaler.domain(domainByDataColumn[d.yColumnName]); 
+      .each(function(d) { yScaler.domain(columnDomains[d.yColumnName]); 
                           d3.select(this).call(yAxis); 
             });
     
@@ -251,8 +261,8 @@ function drawState(state) {
     function brushstart(p) {
         if (brushCell !== this) {
             d3.select(brushCell).call(brush.clear());
-            xScaler.domain(domainByDataColumn[p.xColumnName]);
-            yScaler.domain(domainByDataColumn[p.yColumnName]);
+            xScaler.domain(columnDomains[p.xColumnName]);
+            yScaler.domain(columnDomains[p.yColumnName]);
             brushCell = this;
         }
     }
@@ -278,8 +288,8 @@ function drawState(state) {
     function plot(p) {
         var cell = d3.select(this);
         
-        xScaler.domain(domainByDataColumn[p.xColumnName]);
-        yScaler.domain(domainByDataColumn[p.yColumnName]);
+        xScaler.domain(columnDomains[p.xColumnName]);
+        yScaler.domain(columnDomains[p.yColumnName]);
         
         var marker = state['plots'][p['plotIndex']]['marker'];
         
@@ -305,6 +315,6 @@ function drawState(state) {
             .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
             .attr("r", size)
             .attr("opacity", opacity)
-            .style("fill", function(d) { return color_scale(d[state['colorAxis']]) || "#333333"; }); 
+            .style("fill", function(d) { return cScaler(d[state['colorAxis']]) || "#333333"; }); 
     }
 }
