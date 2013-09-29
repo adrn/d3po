@@ -40,7 +40,7 @@ function loadJSON(jsonFilename) {
 
             presets.enter().append("li")
                    .on("click", function(e,i) {
-                        update_state(jsonData['states'][i]);
+                        drawState(jsonData['states'][i]);
                         $(".navigation li").removeClass("selected");
                         $(this).addClass("selected");
                    });
@@ -58,9 +58,14 @@ function loadJSON(jsonFilename) {
 function drawState(state) {
 /*
     TODO
-*/   
+*/  
     var nRows = state['grid']['nRows'],
-        nCols = state['grid']['nColumns'];
+        nCols = state['grid']['nColumns'],
+        figSpec = state['figure'] || dFigureSpec;
+
+    var figPadding = figSpec["figurePadding"],
+        plotSpacing = figSpec["plotSpacing"],
+        plotSize = figSpec["plotSize"]; 
     
     // Compute the height / width of the svg element based on the plot size,
     // plot spacing, and figure padding.
@@ -78,6 +83,18 @@ function drawState(state) {
        .attr("height", svg_height)
     svg.append("g")
        .attr("transform", "translate(" + figPadding["left"] + "," + figPadding["top"] + ")");
+
+    // Scalers for x / y axes from data space to pixel space
+    // TODO: build in log support here - if statement? need to keep track of what
+    //       axes are log, which are linear, etc.
+    var xScaler = d3.scale.linear()
+                    .range([plotSpacing['horizontal']/2, 
+                            plotSize['width'] + plotSpacing['horizontal']/2]);
+
+    var yScaler = d3.scale.linear()
+                    .range([plotSize['height'] + plotSpacing['vertical']/2,
+                            plotSpacing['vertical']/2]);
+
 
     var brushCell,
         color_scale = d3.scale.linear();
