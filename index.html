@@ -31,25 +31,9 @@
     <body>
     
         <script>
-            // todo:
-            var jsonFilename;
-            function initialize(jsonFilename) {
-                // Read states JSON spec
-                d3.json(jsonFilename, function(error, data) {
-                    if (error) {
-                        console.warn(error);
-                    }
-                    
-                    // Pull out the data into a global container
-                    jsonData = data;
-                    readD3POCSV(jsonData["filename"]);                
-                });
-            }
-            
-            function update_state(state) {
+            function drawState(state) {
                 // Just delete the svg, recreate
-                currentState = state
-                d3.select("svg").remove();
+                currentState = state;
                 
                 var nRows = state['grid']['nRows'],
                     nCols = state['grid']['nColumns'];
@@ -62,18 +46,18 @@
                 var tickSize = 16,
                     brushCell,
                     color_scale = d3.scale.linear();
-                
+
                 // Define an object to contain the domains (in data space) for each column
                 var domainByDataColumn = {},
-                    dataColumns = d3.keys(csvData[0]);                
+                    dataColumns = d3.keys(allPlotData[0]);                
                     
                 dataColumns.forEach(function(colName) {
-                    var domain = d3.extent(csvData, function(d) { return parseFloat(d[colName]); });
+                    var domain = d3.extent(allPlotData, function(d) { return parseFloat(d[colName]); });
                     
                     // if parseFloat failed, probably string values in the column
                     if (isNaN(domain[0]) || isNaN(domain[1])){
                         var this_col = [];
-                        csvData.map(function(d) {
+                        allPlotData.map(function(d) {
                             this_col.push(d[colName]);
                         });
                         
@@ -112,13 +96,17 @@
                     });
                 
                 // Define top level svg tag
-                var svg = d3.select("#svg").append("svg").attr("width", svg_width)
-                                .attr("height", svg_height)
-                                .append("g")
-                                .attr("transform", "translate(" + figPadding["left"] + "," + figPadding["top"] + ")");
+                svg = d3.select("#svg svg");
+                svg.transition()
+                   .duration(500)
+                   .ease('quad-out')
+                   .attr("width", svg_width)
+                   .attr("height", svg_height)
+                svg.append("g")
+                   .attr("transform", "translate(" + figPadding["left"] + "," + figPadding["top"] + ")");
                 
-				d3.select("#caption")
-					    .text(currentState.caption)
+                d3.select("#caption")
+                        .text(currentState.caption)
                 
                 function x_translate(j) {
                     return j*(plotSize['width'] + plotSpacing['horizontal']);
@@ -269,7 +257,7 @@
                         .attr("height", plotSize['height']);
                     
                     cell.selectAll("circle")
-                        .data(csvData)
+                        .data(allPlotData)
                         .enter().append("circle")
                         .attr("cx", function(d) { return xScaler(d[p.xColumnName]); })
                         .attr("cy", function(d) { return yScaler(d[p.yColumnName]); })
@@ -278,10 +266,9 @@
                         .style("fill", function(d) { return color_scale(d[state['colorAxis']]) || "#333333"; }); 
                 }
             }
-            
         </script>
         
-        <div id="svg"></div>
+        <div id="svg"><svg></svg></div>
         <div id="controls">
             <ul class="navigation">
             </ul>
@@ -289,9 +276,10 @@
         <div id="caption"></div>
         
         <div id="footer">
-            <select id="dataSource" onChange="initialize(this.value);">
+            <select id="dataSource" onChange="loadJSON(this.value);">
                 <option value="data/sample_states.json" selected="selected">M-dwarfs</option>
                 <option value="data/kepler_states.json">Kepler</option>
+                <option value="data/borked.json">BORK</option>
             </select>
             <a href="http://adrian.pw">A. M. Price-Whelan</a> // 
             <a href="http://www.astro.columbia.edu/~jpeek/">J. E. G. Peek</a> // 
@@ -307,7 +295,8 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initialize("data/sample_states.json");
+                initialize();
+                loadJSON("data/sample_states.json");
             });
         </script>
     </body>
