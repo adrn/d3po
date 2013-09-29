@@ -150,58 +150,64 @@ function drawState(state) {
     cells.enter().append("g")
          .attr("class", "cell");
     cells.exit().remove();
-    cells.transition()
-         .duration(500)
-         .ease('quad-out')
+    cells.transition().duration(500).ease('quad-out')
          .attr("transform", function(p) { return "translate(" + xPlotTranslator(p) + "," 
                                                               + yPlotTranslator(p) + ")"; })
          .each(plot);
     
     // Define the brush object
     var brush = d3.svg.brush()
-                  .x(xScaler)
-                  .y(yScaler)
+                  .x(xScaler).y(yScaler)
                   .on("brushstart", brushstart)
                   .on("brush", brushmove)
                   .on("brushend", brushend);
-    
+
+    // have the cells call the brush
     cells.call(brush);
     
     // Add axes to the plots
-    var xAxis = d3.svg.axis()
+    // TODO: figure out how to give user better control over ticks?
+    var xAxisD3 = d3.svg.axis()
                 .scale(xScaler)
                 .orient("bottom")
-                .ticks(5);
+                .ticks(5)
+                .tickSize(dTickSize);
             
-    var yAxis = d3.svg.axis()
+    var yAxisD3 = d3.svg.axis()
                 .scale(yScaler)
                 .orient("left")
-                .ticks(5);
-    
-    xAxis.tickSize(dTickSize);
-    yAxis.tickSize(dTickSize);
+                .ticks(5)
+                .tickSize(dTickSize);
     
     // TODO: fix the axes here. should really pass in full data info, so i know about grid position, etc...
-    svg.selectAll(".x.axis")
-      .data(state["plots"])
-      .enter().append("g")
-      .attr("class", "x axis")
-      .attr("transform", function(p, i) { return "translate(" + xPlotTranslator(p) + "," 
-                                                + (yPlotTranslator(p) + plotSize['height'] + 15) + ")"; })
-      .each(function(p) { xScaler.domain(columnDomains[p['xAxis']]); 
-                          d3.select(this).call(xAxis); 
-            });
-        
-    svg.selectAll(".y.axis")
-      .data(state["plots"])
-      .enter().append("g")
-      .attr("class", "y axis")
-      .attr("transform", function(p, i) { return "translate(" + (xPlotTranslator(p) + plotSpacing['horizontal']/2 + 10) + "," 
-                                                    + yPlotTranslator(p) + ")"; })
-      .each(function(p) { yScaler.domain(columnDomains[p['yAxis']]); 
-                          d3.select(this).call(yAxis); 
-            });
-    
+    var xAxis = d3.select("svg").selectAll(".x.axis")
+                  .data(state["plots"]);
+    xAxis.enter().append("g")
+         .attr("class", "x axis")
+    xAxis.exit().remove();
+    xAxis.transition().duration(500).ease('quad-out')
+         .attr("transform", function(p, i) { 
+            return "translate(" + xPlotTranslator(p) + "," 
+                                + (yPlotTranslator(p) + plotSize['height'] + 15) + ")"; 
+        }).each(function(p) { 
+            xScaler.domain(columnDomains[p['xAxis']]); 
+            d3.select(this).call(xAxisD3); 
+        });
+
+    var yAxis = d3.select("svg").selectAll(".y.axis")
+                  .data(state["plots"]);
+    yAxis.enter().append("g")
+         .attr("class", "y axis")
+    yAxis.exit().remove();
+    yAxis.transition().duration(500).ease('quad-out')
+         .attr("transform", function(p, i) { 
+            return "translate(" + (xPlotTranslator(p) + plotSpacing['horizontal']/2 + 10) + "," 
+                                + yPlotTranslator(p) + ")"; 
+        }).each(function(p) { 
+            yScaler.domain(columnDomains[p['yAxis']]); 
+            d3.select(this).call(yAxisD3); 
+        });
+
     // add axis labels
     svg.selectAll(".x-label")
       .data(state["plots"])
