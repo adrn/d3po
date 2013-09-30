@@ -9,6 +9,7 @@ div {
 }
 
 svg {
+    /*-webkit-transform: translateZ(0);*/
     font: 12pt sans-serif;
     font-family: "Source Sans Pro";
     font-weight: 100;
@@ -19,6 +20,12 @@ svg {
     border: 2px solid #555;
     border-radius: 8px;
 }
+
+.hack {
+    display: block;
+    margin: 0 auto;
+}
+
 
 .axis-label {
     font-weight: 300;

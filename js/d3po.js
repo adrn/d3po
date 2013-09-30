@@ -133,6 +133,11 @@ function drawState(state) {
        .ease('quad-out')
        .attr("width", svg_width)
        .attr("height", svg_height)
+       .each("end", function () {
+            $("body").toggleClass("hack");
+            setTimeout(function (){ $("body").toggleClass("hack"); });
+        });
+
     svg.append("g")
        .attr("transform", "translate(" + figPadding["left"] + "," + figPadding["top"] + ")");
 
@@ -348,6 +353,6 @@ function drawState(state) {
                     .style('opacity', 0)
                     .text(state.caption || "")
                     .transition()
-                    .duration(1000)
+                    .duration(500)
                     .style('opacity', 1);
 }
