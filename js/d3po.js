@@ -97,9 +97,9 @@ function isSelected (selection, d) {
             yCol = selection['yAxis'];
 
         if (e[0][0] > d[xCol] || d[xCol] > e[1][0] || e[0][1] > d[yCol] || d[yCol] > e[1][1]) {
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         };
 
     } else {
