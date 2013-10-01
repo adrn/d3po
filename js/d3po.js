@@ -87,6 +87,7 @@ function domains(data, columns) {
 }
 
 function isSelected (selection, d) {
+    // If selection is not empty
     if (!($.isEmptyObject(selection))) {
         var xr = selection['xRange'],
             yr = selection['yRange'];
@@ -102,7 +103,7 @@ function isSelected (selection, d) {
             return true;
         };
 
-    } else {
+    } else { // selection is empty, all points are selected
         return true;
     }
 }
