@@ -1,29 +1,65 @@
-{ 
+{
+    "filename" : "data/segue_data.csv",
+    "title" : "SEGUE", 
     "states" : [{
-                    "grid" : { "nRows" : 1,
+                    "figure" : {"figurePadding" : { "top" : 0, 
+                                                      "left" : 50, 
+                                                      "right" : 10, 
+                                                      "bottom" : 40},
+                                "plotSpacing" : { "vertical" : 50,
+                                                  "horizontal" : 50},
+                                "plotSize" : {"width" : 150,
+                                              "height" : 150}
+                    },
+                    "grid" : { "nRows" : 3,
                                "nColumns" : 3},
                     "name" : "Segue",
                     "caption" : "Something about Segue data",
-                    "colorAxis": "RV_ADOP",
-                    "colorMap": ["Red","Blue"],
+                    "colorAxis": "TEFF_ADOP",
+                    "colorMap": ["red","blue"],
                     "plots" : [ { 
-                                    "gridPosition" : [0,0],
+                                    "gridPosition" : [2,0],
                                     "xAxis" : "TEFF_ADOP",
                                     "yAxis" : "LOGG_ADOP",
                                     "marker" : {"opacity" : 0.25,
-                                                "size" : 1}
+                                                "size" : 1.5}
+                                },
+                                { 
+                                    "gridPosition" : [1,0],
+                                    "xAxis" : "TEFF_ADOP",
+                                    "yAxis" : "FEH_ADOP",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 1.5}
+                                },
+                                { 
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : "TEFF_ADOP",
+                                    "yAxis" : "RV_ADOP",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 1.5}
+                                },
+                                { 
+                                    "gridPosition" : [1,1],
+                                    "xAxis" : "LOGG_ADOP",
+                                    "yAxis" : "FEH_ADOP",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 1.5}
                                 },
                                 { 
                                     "gridPosition" : [0,1],
-                                    "xAxis" : "RV_ADOP",
-                                    "yAxis" : "LOGG_ADOP"
+                                    "xAxis" : "LOGG_ADOP",
+                                    "yAxis" : "RV_ADOP",
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 1.5}
                                 },
                                 { 
                                     "gridPosition" : [0,2],
                                     "xAxis" : "FEH_ADOP",
                                     "yAxis" : "RV_ADOP",
                                     "selection" : {"xRange" : [-1.5, -0.5],
-                                                   "yRange" : [3,4]}
+                                                   "yRange" : [3,4]},
+                                    "marker" : {"opacity" : 0.25,
+                                                "size" : 1.5}
                                 }
                             ]
                 }
