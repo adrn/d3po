@@ -3,12 +3,12 @@
 <html>
     <head>
         <meta charset="utf-8" />
-        
+
         <!-- CSS / Styling -->
         <link rel="stylesheet" type="text/css" href="css/style.css">
         <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:100,200,300,400,700' rel='stylesheet' type='text/css'>
         <!-- not to be confused with Planet Telex -->
-        
+
         <!-- Javscript dependencies -->
         <!--<script src="http://d3js.org/d3.v3.min.js"></script>-->
         <script src="js/d3.v3.min.js"></script>
@@ -22,12 +22,12 @@
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
             m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
             })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-            
+
             ga('create', 'UA-11936482-15', 'adrian.pw');
             ga('send', 'pageview');
     	</script>
     </head>
-    
+
     <body>
         <div id="svg"><svg></svg></div>
         <div id="controls">
@@ -35,24 +35,24 @@
             </ul>
         </div>
         <div id="caption"></div>
-        
+
         <div id="footer">
             <select id="dataSource" onChange="loadJSON(this.value);">
                 <option value="data/sample_states.json" selected="selected">M-dwarfs</option>
                 <option value="data/kepler_states.json">Kepler</option>
                 <option value="data/segue_states.json">Segue</option>
-                <option value="data/borked.json">BORK</option>
+                <!--<option value="data/borked.json">BORK</option>-->
             </select>
-            <a href="http://adrian.pw">A. M. Price-Whelan</a> // 
-            <a href="http://www.astro.columbia.edu/~jpeek/">J. E. G. Peek</a> // 
-            <a href="https://www.cfa.harvard.edu/~enewton/">E. R. Newton</a> // 
-            <a href="http://people.seas.harvard.edu/~borkin/">M. Borkin</a> // 
-            <a href="http://www.physics.usyd.edu.au/~jallen/">J. Allen</a> // 
-            <a href="http://www.ruthangus.co.uk/">R. Angus</a> // 
-            <a href="">D. Muna</a> // 
-            <a href="http://www.ast.cam.ac.uk/~ts337/">T. Staley</a> // 
+            <a href="http://adrian.pw">A. M. Price-Whelan</a> //
+            <a href="http://www.astro.columbia.edu/~jpeek/">J. E. G. Peek</a> //
+            <a href="https://www.cfa.harvard.edu/~enewton/">E. R. Newton</a> //
+            <a href="http://people.seas.harvard.edu/~borkin/">M. Borkin</a> //
+            <a href="http://www.physics.usyd.edu.au/~jallen/">J. Allen</a> //
+            <a href="http://www.ruthangus.co.uk/">R. Angus</a> //
+            <a href="">D. Muna</a> //
+            <a href="http://www.ast.cam.ac.uk/~ts337/">T. Staley</a> //
         </div>
-        
+
         <a href="https://github.com/adrn/d3po"><img style="position: absolute; top: 0; right: 0; border: 0;" src="images/forkme.png" alt="Fork me on GitHub"></a>
 
         <script type="text/javascript">
