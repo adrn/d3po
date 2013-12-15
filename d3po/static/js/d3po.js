@@ -10,8 +10,8 @@ var svg;
 function initialize() {
 }
 
-function loadJSON(jsonFilename) {
-    /* 
+function loadJSON(jsonFilename, csvFilename) {
+    /*
         Initialize the D3PO figure given a JSON specification.
 
         Parameters
@@ -27,10 +27,10 @@ function loadJSON(jsonFilename) {
         jsonData = _tmp;
 
         // TODO: figure out type of file, use appropriate reader
-        d3.csv(jsonData["filename"], function(error, _tmp) {
+        d3.csv(csvFilename, function(error, _tmp) {
             if (error) {
                 console.warn(error);
-                alert('Unable to read/parse file "' + jsonData["filename"] + '"');
+                alert('Unable to read/parse file "' + csvFilename + '"');
             }
             allPlotData = _tmp;
             columnNames = d3.keys(allPlotData[0]);
@@ -59,27 +59,27 @@ function loadJSON(jsonFilename) {
 }
 
 function domains(data, columns) {
-    /* 
+    /*
         Get the domains (min, max) for each column in the plot data.
     */
 
     // Define an object to contain the domains (in data space) for each column
     var domainByDataColumn = {};
-        
+
     columnNames.forEach(function(colName) {
         var domain = d3.extent(data, function(d) { return parseFloat(d[colName]); });
-        
+
         // if parseFloat failed, probably string values in the column
         if (isNaN(domain[0]) || isNaN(domain[1])){
             var this_col = [];
             data.map(function(d) {
                 this_col.push(d[colName]);
             });
-            
+
             domainByDataColumn[colName] = this_col.unique();
         } else {
             var size = domain[1]-domain[0];
-            domainByDataColumn[colName] = [domain[0] - size/25., 
+            domainByDataColumn[colName] = [domain[0] - size/25.,
                                            domain[1] + size/25.];
         }
     });
@@ -129,18 +129,18 @@ function isSelected(selection, d) {
 function drawState(state) {
 /*
     TODO
-*/  
+*/
     var nRows = state['grid']['nRows'],
         nCols = state['grid']['nColumns'],
         figSpec = state['figure'] || dFigureSpec;
 
     var figPadding = figSpec["figurePadding"],
         plotSpacing = figSpec["plotSpacing"],
-        plotSize = figSpec["plotSize"]; 
-    
+        plotSize = figSpec["plotSize"];
+
     // Compute the height / width of the svg element based on the plot size,
     // plot spacing, and figure padding.
-    var svg_height = nRows*(plotSize['height'] + plotSpacing['vertical']) + 
+    var svg_height = nRows*(plotSize['height'] + plotSpacing['vertical']) +
                      figPadding['top'] + figPadding['bottom'],
         svg_width = nCols*(plotSize['width'] + plotSpacing['horizontal']) + plotSpacing['horizontal']
                      figPadding['left'] + figPadding['right'];
@@ -164,7 +164,7 @@ function drawState(state) {
     // TODO: build in log support here - if statement? need to keep track of what
     //       axes are log, which are linear, etc.
     var xScaler = d3.scale.linear()
-                    .range([plotSpacing['horizontal']/2, 
+                    .range([plotSpacing['horizontal']/2,
                             plotSize['width'] + plotSpacing['horizontal']/2]),
         yScaler = d3.scale.linear()
                     .range([plotSize['height'] + plotSpacing['vertical']/2,
@@ -172,13 +172,13 @@ function drawState(state) {
         cScaler = d3.scale.linear();
 
     // Functions to compute the amount to translate the individual plots by
-    xPlotTranslator = function (plot) { 
+    xPlotTranslator = function (plot) {
         index = plot["gridPosition"][1];
-        return index*(plotSize['width'] + plotSpacing['horizontal']) + plotSpacing['horizontal']/2.; 
+        return index*(plotSize['width'] + plotSpacing['horizontal']) + plotSpacing['horizontal']/2.;
     }
-    yPlotTranslator = function (plot) { 
+    yPlotTranslator = function (plot) {
         index = plot["gridPosition"][0];
-        return (nRows - index - 1)*(plotSize['height'] + plotSpacing['vertical']); 
+        return (nRows - index - 1)*(plotSize['height'] + plotSpacing['vertical']);
     }
 
     // Get the domains in data units for each column in the data file
@@ -201,17 +201,17 @@ function drawState(state) {
                 selection[item] = p['selection'][item];
         }
     }
-    
+
     // Set up a cell group for each plot window, to then draw points and rectangle over
     var cells = d3.select("svg").selectAll("g.cell").data(state["plots"]);
     cells.enter().append("g")
          .attr("class", "cell");
     cells.exit().remove();
     cells.transition().duration(500).ease('quad-out')
-         .attr("transform", function(p) { return "translate(" + xPlotTranslator(p) + "," 
+         .attr("transform", function(p) { return "translate(" + xPlotTranslator(p) + ","
                                                               + yPlotTranslator(p) + ")"; })
          .each(plot);
-    
+
     // Define the brush object
     var brush = d3.svg.brush()
                   .x(xScaler).y(yScaler)
@@ -221,7 +221,7 @@ function drawState(state) {
 
     // have the cells call the brush
     cells.call(brush);
-    
+
     // Add axes to the plots
     // TODO: figure out how to give user better control over ticks?
     var xAxisD3 = d3.svg.axis()
@@ -229,13 +229,13 @@ function drawState(state) {
                 .orient("bottom")
                 .ticks(5)
                 .tickSize(dTickSize);
-            
+
     var yAxisD3 = d3.svg.axis()
                 .scale(yScaler)
                 .orient("left")
                 .ticks(5)
                 .tickSize(dTickSize);
-    
+
     // Draw / update axes
     var xAxis = d3.select("svg").selectAll(".x.axis")
                   .data(state["plots"]);
@@ -243,12 +243,12 @@ function drawState(state) {
          .attr("class", "x axis");
     xAxis.exit().remove();
     xAxis.transition().duration(500).ease('quad-out')
-         .attr("transform", function(p, i) { 
-            return "translate(" + xPlotTranslator(p) + "," 
-                                + (yPlotTranslator(p) + plotSize['height'] + 15) + ")"; 
-        }).each(function(p) { 
-            xScaler.domain(columnDomains[p['xAxis']]); 
-            d3.select(this).call(xAxisD3); 
+         .attr("transform", function(p, i) {
+            return "translate(" + xPlotTranslator(p) + ","
+                                + (yPlotTranslator(p) + plotSize['height'] + 15) + ")";
+        }).each(function(p) {
+            xScaler.domain(columnDomains[p['xAxis']]);
+            d3.select(this).call(xAxisD3);
         });
 
     var yAxis = d3.select("svg").selectAll(".y.axis")
@@ -257,12 +257,12 @@ function drawState(state) {
          .attr("class", "y axis");
     yAxis.exit().remove();
     yAxis.transition().duration(500).ease('quad-out')
-         .attr("transform", function(p, i) { 
-            return "translate(" + (xPlotTranslator(p) + plotSpacing['horizontal']/2 + 10) + "," 
-                                + yPlotTranslator(p) + ")"; 
-        }).each(function(p) { 
-            yScaler.domain(columnDomains[p['yAxis']]); 
-            d3.select(this).call(yAxisD3); 
+         .attr("transform", function(p, i) {
+            return "translate(" + (xPlotTranslator(p) + plotSpacing['horizontal']/2 + 10) + ","
+                                + yPlotTranslator(p) + ")";
+        }).each(function(p) {
+            yScaler.domain(columnDomains[p['yAxis']]);
+            d3.select(this).call(yAxisD3);
         });
 
     // Add axis labels
@@ -272,9 +272,9 @@ function drawState(state) {
           .attr("class", "axis-label x-label");
     xLabel.exit().remove();
     xLabel.text(function(p, i) { return p['xAxis']; });
-    xLabel.attr("x", function(p) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; }) 
+    xLabel.attr("x", function(p) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
           .attr("y", function(p) { return yPlotTranslator(p) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
-    
+
     var yLabel = svg.selectAll(".y-label")
                     .data(state["plots"]);
     yLabel.enter().append("text")
@@ -294,13 +294,13 @@ function drawState(state) {
             brushCell = this;
         }
     }
-    
+
     // Highlight the selected circles.
     function brushmove(p) {
         var e = brush.extent(),
             xCol = p['xAxis'],
             yCol = p['yAxis'];
-        
+
         svg.selectAll("circle")
            .style("fill", function (d) { return cScaler(d[state['colorAxis']]) || dMarkerFill; })
            .attr("opacity", function (d) { return dMarkerOpacity; })
@@ -309,21 +309,21 @@ function drawState(state) {
                       || e[0][1] > d[yCol] || d[yCol] > e[1][1];
         });
     }
-    
+
     // If the brush is empty, select all circles.
     function brushend() {
         if (brush.empty()) svg.selectAll("circle").classed("hidden", false);
     }
-    
+
     // TODO: wtf
     function plot(p) {
         var cell = d3.select(this);
-        
+
         xScaler.domain(columnDomains[p['xAxis']]);
         yScaler.domain(columnDomains[p['yAxis']]);
-        
+
         var marker = p['marker'];
-        
+
         if (typeof marker != 'undefined') {
             opacity = marker['opacity'] || dMarkerOpacity;
             size = marker['size'] || dMarkerSize;
@@ -333,7 +333,7 @@ function drawState(state) {
             size = dMarkerSize;
             fill = dMarkerFill;
         }
-        
+
         var rect = cell.selectAll("rect.frame").data([1]);
         rect.enter().append("rect");
         rect.exit().remove();
@@ -343,7 +343,7 @@ function drawState(state) {
             .attr("y", plotSpacing['vertical'] / 2)
             .attr("width", plotSize['width'])
             .attr("height", plotSize['height']);
-        
+
         var circ = cell.selectAll("circle").data(allPlotData)
         circ.enter().append("circle");
         circ.exit().remove();
@@ -351,9 +351,9 @@ function drawState(state) {
             .attr("cx", function(d) { return xScaler(d[p['xAxis']]); })
             .attr("cy", function(d) { return yScaler(d[p['yAxis']]); })
             .attr("r", size)
-            .style("fill", function (d) { 
+            .style("fill", function (d) {
                 if (isSelected(selection, d)) {
-                    return cScaler(d[state['colorAxis']]) || fill; 
+                    return cScaler(d[state['colorAxis']]) || fill;
                 } else {
                     return "#cccccc";
                 }
