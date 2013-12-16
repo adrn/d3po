@@ -1,4 +1,10 @@
 # coding: utf-8
+#-----------------------------------------------------------------------------
+#  Copyright (C) 2013 D3PO
+#
+#  Distributed under the terms of the BSD License.  The full license is in
+#  the file LICENSE.txt, distributed as part of this software.
+#-----------------------------------------------------------------------------
 
 from __future__ import division, print_function
 
@@ -25,7 +31,7 @@ if __name__ == "__main__":
                         default=False, help="Run on an external server")
 
     args = parser.parse_args()
-    
+
     if args.extern:
         host = "0.0.0.0"
     else:
