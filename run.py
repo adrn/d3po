@@ -21,7 +21,13 @@ if __name__ == "__main__":
     #                     default=False, help="Be quiet! (default = False)")
     parser.add_argument("--debug", action="store_true", dest="debug",
                         default=False, help="Run flask with debugging.")
+    parser.add_argument("--extern", action="store_true", dest="extern",
+                        default=False, help="Run on an external server")
 
     args = parser.parse_args()
-
-    app.run(debug=args.debug)
+    
+    if args.extern:
+        host = "0.0.0.0"
+    else:
+        host = "127.0.0.1"
+    app.run(host=host, debug=args.debug)
