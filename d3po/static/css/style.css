@@ -22,7 +22,7 @@ hr {
 }
 
 /*
-    Headers
+    Header / footer
 */
 header {
     text-align: center;
@@ -46,24 +46,21 @@ h2 {
     color: #666666;
 }
 
-/*
-    Footers
-*/
-#footer {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    font-size: 10pt;
-    color: #666;
+footer {
+    margin: 0 auto;
+    line-height: 160%;
 }
 
-#footer a {
-    color: #555;
+/*
+    Links
+*/
+a {
+    color: #2b8cbe;
     text-decoration: none;
 }
 
-#footer a:hover {
-    color: #000;
+a:hover {
+    color: #666;
     text-decoration: underline;
 }
 
