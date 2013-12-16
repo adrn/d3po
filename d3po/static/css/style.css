@@ -194,6 +194,10 @@ input[type="submit"] {
     margin: 0 auto;
 }
 
+.wrapper p {
+    font-size: 135%;
+}
+
 .gistURLInput {
     padding: 2px;
     padding-left: 5px;
