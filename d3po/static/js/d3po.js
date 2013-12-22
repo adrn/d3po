@@ -93,8 +93,8 @@ function isSelectedBox(selection, d) {
         [xr[1], yr[1]]
     ];
 
-    var xCol = selection['xAxis'],
-        yCol = selection['yAxis'];
+    var xCol = selection['xAxis']['label'],
+        yCol = selection['yAxis']['label'];
 
     if (e[0][0] > d[xCol] || d[xCol] > e[1][0] || e[0][1] > d[yCol] || d[yCol] > e[1][1]) {
         return false;
@@ -192,8 +192,8 @@ function drawState(state) {
     for (var ii=0; ii < state['plots'].length; ii++) {
         var p = state['plots'][ii];
         if (typeof p['selection'] != 'undefined') {
-            selection['xAxis'] = p['xAxis'];
-            selection['yAxis'] = p['yAxis'];
+            selection['xAxis'] = p['xAxis']['label'];
+            selection['yAxis'] = p['yAxis']['label'];
             for (var item in p['selection'])
                 selection[item] = p['selection'][item];
         }
@@ -244,7 +244,7 @@ function drawState(state) {
             return "translate(" + xPlotTranslator(p) + ","
                                 + (yPlotTranslator(p) + plotSize['height'] + 15) + ")";
         }).each(function(p) {
-            xScaler.domain(columnDomains[p['xAxis']]);
+            xScaler.domain(columnDomains[p['xAxis']['label']]);
             d3.select(this).call(xAxisD3);
         });
 
@@ -258,7 +258,7 @@ function drawState(state) {
             return "translate(" + (xPlotTranslator(p) + plotSpacing['horizontal']/2 + 10) + ","
                                 + yPlotTranslator(p) + ")";
         }).each(function(p) {
-            yScaler.domain(columnDomains[p['yAxis']]);
+            yScaler.domain(columnDomains[p['yAxis']['label']]);
             d3.select(this).call(yAxisD3);
         });
 
@@ -268,7 +268,7 @@ function drawState(state) {
     xLabel.enter().append("text")
           .attr("class", "axis-label x-label");
     xLabel.exit().remove();
-    xLabel.text(function(p, i) { return p['xAxis']; });
+    xLabel.text(function(p, i) { return p['xAxis']['label']; });
     xLabel.attr("x", function(p) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
           .attr("y", function(p) { return yPlotTranslator(p) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
 
@@ -277,7 +277,7 @@ function drawState(state) {
     yLabel.enter().append("text")
           .attr("class", "axis-label y-label");
     yLabel.exit().remove();
-    yLabel.text(function(p,i) { return p['yAxis']; });
+    yLabel.text(function(p,i) { return p['yAxis']['label']; });
     yLabel.attr("x", function(p) { return -((plotSpacing['vertical']/2-yPlotTranslator(p)) + plotSize['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
           .attr("y", function(p) { return xPlotTranslator(p); });
 
@@ -286,8 +286,8 @@ function drawState(state) {
     function brushstart(p) {
         if (brushCell !== this) {
             d3.select(brushCell).call(brush.clear());
-            xScaler.domain(columnDomains[p['xAxis']]);
-            yScaler.domain(columnDomains[p['yAxis']]);
+            xScaler.domain(columnDomains[p['xAxis']['label']]);
+            yScaler.domain(columnDomains[p['yAxis']['label']]);
             brushCell = this;
         }
     }
@@ -295,8 +295,8 @@ function drawState(state) {
     // Highlight the selected circles.
     function brushmove(p) {
         var e = brush.extent(),
-            xCol = p['xAxis'],
-            yCol = p['yAxis'];
+            xCol = p['xAxis']['label'],
+            yCol = p['yAxis']['label'];
 
         svg.selectAll("circle")
            .style("fill", function (d) { return cScaler(d[state['colorAxis']]) || dMarkerFill; })
@@ -316,8 +316,8 @@ function drawState(state) {
     function plot(p) {
         var cell = d3.select(this);
 
-        xScaler.domain(columnDomains[p['xAxis']]);
-        yScaler.domain(columnDomains[p['yAxis']]);
+        xScaler.domain(columnDomains[p['xAxis']['label']]);
+        yScaler.domain(columnDomains[p['yAxis']['label']]);
 
         var marker = p['marker'];
 
@@ -345,8 +345,8 @@ function drawState(state) {
         circ.enter().append("circle");
         circ.exit().remove();
         circ.transition().duration(500).ease("quad-out")
-            .attr("cx", function(d) { return xScaler(d[p['xAxis']]); })
-            .attr("cy", function(d) { return yScaler(d[p['yAxis']]); })
+            .attr("cx", function(d) { return xScaler(d[p['xAxis']['label']]); })
+            .attr("cy", function(d) { return yScaler(d[p['yAxis']['label']]); })
             .attr("r", size)
             .style("fill", function (d) {
                 if (isSelected(selection, d)) {

@@ -6,31 +6,31 @@
                                "nColumns" : 4},
                     "name" : "All stars",
                     "caption" : "This plot shows the near-infrared 2MASS colors of M dwarfs observed by Newton et al. (2013). One color is plotted on the x-axis and another color is plotted on the y-axis. The stars trace out a main sequence, with some scatter.",
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K",
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "H-K"},
                                     "marker" : {"opacity" : 0.25,
                                                 "size" : 3}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H",
+                                    "xAxis" : {"label" : "H-K"},
+                                    "yAxis" : {"label" : "J-H"},
                                     "marker" : {"opacity" : 0.25,
                                                 "size" : 3}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "J-H",
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "J-H"},
                                     "marker" : {"opacity" : 0.25,
                                                 "size" : 3}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,3],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index",
+                                    "xAxis" : {"label" : "H2OK2 Index"},
+                                    "yAxis" : {"label" : "H2OK2 Index"},
                                     "marker" : {"opacity" : 0.25,
                                                 "size" : 3}
                                 }
@@ -41,34 +41,34 @@
                                "nColumns" : 4},
                     "name" : "Late M dwarfs",
                     "caption" : "Late M dwarfs",
-                    "figure" : {"figurePadding" : { "top" : 0, 
-                                                      "left" : 50, 
-                                                      "right" : 10, 
+                    "figure" : {"figurePadding" : { "top" : 0,
+                                                      "left" : 50,
+                                                      "right" : 10,
                                                       "bottom" : 40},
                                 "plotSpacing" : { "vertical" : 50,
                                                   "horizontal" : 100},
                                 "plotSize" : {"width" : 100,
                                               "height" : 100}
                     },
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "H-K"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
+                                    "xAxis" : {"label" : "H-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,3],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index" , 
+                                    "xAxis" : {"label" : "H2OK2 Index"},
+                                    "yAxis" : {"label" : "H2OK2 Index"} ,
                                     "selection" : {"xRange" : [0.65, 0.83],
                                                    "yRange" : [0.65, 0.83]}
                                }
@@ -81,25 +81,25 @@
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "In this plot, the near-infrared colors of the M dwarfs remain the same. However, now the stars are colored by their Na abundance, which we calibrated as a proxy for metallicity. You can see that a metal-rich star is seen to have a different color than a more metal-poor star of the same spectral type. This allowed us to calibrate a relation for Na abundance (and therefore iron abundance) using 2MASS photometry.",
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "H-K"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
+                                    "xAxis" : {"label" : "H-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
-               	                     "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
+               	                     "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,3],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index"
+                                    "xAxis" : {"label" : "H2OK2 Index"},
+                                    "yAxis" : {"label" : "H2OK2 Index"}
                                 }
                             ]
                 },
@@ -110,25 +110,25 @@
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "First we highlight the early M dwarfs, coloring each data point by its Na abundance...",
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "H-K"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
+                                    "xAxis" : {"label" : "H-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
-               	                     "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
+               	                     "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,3],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index",
+                                    "xAxis" : {"label" : "H2OK2 Index"},
+                                    "yAxis" : {"label" : "H2OK2 Index"},
                                     "selection" : {"xRange" : [0.9, 1.2],
                                                    "yRange" : [0.9, 1.2]}
                                   }
@@ -141,25 +141,25 @@
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "...and the mid M and their EW Na...",
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "H-K"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
+                                    "xAxis" : {"label" : "H-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
-               	                     "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
+               	                     "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,3],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index",
+                                    "xAxis" : {"label" : "H2OK2 Index"},
+                                    "yAxis" : {"label" : "H2OK2 Index"},
                                     "selection" : {"xRange" : [0.83, 0.9],
                                                    "yRange" : [0.83, 0.9]}
                                   }
@@ -172,25 +172,25 @@
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "Late M and iron abundance",
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "H-K"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
+                                    "xAxis" : {"label" : "H-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
-               	                     "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
+               	                     "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,3],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index",
+                                    "xAxis" : {"label" : "H2OK2 Index"},
+                                    "yAxis" : {"label" : "H2OK2 Index"},
                                     "selection" : {"xRange" : [0.1, 0.83],
                                                    "yRange" : [0.1, 0.83]}
                                   }
@@ -203,25 +203,25 @@
                     "colorAxis" : "EW NA",
                     "colorMap" : ["blue", "red"],
                     "caption" : "Late M and iron abundance",
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : "J-K",
-                                    "yAxis" : "H-K"
+                                    "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "H-K"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
-                                    "xAxis" : "H-K",
-                                    "yAxis" : "J-H"
+                                    "xAxis" : {"label" : "H-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [1,0],
-               	                     "xAxis" : "J-K",
-                                    "yAxis" : "J-H"
+               	                     "xAxis" : {"label" : "J-K"},
+                                    "yAxis" : {"label" : "J-H"}
                                 },
-                                { 
+                                {
                                     "gridPosition" : [1,1],
-                                    "xAxis" : "H2OK2 Index",
-                                    "yAxis" : "H2OK2 Index",
+                                    "xAxis" : {"label" : "H2OK2 Index"},
+                                    "yAxis" : {"label" : "H2OK2 Index"},
                                     "selection" : {"xRange" : [0.1, 0.83],
                                                    "yRange" : [0.1, 0.83]}
                                   }
@@ -229,6 +229,6 @@
                 }
 
 
-            
+
             ]
 }
