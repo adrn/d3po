@@ -38,9 +38,8 @@
 
         <script type="text/javascript">
             $(document).ready(function() {
-                initialize();
-                loadJSON("/gist/{{gist_id}}/json",
-                         "/gist/{{gist_id}}/csv");
+                initialize("/gist/{{gist_id}}/json",
+                           "/gist/{{gist_id}}/csv");
             });
         </script>
     </body>
