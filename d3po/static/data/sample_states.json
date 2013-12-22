@@ -22,8 +22,10 @@
                                 },
                                 {
                                     "gridPosition" : [0,2],
-                                    "xAxis" : {"label" : "J-K"},
-                                    "yAxis" : {"label" : "J-H"},
+                                    "xAxis" : {"label" : "J-K",
+                                               "range" : [0.85,1.0]},
+                                    "yAxis" : {"label" : "J-H",
+                                               "range" : [0.55,0.65]},
                                     "marker" : {"opacity" : 0.25,
                                                 "size" : 3}
                                 },
