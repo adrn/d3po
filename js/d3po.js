@@ -1,8 +1,9 @@
 // Globals
-var jsonFilename, 
+var jsonFilename,
     jsonData,
     allPlotData,
-    columnNames;
+    columnNames,
+    selectionDispatch = {};
 
 var svg;
 
@@ -86,26 +87,43 @@ function domains(data, columns) {
     return domainByDataColumn;
 }
 
-function isSelected (selection, d) {
-    // If selection is not empty
-    if (!($.isEmptyObject(selection))) {
-        var xr = selection['xRange'],
-            yr = selection['yRange'];
-        var e = [[xr[0],yr[0]],
-                 [xr[1],yr[1]]];
+function isSelectedBox(selection, d) {
+    // test for a selection based on a box
+    var xr = selection['xRange'],
+        yr = selection['yRange'];
+    var e = [
+        [xr[0], yr[0]],
+        [xr[1], yr[1]]
+    ];
 
-        var xCol = selection['xAxis'],
-            yCol = selection['yAxis'];
+    var xCol = selection['xAxis'],
+        yCol = selection['yAxis'];
 
-        if (e[0][0] > d[xCol] || d[xCol] > e[1][0] || e[0][1] > d[yCol] || d[yCol] > e[1][1]) {
-            return false;
-        } else {
-            return true;
-        };
-
-    } else { // selection is empty, all points are selected
+    if (e[0][0] > d[xCol] || d[xCol] > e[1][0] || e[0][1] > d[yCol] || d[yCol] > e[1][1]) {
+        return false;
+    } else {
         return true;
     }
+}
+
+selectionDispatch['box'] = isSelectedBox;
+
+function isSelectedAttribute(selection, d) {
+    // test for selection based on the value of a binary-valued column in the data
+    var att = selection['attribute'];
+    return d[att] > 0;
+}
+selectionDispatch['attribute'] = isSelectedAttribute;
+
+
+function isSelected(selection, d) {
+    if ($.isEmptyObject(selection)) {
+        return true;
+    } // empty selection defaults to select all
+
+    // determine what kind of selection to perform
+    var selectionType = selection['type'] || 'box';
+    return selectionDispatch[selectionType](selection, d);
 }
 
 function drawState(state) {
@@ -177,10 +195,10 @@ function drawState(state) {
     for (var ii=0; ii < state['plots'].length; ii++) {
         var p = state['plots'][ii];
         if (typeof p['selection'] != 'undefined') {
-            selection['xAxis'] = p['xAxis'],
-            selection['yAxis'] = p['yAxis'],
-            selection['xRange'] = p['selection']['xRange'],
-            selection['yRange'] = p['selection']['yRange'];
+            selection['xAxis'] = p['xAxis'];
+            selection['yAxis'] = p['yAxis'];
+            for (var item in p['selection'])
+                selection[item] = p['selection'][item];
         }
     }
     
