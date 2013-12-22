@@ -7,10 +7,7 @@ var jsonFilename,
 
 var svg;
 
-function initialize() {
-}
-
-function loadJSON(jsonFilename, csvFilename) {
+function initialize(jsonFilename, csvFilename) {
     /*
         Initialize the D3PO figure given a JSON specification.
 
