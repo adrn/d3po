@@ -244,7 +244,7 @@ function drawState(state) {
             return "translate(" + xPlotTranslator(p) + ","
                                 + (yPlotTranslator(p) + plotSize['height'] + 15) + ")";
         }).each(function(p) {
-            xScaler.domain(columnDomains[p['xAxis']['label']]);
+            xScaler.domain(p['xAxis']['range'] || columnDomains[p['xAxis']['label']]);
             d3.select(this).call(xAxisD3);
         });
 
@@ -258,7 +258,7 @@ function drawState(state) {
             return "translate(" + (xPlotTranslator(p) + plotSpacing['horizontal']/2 + 10) + ","
                                 + yPlotTranslator(p) + ")";
         }).each(function(p) {
-            yScaler.domain(columnDomains[p['yAxis']['label']]);
+            yScaler.domain(p['yAxis']['range'] || columnDomains[p['yAxis']['label']]);
             d3.select(this).call(yAxisD3);
         });
 
@@ -286,8 +286,8 @@ function drawState(state) {
     function brushstart(p) {
         if (brushCell !== this) {
             d3.select(brushCell).call(brush.clear());
-            xScaler.domain(columnDomains[p['xAxis']['label']]);
-            yScaler.domain(columnDomains[p['yAxis']['label']]);
+            xScaler.domain(p['xAxis']['range'] || columnDomains[p['xAxis']['label']]);
+            yScaler.domain(p['yAxis']['range'] || columnDomains[p['yAxis']['label']]);
             brushCell = this;
         }
     }
@@ -316,8 +316,8 @@ function drawState(state) {
     function plot(p) {
         var cell = d3.select(this);
 
-        xScaler.domain(columnDomains[p['xAxis']['label']]);
-        yScaler.domain(columnDomains[p['yAxis']['label']]);
+        xScaler.domain(p['xAxis']['range'] || columnDomains[p['xAxis']['label']]);
+        yScaler.domain(p['yAxis']['range'] || columnDomains[p['yAxis']['label']]);
 
         var marker = p['marker'];
 
@@ -341,6 +341,14 @@ function drawState(state) {
             .attr("width", plotSize['width'])
             .attr("height", plotSize['height']);
 
+        svg.append("defs").append("clipPath")
+                          .attr("id", "clip")
+                          .append("rect")
+                          .attr("x", plotSpacing['horizontal'] / 2)
+                          .attr("y", plotSpacing['vertical'] / 2)
+                          .attr("width", plotSize['width'])
+                          .attr("height", plotSize['height']);
+
         var circ = cell.selectAll("circle").data(allPlotData)
         circ.enter().append("circle");
         circ.exit().remove();
@@ -361,7 +369,8 @@ function drawState(state) {
                 } else {
                     return 0.5;
                 }
-            });
+            })
+            .attr("clip-path", "url(#clip)");
     }
 
     // Finally, update caption
