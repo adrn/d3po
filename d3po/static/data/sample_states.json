@@ -67,7 +67,7 @@
                                 {
                                     "gridPosition" : [0,3],
                                     "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
+                                    "histogram" : {"bins" : 6}
                                }
                             ]
                 },

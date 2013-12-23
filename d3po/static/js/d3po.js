@@ -338,6 +338,8 @@ State = function(jsonState) {
         this.cScaler.range(jsonState['colorMap'] || defaultColorMap);
     }
 
+    this.caption = jsonState["caption"] || "";
+
     /*
         brushes
     */
@@ -366,7 +368,7 @@ State = function(jsonState) {
                         state.selection = {'range' : {}}
                         state.selection['range'][p.xCol] = xRange;
                         state.selection['range'][p.yCol] = yRange;
-                        console.log(p.markerSpec);
+
                         svg.selectAll("circle")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
@@ -554,7 +556,7 @@ function drawState(jsonState) {
     // Finally, update caption
     var caption = d3.select("#caption")
                     .style('opacity', 0)
-                    .text(state.caption || "")
+                    .text(state.caption)
                     .transition()
                     .duration(500)
                     .style('opacity', 1);
