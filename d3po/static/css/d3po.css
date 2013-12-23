@@ -45,9 +45,6 @@ svg {
   zorder: -1;
 }
 
-circle {
-}
-
 .hidden {
   fill: #ccc !important;
   opacity: 0.5;
