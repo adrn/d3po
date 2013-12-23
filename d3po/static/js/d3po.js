@@ -363,13 +363,11 @@ function drawState(state) {
     }
 
     function xhistogram(cell, p) {
-        var nbins = 12;
-
-        console.log(xScaler.ticks(nbins).length);
+        var nbins = p['bins'] || 10;
 
         var rawData = allPlotData.map(function(d) { return parseFloat(d[p['xAxis']['label']]); });
         var data = d3.layout.histogram()
-                            .bins(xScaler.ticks(nbins))
+                            .bins(nbins)
                             (rawData);
 
         var barWidth = xScaler(2*data[0].dx)-xScaler(data[0].dx);
