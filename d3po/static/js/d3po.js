@@ -71,16 +71,18 @@ function scatter(state, plot, cell) {
         .attr("clip-path", "url(#clip)");
 }
 
+// TODO: how to support y histograms?
 function histogram(state, plot, cell) {
-    var nbins = p['bins'] || 10;
+    var nbins = plot.histogramSpec['bins'] || 10,
+        fill = plot.histogramSpec['fill'] || defaultSelectedMarkerSpec['fill'];
 
-    var rawData = allPlotData.map(function(d) { return parseFloat(d[p['xAxis']['label']]); });
+    var rawData = allPlotData.map(function(d) { return parseFloat(d[plot.xCol]); });
     var data = d3.layout.histogram()
                         .bins(nbins)
                         (rawData);
 
-    var barWidth = xScaler(2*data[0].dx)-xScaler(data[0].dx);
-    var height = plotSize['height'];
+    var barWidth = state.xScaler(2*data[0].dx) - state.xScaler(data[0].dx);
+    var height = state.figure.plotSpec['size']['height'];
 
     var barHeightScaler = d3.scale.linear()
               .domain([0, d3.max(data, function(d) { return d.y; })])
@@ -94,16 +96,16 @@ function histogram(state, plot, cell) {
 
     bar.append("rect")
         .attr("x", function(d) {
-            return xScaler(d.x);
+            return state.xScaler(d.x);
         })
         .attr("y", function(d) {
-            return barHeightScaler(d.y) + plotSpacing['vertical']/2 + figPadding['top'];
+            return barHeightScaler(d.y) + state.figure.plotSpec['spacing']['vertical']/2 + state.figure.padding['top'];
         })
         .attr("width", barWidth)
         .attr("height", function(d) {
             return height - barHeightScaler(d.y);
         })
-        .style("fill", function (d) { return dMarkerFill; });
+        .style("fill", function (d) { return fill; });
 }
 
 /*
@@ -164,15 +166,19 @@ Plot = function(jsonPlot) {
     this.xLim = xAxis["range"];
     this.yLim = yAxis["range"];
 
-    this.markerSpec = jsonPlot["marker"] || {};
-    this.deselectedMarkerSpec = jsonPlot["deselectedMarker"] || {};
+    if (this.type == "scatter") {
+        this.markerSpec = jsonPlot["marker"] || {};
+        this.deselectedMarkerSpec = jsonPlot["deselectedMarker"] || {};
 
-    for (var key in defaultSelectedMarkerSpec) {
-        this.markerSpec[key] = this.markerSpec[key] || defaultSelectedMarkerSpec[key];
-    }
+        for (var key in defaultSelectedMarkerSpec) {
+            this.markerSpec[key] = this.markerSpec[key] || defaultSelectedMarkerSpec[key];
+        }
 
-    for (var key in defaultDeselectedMarkerSpec) {
-        this.deselectedMarkerSpec[key] = this.deselectedMarkerSpec[key] || defaultDeselectedMarkerSpec[key];
+        for (var key in defaultDeselectedMarkerSpec) {
+            this.deselectedMarkerSpec[key] = this.deselectedMarkerSpec[key] || defaultDeselectedMarkerSpec[key];
+        }
+    } else if (this.type == "histogram") {
+        this.histogramSpec = jsonPlot["histogram"] || {};
     }
 
     this.translate = function(state) {
@@ -287,7 +293,7 @@ Plot = function(jsonPlot) {
             scatter(state, this, cell);
         } else if (this.type == "histogram") {
             // TODO: histogram
-            //console.log("Not implemented");
+            histogram(state, this, cell);
         } else {
             alert("Invalid plot type.");
             return false;
