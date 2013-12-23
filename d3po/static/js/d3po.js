@@ -43,7 +43,7 @@ function scatter(state, plot, cell) {
     circ.enter().append("circle")
         .attr("class","data");
     circ.exit().remove();
-    circ.transition().duration(500).ease("quad-out")
+    circ.transition().duration(0).ease("quad-out")
         .attr("cx", function(d) { return state.xScaler(d[plot.xCol]); })
         .attr("cy", function(d) { return state.yScaler(d[plot.yCol]); })
         .attr("r", function (d,ii) {
@@ -55,7 +55,6 @@ function scatter(state, plot, cell) {
         })
         .style("fill", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                // TODO: color axis
                 return state.cScaler(d[state['colorAxis']]) || plot.markerSpec["fill"];
             } else {
                 return plot.deselectedMarkerSpec["fill"];
@@ -198,6 +197,8 @@ Plot = function(jsonPlot) {
     }
 
     this.drawAxes = function(state, cell) {
+        cell.selectAll('.data').data([]).exit().remove();
+
         // x-axis ticks and label
         if (this.xCol) {
             state.xScaler.domain(this.xLim || columnDomains[this.xCol]);
@@ -214,7 +215,7 @@ Plot = function(jsonPlot) {
             xAxis.enter().append("g")
                  .attr("class", "axis x-axis");
             xAxis.exit().remove();
-            xAxis.transition().duration(500).ease('quad-out')
+            xAxis.transition().duration(0).ease('quad-out')
                  .attr("transform", function(p) {
                     return "translate(0," + (state.figure.plotSpec['size']['height'] + 15) + ")";
                 }).each(function(p) {
@@ -248,7 +249,7 @@ Plot = function(jsonPlot) {
                           .data([this]);
             yAxis.enter().append("g")
                  .attr("class", "axis y-axis");
-            yAxis.transition().duration(500).ease('quad-out')
+            yAxis.transition().duration(0).ease('quad-out')
                 .attr("transform", function(p, i) {
                     return "translate(" + (state.figure.plotSpec['spacing']['horizontal']/2 + 10) + ",0)";
                 }).each(function(p) {
@@ -271,7 +272,7 @@ Plot = function(jsonPlot) {
         var rect = cell.selectAll("rect.frame").data([1]);
         rect.enter().append("rect");
         rect.exit().remove();
-        rect.transition().duration(500).ease("quad-out")
+        rect.transition().duration(0).ease("quad-out")
             .attr("class", "frame")
             .attr("x", state.figure.plotSpec['spacing']['horizontal'] / 2)
             .attr("y", state.figure.plotSpec['spacing']['vertical'] / 2)
@@ -514,12 +515,11 @@ function drawState(jsonState) {
 
     // define a state object which automatically sets defaults
     state = new State(jsonState);
-    console.log(state.selection);
 
     // Define top level svg tag
     svg = d3.select("#svg svg");
     svg.transition()
-       .duration(500)
+       .duration(0)
        .ease('quad-out')
        .attr("width", state.width)
        .attr("height", state.height)
@@ -541,7 +541,7 @@ function drawState(jsonState) {
     cells.enter().append("g")
          .attr("class", "cell");
     cells.exit().remove();
-    cells.transition().duration(500).ease('quad-out')
+    cells.transition().duration(0).ease('quad-out')
          .attr("transform", function(p) { return "translate(" + p.translate(state)[0] + ","
                                                               + p.translate(state)[1] + ")"; });
 
@@ -558,6 +558,6 @@ function drawState(jsonState) {
                     .style('opacity', 0)
                     .text(state.caption)
                     .transition()
-                    .duration(500)
+                    .duration(0)
                     .style('opacity', 1);
 }

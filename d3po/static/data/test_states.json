@@ -71,7 +71,7 @@
                                 {
                                     "gridPosition" : [0,3],
                                     "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "yAxis" : {"columnName" : "H2OK2 Index"}
+                                    "histogram" : {"bins" : 5}
                                }
                             ]
                 },
@@ -101,7 +101,7 @@
                                 {
                                     "gridPosition" : [0,3],
                                     "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "yAxis" : {"columnName" : "H2OK2 Index"}
+                                    "histogram" : {"bins" : 6}
                                 }
                             ]
                 },
@@ -130,7 +130,7 @@
                                 {
                                     "gridPosition" : [1,1],
                                     "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "yAxis" : {"columnName" : "H2OK2 Index"}
+                                    "histogram" : {"bins" : 5}
                                   }
                             ]
                 }
