@@ -33,7 +33,7 @@
                                     "gridPosition" : [0,3],
                                     "xAxis" : {"label" : "H2OK2 Index"},
                                     "marker" : {"opacity" : 0.25},
-                                    "bins" : 15
+                                    "bins" : 3
                                 }
                             ]
                 },
@@ -53,8 +53,8 @@
                     },
                     "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : {"label" : "J-K"},
-                                    "yAxis" : {"label" : "H-K"}
+                                    "xAxis" : {"label" : "H-K"},
+                                    "yAxis" : {"label" : "J-K"}
                                 },
                                 {
                                     "gridPosition" : [0,1],

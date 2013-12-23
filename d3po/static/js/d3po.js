@@ -208,7 +208,62 @@ function drawState(state) {
     cells.transition().duration(500).ease('quad-out')
          .attr("transform", function(p) { return "translate(" + xPlotTranslator(p) + ","
                                                               + yPlotTranslator(p) + ")"; });
-         //.each(plot);
+
+    // TODO: this business with the NaN's is bad, and selection in histogram doesn't snap to bins...
+
+    var brushCell;
+    // Clear the previously-active brush, if any.
+    function brushstart(p) {
+        if (brushCell !== this) {
+            d3.select(brushCell).call(brush.clear());
+
+            if ('xAxis' in p) {
+                xScaler.domain(p['xAxis']['range'] || columnDomains[p['xAxis']['label']]);
+            } else {
+                xScaler.domain([NaN, NaN]);
+            }
+
+            if ('yAxis' in p) {
+                yScaler.domain(p['yAxis']['range'] || columnDomains[p['yAxis']['label']]);
+            } else {
+                yScaler.domain([NaN, NaN]);
+            }
+
+            brushCell = this;
+        }
+    }
+
+    // Highlight the selected circles.
+    function brushmove(p) {
+        var e = brush.extent();
+
+        xCol = p['xAxis']['label'];
+        yCol = p['yAxis']['label'];
+
+        svg.selectAll("circle")
+           .style("fill", function (d) { return cScaler(d[state['colorAxis']]) || dMarkerFill; })
+           .attr("opacity", function (d) { return dMarkerOpacity; })
+           .classed("hidden", function(d) {
+              return e[0][0] > d[xCol] || d[xCol] > e[1][0]
+                      || e[0][1] > d[yCol] || d[yCol] > e[1][1];
+        });
+    }
+
+    function brushend(p) {
+        if (brush.empty()) {
+            svg.selectAll("circle").classed("hidden", false);
+        }
+        if (xHistogramBrush.empty()) {
+            svg.selectAll(".bar").classed("hidden", false);
+        }
+    }
+
+    // Define the brush object
+    var brush = d3.svg.brush()
+                    .x(xScaler).y(yScaler)
+                    .on("brushstart", brushstart)
+                    .on("brush", brushmove)
+                    .on("brushend", brushend);
 
     // Add axes to the plots
     cells.each(function(p,ii) {
@@ -224,10 +279,10 @@ function drawState(state) {
                             .ticks(5)
                             .tickSize(dTickSize);
 
-            var xAxis = cell.selectAll(".x.axis")
+            var xAxis = cell.selectAll(".x-axis")
                           .data([p]);
             xAxis.enter().append("g")
-                 .attr("class", "x axis");
+                 .attr("class", "axis x-axis");
             xAxis.exit().remove();
             xAxis.transition().duration(500).ease('quad-out')
                  .attr("transform", function(p, i) {
@@ -258,17 +313,17 @@ function drawState(state) {
                         .ticks(5)
                         .tickSize(dTickSize);
 
-            var yAxis = cell.selectAll(".y.axis")
+            var yAxis = cell.selectAll(".y-axis")
                           .data([p]);
             yAxis.enter().append("g")
-                 .attr("class", "y axis");
-            yAxis.exit().remove();
+                 .attr("class", "axis y-axis");
             yAxis.transition().duration(500).ease('quad-out')
-                 .attr("transform", function(p, i) {
+                .attr("transform", function(p, i) {
                     return "translate(" + (plotSpacing['horizontal']/2 + 10) + ",0)";
                 }).each(function(p) {
                     d3.select(this).call(yAxisD3);
                 });
+            yAxis.exit().remove();
 
             var yLabel = cell.selectAll(".y-label")
                             .data([p]);
@@ -278,51 +333,37 @@ function drawState(state) {
             yLabel.text(function(p,i) { return p['yAxis']['label']; });
             yLabel.attr("x", function(p) { return -((plotSpacing['vertical']/2) + plotSize['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
                   .attr("y", function(p) { return 0.; });
+
         }
 
-        plot(p,cell);
+        //plot(p,cell);
+        var rect = cell.selectAll("rect.frame").data([1]);
+        rect.enter().append("rect");
+        rect.exit().remove();
+        rect.transition().duration(500).ease("quad-out")
+            .attr("class", "frame")
+            .attr("x", plotSpacing['horizontal'] / 2)
+            .attr("y", plotSpacing['vertical'] / 2)
+            .attr("width", plotSize['width'])
+            .attr("height", plotSize['height']);
+
+        svg.append("defs").append("clipPath")
+                          .attr("id", "clip")
+                          .append("rect")
+                          .attr("x", plotSpacing['horizontal'] / 2)
+                          .attr("y", plotSpacing['vertical'] / 2)
+                          .attr("width", plotSize['width'])
+                          .attr("height", plotSize['height']);
+
+        if (('xAxis' in p) && ('yAxis' in p)) {
+            scatter(cell, p);
+            brush(cell);
+        } else if ('xAxis' in p) {
+            xHistogram(cell, p);
+        } else if ('yAxis' in p) {
+            yhistogram(cell, p);
+        }
     })
-
-    // Define the brush object
-    var brush = d3.svg.brush()
-                  .x(xScaler).y(yScaler)
-                  .on("brushstart", brushstart)
-                  .on("brush", brushmove)
-                  .on("brushend", brushend);
-
-    // have the cells call the brush
-    cells.call(brush);
-
-    var brushCell;
-    // Clear the previously-active brush, if any.
-    function brushstart(p) {
-        if (brushCell !== this) {
-            d3.select(brushCell).call(brush.clear());
-            xScaler.domain(p['xAxis']['range'] || columnDomains[p['xAxis']['label']]);
-            yScaler.domain(p['yAxis']['range'] || columnDomains[p['yAxis']['label']]);
-            brushCell = this;
-        }
-    }
-
-    // Highlight the selected circles.
-    function brushmove(p) {
-        var e = brush.extent(),
-            xCol = p['xAxis']['label'],
-            yCol = p['yAxis']['label'];
-
-        svg.selectAll("circle")
-           .style("fill", function (d) { return cScaler(d[state['colorAxis']]) || dMarkerFill; })
-           .attr("opacity", function (d) { return dMarkerOpacity; })
-           .classed("hidden", function(d) {
-              return e[0][0] > d[xCol] || d[xCol] > e[1][0]
-                      || e[0][1] > d[yCol] || d[yCol] > e[1][1];
-        });
-    }
-
-    // If the brush is empty, select all circles.
-    function brushend() {
-        if (brush.empty()) svg.selectAll("circle").classed("hidden", false);
-    }
 
     function scatter(cell, p) {
 
@@ -338,8 +379,12 @@ function drawState(state) {
             fill = dMarkerFill;
         }
 
+        // remove any histogram
+        cell.selectAll(".bar").data([]).exit().remove();
+
         var circ = cell.selectAll("circle").data(allPlotData)
-        circ.enter().append("circle");
+        circ.enter().append("circle")
+            .attr("class","data");
         circ.exit().remove();
         circ.transition().duration(500).ease("quad-out")
             .attr("cx", function(d) { return xScaler(d[p['xAxis']['label']]); })
@@ -362,7 +407,7 @@ function drawState(state) {
             .attr("clip-path", "url(#clip)");
     }
 
-    function xhistogram(cell, p) {
+    function xHistogram(cell, p) {
         var nbins = p['bins'] || 10;
 
         var rawData = allPlotData.map(function(d) { return parseFloat(d[p['xAxis']['label']]); });
@@ -371,16 +416,17 @@ function drawState(state) {
                             (rawData);
 
         var barWidth = xScaler(2*data[0].dx)-xScaler(data[0].dx);
-        console.log(barWidth);
         var height = plotSize['height'];
 
         var barHeightScaler = d3.scale.linear()
                   .domain([0, d3.max(data, function(d) { return d.y; })])
                   .range([height, 0]);
 
+        // remove any data points
+        cell.selectAll("circle").data([]).exit().remove();
         var bar = cell.selectAll(".bar").data(data)
                         .enter().append("g")
-                        .attr("class", "bar");
+                        .attr("class", "bar data");
 
         bar.append("rect")
             .attr("x", function(d) {
@@ -392,36 +438,8 @@ function drawState(state) {
             .attr("width", barWidth)
             .attr("height", function(d) {
                 return height - barHeightScaler(d.y);
-            });
-    }
-
-    function plot(p,cell) {
-
-        var rect = cell.selectAll("rect.frame").data([1]);
-        rect.enter().append("rect");
-        rect.exit().remove();
-        rect.transition().duration(500).ease("quad-out")
-            .attr("class", "frame")
-            .attr("x", plotSpacing['horizontal'] / 2)
-            .attr("y", plotSpacing['vertical'] / 2)
-            .attr("width", plotSize['width'])
-            .attr("height", plotSize['height']);
-
-        svg.append("defs").append("clipPath")
-                          .attr("id", "clip")
-                          .append("rect")
-                          .attr("x", plotSpacing['horizontal'] / 2)
-                          .attr("y", plotSpacing['vertical'] / 2)
-                          .attr("width", plotSize['width'])
-                          .attr("height", plotSize['height']);
-
-        if (('xAxis' in p) && ('yAxis' in p)) {
-            scatter(cell, p);
-        } else if ('xAxis' in p) {
-            xhistogram(cell, p);
-        } else if ('yAxis' in p) {
-            yhistogram(cell, p);
-        }
+            })
+            .style("fill", function (d) { return dMarkerFill; });
     }
 
     // Finally, update caption

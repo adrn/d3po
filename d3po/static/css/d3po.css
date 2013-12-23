@@ -48,8 +48,9 @@ svg {
 circle {
 }
 
-circle.hidden {
+.hidden {
   fill: #ccc !important;
+  opacity: 0.5;
 }
 
 .extent {
