@@ -127,6 +127,7 @@ function drawState(state) {
 /*
     TODO
 */
+
     var nRows = state['grid']['nRows'],
         nCols = state['grid']['nColumns'],
         figSpec = state['figure'] || dFigureSpec;
@@ -206,8 +207,81 @@ function drawState(state) {
     cells.exit().remove();
     cells.transition().duration(500).ease('quad-out')
          .attr("transform", function(p) { return "translate(" + xPlotTranslator(p) + ","
-                                                              + yPlotTranslator(p) + ")"; })
-         .each(plot);
+                                                              + yPlotTranslator(p) + ")"; });
+         //.each(plot);
+
+    // Add axes to the plots
+    cells.each(function(p,ii) {
+        var cell = d3.select(this);
+
+        if ('xAxis' in p) {
+            xScaler.domain(p['xAxis']['range'] || columnDomains[p['xAxis']['label']]);
+
+            // set up x axis ticks
+            xAxisD3 = d3.svg.axis()
+                            .scale(xScaler)
+                            .orient("bottom")
+                            .ticks(5)
+                            .tickSize(dTickSize);
+
+            var xAxis = cell.selectAll(".x.axis")
+                          .data([p]);
+            xAxis.enter().append("g")
+                 .attr("class", "x axis");
+            xAxis.exit().remove();
+            xAxis.transition().duration(500).ease('quad-out')
+                 .attr("transform", function(p, i) {
+                    return "translate(0," + (plotSize['height'] + 15) + ")";
+                }).each(function(p) {
+                    d3.select(this).call(xAxisD3);
+                });
+
+            // Add axis labels
+            var xLabel = cell.selectAll(".x-label")
+                            .data([p]);
+            xLabel.enter().append("text")
+                  .attr("class", "axis-label x-label");
+            xLabel.exit().remove();
+            xLabel.text(function(p, i) { return p['xAxis']['label']; });
+            xLabel.attr("x", function(p) { return plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
+                  .attr("y", function(p) { return plotSpacing['vertical']/2 + plotSize['height'] + 50; });
+
+        }
+
+        if ('yAxis' in p) {
+            yScaler.domain(p['yAxis']['range'] || columnDomains[p['yAxis']['label']]);
+
+            // set up y axis ticks
+            yAxisD3 = d3.svg.axis()
+                        .scale(yScaler)
+                        .orient("left")
+                        .ticks(5)
+                        .tickSize(dTickSize);
+
+            var yAxis = cell.selectAll(".y.axis")
+                          .data([p]);
+            yAxis.enter().append("g")
+                 .attr("class", "y axis");
+            yAxis.exit().remove();
+            yAxis.transition().duration(500).ease('quad-out')
+                 .attr("transform", function(p, i) {
+                    return "translate(" + (plotSpacing['horizontal']/2 + 10) + ",0)";
+                }).each(function(p) {
+                    d3.select(this).call(yAxisD3);
+                });
+
+            var yLabel = cell.selectAll(".y-label")
+                            .data([p]);
+            yLabel.enter().append("text")
+                  .attr("class", "axis-label y-label");
+            yLabel.exit().remove();
+            yLabel.text(function(p,i) { return p['yAxis']['label']; });
+            yLabel.attr("x", function(p) { return -((plotSpacing['vertical']/2) + plotSize['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
+                  .attr("y", function(p) { return 0.; });
+        }
+
+        plot(p,cell);
+    })
 
     // Define the brush object
     var brush = d3.svg.brush()
@@ -218,68 +292,6 @@ function drawState(state) {
 
     // have the cells call the brush
     cells.call(brush);
-
-    // Add axes to the plots
-    // TODO: figure out how to give user better control over ticks?
-    var xAxisD3 = d3.svg.axis()
-                .scale(xScaler)
-                .orient("bottom")
-                .ticks(5)
-                .tickSize(dTickSize);
-
-    var yAxisD3 = d3.svg.axis()
-                .scale(yScaler)
-                .orient("left")
-                .ticks(5)
-                .tickSize(dTickSize);
-
-    // Draw / update axes
-    var xAxis = d3.select("svg").selectAll(".x.axis")
-                  .data(state["plots"]);
-    xAxis.enter().append("g")
-         .attr("class", "x axis");
-    xAxis.exit().remove();
-    xAxis.transition().duration(500).ease('quad-out')
-         .attr("transform", function(p, i) {
-            return "translate(" + xPlotTranslator(p) + ","
-                                + (yPlotTranslator(p) + plotSize['height'] + 15) + ")";
-        }).each(function(p) {
-            xScaler.domain(p['xAxis']['range'] || columnDomains[p['xAxis']['label']]);
-            d3.select(this).call(xAxisD3);
-        });
-
-    var yAxis = d3.select("svg").selectAll(".y.axis")
-                  .data(state["plots"]);
-    yAxis.enter().append("g")
-         .attr("class", "y axis");
-    yAxis.exit().remove();
-    yAxis.transition().duration(500).ease('quad-out')
-         .attr("transform", function(p, i) {
-            return "translate(" + (xPlotTranslator(p) + plotSpacing['horizontal']/2 + 10) + ","
-                                + yPlotTranslator(p) + ")";
-        }).each(function(p) {
-            yScaler.domain(p['yAxis']['range'] || columnDomains[p['yAxis']['label']]);
-            d3.select(this).call(yAxisD3);
-        });
-
-    // Add axis labels
-    var xLabel = svg.selectAll(".x-label")
-                    .data(state["plots"]);
-    xLabel.enter().append("text")
-          .attr("class", "axis-label x-label");
-    xLabel.exit().remove();
-    xLabel.text(function(p, i) { return p['xAxis']['label']; });
-    xLabel.attr("x", function(p) { return xPlotTranslator(p) + plotSpacing['horizontal']/2 + plotSize['width']/2. - $(this).width()/2.; })
-          .attr("y", function(p) { return yPlotTranslator(p) + plotSpacing['vertical']/2 + plotSize['height'] + 50; });
-
-    var yLabel = svg.selectAll(".y-label")
-                    .data(state["plots"]);
-    yLabel.enter().append("text")
-          .attr("class", "axis-label y-label");
-    yLabel.exit().remove();
-    yLabel.text(function(p,i) { return p['yAxis']['label']; });
-    yLabel.attr("x", function(p) { return -((plotSpacing['vertical']/2-yPlotTranslator(p)) + plotSize['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
-          .attr("y", function(p) { return xPlotTranslator(p); });
 
     var brushCell;
     // Clear the previously-active brush, if any.
@@ -312,12 +324,7 @@ function drawState(state) {
         if (brush.empty()) svg.selectAll("circle").classed("hidden", false);
     }
 
-    // TODO: wtf
-    function plot(p) {
-        var cell = d3.select(this);
-
-        xScaler.domain(p['xAxis']['range'] || columnDomains[p['xAxis']['label']]);
-        yScaler.domain(p['yAxis']['range'] || columnDomains[p['yAxis']['label']]);
+    function scatter(cell, p) {
 
         var marker = p['marker'];
 
@@ -330,24 +337,6 @@ function drawState(state) {
             size = dMarkerSize;
             fill = dMarkerFill;
         }
-
-        var rect = cell.selectAll("rect.frame").data([1]);
-        rect.enter().append("rect");
-        rect.exit().remove();
-        rect.transition().duration(500).ease("quad-out")
-            .attr("class", "frame")
-            .attr("x", plotSpacing['horizontal'] / 2)
-            .attr("y", plotSpacing['vertical'] / 2)
-            .attr("width", plotSize['width'])
-            .attr("height", plotSize['height']);
-
-        svg.append("defs").append("clipPath")
-                          .attr("id", "clip")
-                          .append("rect")
-                          .attr("x", plotSpacing['horizontal'] / 2)
-                          .attr("y", plotSpacing['vertical'] / 2)
-                          .attr("width", plotSize['width'])
-                          .attr("height", plotSize['height']);
 
         var circ = cell.selectAll("circle").data(allPlotData)
         circ.enter().append("circle");
@@ -371,6 +360,70 @@ function drawState(state) {
                 }
             })
             .attr("clip-path", "url(#clip)");
+    }
+
+    function xhistogram(cell, p) {
+        var nbins = 12;
+
+        console.log(xScaler.ticks(nbins).length);
+
+        var rawData = allPlotData.map(function(d) { return parseFloat(d[p['xAxis']['label']]); });
+        var data = d3.layout.histogram()
+                            .bins(xScaler.ticks(nbins))
+                            (rawData);
+
+        var barWidth = xScaler(2*data[0].dx)-xScaler(data[0].dx);
+        console.log(barWidth);
+        var height = plotSize['height'];
+
+        var barHeightScaler = d3.scale.linear()
+                  .domain([0, d3.max(data, function(d) { return d.y; })])
+                  .range([height, 0]);
+
+        var bar = cell.selectAll(".bar").data(data)
+                        .enter().append("g")
+                        .attr("class", "bar");
+
+        bar.append("rect")
+            .attr("x", function(d) {
+                return xScaler(d.x);
+            })
+            .attr("y", function(d) {
+                return barHeightScaler(d.y) + plotSpacing['vertical']/2 + figPadding['top'];
+            })
+            .attr("width", barWidth)
+            .attr("height", function(d) {
+                return height - barHeightScaler(d.y);
+            });
+    }
+
+    function plot(p,cell) {
+
+        var rect = cell.selectAll("rect.frame").data([1]);
+        rect.enter().append("rect");
+        rect.exit().remove();
+        rect.transition().duration(500).ease("quad-out")
+            .attr("class", "frame")
+            .attr("x", plotSpacing['horizontal'] / 2)
+            .attr("y", plotSpacing['vertical'] / 2)
+            .attr("width", plotSize['width'])
+            .attr("height", plotSize['height']);
+
+        svg.append("defs").append("clipPath")
+                          .attr("id", "clip")
+                          .append("rect")
+                          .attr("x", plotSpacing['horizontal'] / 2)
+                          .attr("y", plotSpacing['vertical'] / 2)
+                          .attr("width", plotSize['width'])
+                          .attr("height", plotSize['height']);
+
+        if (('xAxis' in p) && ('yAxis' in p)) {
+            scatter(cell, p);
+        } else if ('xAxis' in p) {
+            xhistogram(cell, p);
+        } else if ('yAxis' in p) {
+            yhistogram(cell, p);
+        }
     }
 
     // Finally, update caption
