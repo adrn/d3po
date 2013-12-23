@@ -27,9 +27,9 @@ var defaultFigure = { "padding" : { "top" : 0,
 var defaultSelectedMarkerSpec = { "opacity" : 0.75,
                                   "color" : "#333333",
                                   "size" : 3};
-var defaultDeselectedMarkerSpec = { "opacity" : 0.5,
+var defaultDeselectedMarkerSpec = { "opacity" : 0.25,
                                     "color" : "#cccccc",
-                                    "size" : 2};
+                                    "size" : 3};
 
 // Default plot parameters
 var defaultTickSize = 16,
@@ -167,8 +167,9 @@ Plot = function(jsonPlot) {
     this.yLim = yAxis["range"];
 
     if (this.type == "scatter") {
-        this.markerSpec = jsonPlot["marker"] || {};
-        this.deselectedMarkerSpec = jsonPlot["deselectedMarker"] || {};
+        marker = jsonPlot["marker"] || {};
+        this.markerSpec = marker["selected"] || {};
+        this.deselectedMarkerSpec = marker["deselected"] || {};
 
         for (var key in defaultSelectedMarkerSpec) {
             this.markerSpec[key] = this.markerSpec[key] || defaultSelectedMarkerSpec[key];
@@ -365,7 +366,7 @@ State = function(jsonState) {
                         state.selection = {'range' : {}}
                         state.selection['range'][p.xCol] = xRange;
                         state.selection['range'][p.yCol] = yRange;
-
+                        console.log(p.markerSpec);
                         svg.selectAll("circle")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
@@ -376,7 +377,6 @@ State = function(jsonState) {
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    // TODO: color axis
                                     return state.cScaler(d[state.colorAxis]) || p.markerSpec["fill"];
                                 } else {
                                     return p.deselectedMarkerSpec["fill"];

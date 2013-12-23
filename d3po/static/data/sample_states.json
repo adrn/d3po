@@ -9,24 +9,32 @@
                                     "gridPosition" : [0,0],
                                     "xAxis" : {"columnName" : "J-K"},
                                     "yAxis" : {"columnName" : "H-K"},
-                                    "marker" : {"opacity" : 0.25,
-                                                "size" : 3}
+                                    "marker" : {"selected" : {"opacity" : 0.75,
+                                                              "size" : 3,
+                                                              "color" : "#333333"},
+                                                "deselected" : {"opacity" : 0.25,
+                                                                "size" : 3,
+                                                                "color" : "#cccccc"}
+                                               }
                                 },
                                 {
                                     "gridPosition" : [0,1],
                                     "xAxis" : {"columnName" : "H-K"},
                                     "yAxis" : {"columnName" : "J-H"},
-                                    "marker" : {"opacity" : 0.25,
-                                                "size" : 3}
+                                    "marker" : {"selected" : {"opacity" : 0.5,
+                                                              "size" : 2,
+                                                              "color" : "#333333"},
+                                                "deselected" : {"opacity" : 0.25,
+                                                                "size" : 2,
+                                                                "color" : "#cccccc"}
+                                               }
                                 },
                                 {
                                     "gridPosition" : [0,2],
                                     "xAxis" : {"columnName" : "J-K",
                                                "range" : [0.85,1.0]},
                                     "yAxis" : {"columnName" : "J-H",
-                                               "range" : [0.55,0.65]},
-                                    "marker" : {"opacity" : 0.25,
-                                                "size" : 3}
+                                               "range" : [0.55,0.65]}
                                 },
                                 {
                                     "gridPosition" : [0,3],
