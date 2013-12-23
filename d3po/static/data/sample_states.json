@@ -32,9 +32,8 @@
                                 {
                                     "gridPosition" : [0,3],
                                     "xAxis" : {"label" : "H2OK2 Index"},
-                                    "yAxis" : {"label" : "H2OK2 Index"},
-                                    "marker" : {"opacity" : 0.25,
-                                                "size" : 3}
+                                    "marker" : {"opacity" : 0.25},
+                                    "bins" : 15
                                 }
                             ]
                 },
