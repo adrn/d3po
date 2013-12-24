@@ -36,11 +36,14 @@ var defaultTickSize = 16,
     Generalized plotting
 */
 function scatter(state, plot, cell) {
-    var circ = cell.selectAll("g.data").data(allPlotData)
+    // remove any histogram
+    cell.selectAll("rect.data").data([]).exit().remove();
+
+    var circ = cell.selectAll("circle.data")
+                   .data(allPlotData);
     circ.enter().append("circle")
-        .attr("class","data");
-    circ.exit().remove();
-    circ.transition().duration(0).ease("quad-out")
+                .classed("data",true);
+    circ.transition().duration(400).ease("quad-out")
         .attr("cx", function(d) { return state.xScaler(d[plot.xCol]); })
         .attr("cy", function(d) { return state.yScaler(d[plot.yCol]); })
         .attr("r", function (d,ii) {
@@ -65,6 +68,7 @@ function scatter(state, plot, cell) {
             }
         })
         .attr("clip-path", "url(#clip)");
+    circ.exit().remove();
 }
 
 // TODO: how to support y histograms?
@@ -86,13 +90,15 @@ function histogram(state, plot, cell) {
               .range([height, 0]);
 
     // remove any data points
-    cell.selectAll("circle").data([]).exit().remove();
-    var bar = cell.selectAll(".bar").data(data)
-                    .enter().append("g")
-                    .attr("class", "bar data");
-
-    bar.append("rect")
-        .attr("x", function(d) {
+    cell.selectAll("circle.data").data([]).exit().remove();
+    var bar = cell.selectAll("rect.data").data(data);
+    bar.enter().append("rect")
+               .classed("bar", true)
+               .classed("data", true);
+    bar.style("fill", fill)
+       .style("opacity", opacity);
+    bar.transition().duration(400).ease("quad-out")
+       .attr("x", function(d) {
             return state.xScaler(d.x);
         })
         .attr("y", function(d) {
@@ -102,8 +108,7 @@ function histogram(state, plot, cell) {
         .attr("height", function(d) {
             return height - barHeightScaler(d.y);
         })
-        .style("fill", fill)
-        .style("opacity", opacity);
+    bar.exit().remove();
 }
 
 /*
@@ -198,8 +203,6 @@ Plot = function(jsonPlot) {
     }
 
     this.drawAxes = function(state, cell) {
-        cell.selectAll('.data').data([]).exit().remove();
-
         // x-axis ticks and label
         if (this.xCol) {
             state.xScaler.domain(this.xLim || columnDomains[this.xCol]);
@@ -273,7 +276,7 @@ Plot = function(jsonPlot) {
         var rect = cell.selectAll("rect.frame").data([1]);
         rect.enter().append("rect");
         rect.exit().remove();
-        rect.transition().duration(0).ease("quad-out")
+        rect.transition().duration(400).ease("quad-out")
             .attr("class", "frame")
             .attr("x", state.figure.plotSpec['spacing']['horizontal'] / 2)
             .attr("y", state.figure.plotSpec['spacing']['vertical'] / 2)
@@ -520,7 +523,7 @@ function drawState(jsonState) {
     // Define top level svg tag
     svg = d3.select("#svg svg");
     svg.transition()
-       .duration(0)
+       .duration(400)
        .ease('quad-out')
        .attr("width", state.width)
        .attr("height", state.height)
@@ -542,7 +545,7 @@ function drawState(jsonState) {
     cells.enter().append("g")
          .attr("class", "cell");
     cells.exit().remove();
-    cells.transition().duration(0).ease('quad-out')
+    cells.transition().duration(400).ease('quad-out')
          .attr("transform", function(p) { return "translate(" + p.translate(state)[0] + ","
                                                               + p.translate(state)[1] + ")"; });
 
@@ -559,6 +562,6 @@ function drawState(jsonState) {
                     .style('opacity', 0)
                     .text(state.caption)
                     .transition()
-                    .duration(0)
+                    .duration(400)
                     .style('opacity', 1);
 }
