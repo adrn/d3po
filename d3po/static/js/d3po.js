@@ -1,12 +1,8 @@
 // Globals
-var jsonFilename,
-    jsonData,
-    allPlotData,
+var allPlotData,
     columnNames,
     columnDomains,
-    selectionDispatch = {};
-
-var svg;
+    svg;
 
 /*
     Define some default style parameters
@@ -24,12 +20,13 @@ var defaultFigure = { "padding" : { "top" : 0,
                                    }
                     }
 
-var defaultSelectedMarkerSpec = { "opacity" : 0.75,
-                                  "color" : "#333333",
-                                  "size" : 3};
-var defaultDeselectedMarkerSpec = { "opacity" : 0.25,
-                                    "color" : "#cccccc",
-                                    "size" : 3};
+var defaultMarkerSpec = { "selected" : {"opacity" : 0.5,
+                                        "size" : 3,
+                                        "color" : "#333333"},
+                          "deselected" : {"opacity" : 0.25,
+                                          "size" : 3,
+                                          "color" : "#cccccc"}
+                        }
 
 // Default plot parameters
 var defaultTickSize = 16,
@@ -39,7 +36,7 @@ var defaultTickSize = 16,
     Generalized plotting
 */
 function scatter(state, plot, cell) {
-    var circ = cell.selectAll("circle").data(allPlotData)
+    var circ = cell.selectAll("g.data").data(allPlotData)
     circ.enter().append("circle")
         .attr("class","data");
     circ.exit().remove();
@@ -48,23 +45,23 @@ function scatter(state, plot, cell) {
         .attr("cy", function(d) { return state.yScaler(d[plot.yCol]); })
         .attr("r", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return plot.markerSpec["size"];
+                return plot.markerSpec['selected']['size'];
             } else {
-                return plot.deselectedMarkerSpec["size"];
+                return plot.markerSpec['deselected']["size"];
             }
         })
         .style("fill", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.cScaler(d[state['colorAxis']]) || plot.markerSpec["fill"];
+                return state.cScaler(d[state['colorAxis']]) || plot.markerSpec['selected']["fill"];
             } else {
-                return plot.deselectedMarkerSpec["fill"];
+                return plot.markerSpec['deselected']["fill"];
             }
         })
         .attr("opacity", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return plot.markerSpec["opacity"];
+                return plot.markerSpec['selected']["opacity"];
             } else {
-                return plot.deselectedMarkerSpec["opacity"];
+                return plot.markerSpec['deselected']["opacity"];
             }
         })
         .attr("clip-path", "url(#clip)");
@@ -73,7 +70,8 @@ function scatter(state, plot, cell) {
 // TODO: how to support y histograms?
 function histogram(state, plot, cell) {
     var nbins = plot.histogramSpec['bins'] || 10,
-        fill = plot.histogramSpec['fill'] || defaultSelectedMarkerSpec['fill'];
+        fill = plot.histogramSpec['fill'] || defaultMarkerSpec['selected']['fill'],
+        opacity = plot.histogramSpec['opacity'] || defaultMarkerSpec['selected']['opacity'];
 
     var rawData = allPlotData.map(function(d) { return parseFloat(d[plot.xCol]); });
     var data = d3.layout.histogram()
@@ -104,7 +102,8 @@ function histogram(state, plot, cell) {
         .attr("height", function(d) {
             return height - barHeightScaler(d.y);
         })
-        .style("fill", function (d) { return fill; });
+        .style("fill", fill)
+        .style("opacity", opacity);
 }
 
 /*
@@ -166,17 +165,19 @@ Plot = function(jsonPlot) {
     this.yLim = yAxis["range"];
 
     if (this.type == "scatter") {
+        this.markerSpec = {};
+
         marker = jsonPlot["marker"] || {};
-        this.markerSpec = marker["selected"] || {};
-        this.deselectedMarkerSpec = marker["deselected"] || {};
+        this.markerSpec['selected'] = marker["selected"] || {};
+        this.markerSpec['deselected'] = marker["deselected"] || {};
 
-        for (var key in defaultSelectedMarkerSpec) {
-            this.markerSpec[key] = this.markerSpec[key] || defaultSelectedMarkerSpec[key];
+        for (var key in defaultMarkerSpec["selected"]) {
+            this.markerSpec['selected'][key] = this.markerSpec['selected'][key] ||
+                                               defaultMarkerSpec["selected"][key];
+            this.markerSpec['deselected'][key] = this.markerSpec['deselected'][key] ||
+                                                 defaultMarkerSpec["deselected"][key];
         }
 
-        for (var key in defaultDeselectedMarkerSpec) {
-            this.deselectedMarkerSpec[key] = this.deselectedMarkerSpec[key] || defaultDeselectedMarkerSpec[key];
-        }
     } else if (this.type == "histogram") {
         this.histogramSpec = jsonPlot["histogram"] || {};
     }
@@ -373,23 +374,23 @@ State = function(jsonState) {
                         svg.selectAll("circle")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return p.markerSpec["size"];
+                                    return p.markerSpec["selected"]["size"];
                                 } else {
-                                    return p.deselectedMarkerSpec["size"];
+                                    return p.markerSpec["deselected"]["size"];
                                 }
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.cScaler(d[state.colorAxis]) || p.markerSpec["fill"];
+                                    return state.cScaler(d[state.colorAxis]) || p.markerSpec["selected"]["fill"];
                                 } else {
-                                    return p.deselectedMarkerSpec["fill"];
+                                    return p.markerSpec["deselected"]["fill"];
                                 }
                             })
                             .attr("opacity", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return p.markerSpec["opacity"];
+                                    return p.markerSpec["selected"]["opacity"];
                                 } else {
-                                    return p.deselectedMarkerSpec["opacity"];
+                                    return p.markerSpec["deselected"]["opacity"];
                                 }
                             })
                     })
