@@ -5,29 +5,22 @@
                                "nColumns" : 4},
                     "name" : "All stars",
                     "caption" : "This plot shows the near-infrared 2MASS colors of M dwarfs observed by Newton et al. (2013). One color is plotted on the x-axis and another color is plotted on the y-axis. The stars trace out a main sequence, with some scatter.",
+                    "marker" : {"selected" : {"opacity" : 0.75,
+                                              "size" : 5,
+                                              "color" : "#333333"},
+                                "deselected" : {"opacity" : 0.25,
+                                                "size" : 3,
+                                                "color" : "#cccccc"}
+                               },
                     "plots" : [ {
                                     "gridPosition" : [0,0],
                                     "xAxis" : {"columnName" : "J-K"},
                                     "yAxis" : {"columnName" : "H-K"},
-                                    "marker" : {"selected" : {"opacity" : 0.75,
-                                                              "size" : 3,
-                                                              "color" : "#333333"},
-                                                "deselected" : {"opacity" : 0.25,
-                                                                "size" : 3,
-                                                                "color" : "#cccccc"}
-                                               }
                                 },
                                 {
                                     "gridPosition" : [0,1],
                                     "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"},
-                                    "marker" : {"selected" : {"opacity" : 0.5,
-                                                              "size" : 2,
-                                                              "color" : "#333333"},
-                                                "deselected" : {"opacity" : 0.25,
-                                                                "size" : 2,
-                                                                "color" : "#cccccc"}
-                                               }
+                                    "yAxis" : {"columnName" : "J-H"}
                                 },
                                 {
                                     "gridPosition" : [0,2],

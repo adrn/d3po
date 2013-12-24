@@ -5,30 +5,31 @@
                                "nColumns" : 4},
                     "name" : "None selected",
                     "caption" : "test 1",
+                    "marker" : {"selected" : {"opacity" : 0.75,
+                                              "size" : 3,
+                                              "color" : "#333333"},
+                                "deselected" : {"opacity" : 0.5,
+                                                "size" : 3,
+                                                "color" : "#aaaaaa"}
+                               },
                     "plots" : [ {
                                     "gridPosition" : [0,0],
                                     "xAxis" : {"columnName" : "J-K",
                                                "label" : "Color1"},
                                     "yAxis" : {"columnName" : "H-K",
-                                               "label" : "Color2"},
-                                    "marker" : {"opacity" : 0.25,
-                                                "size" : 3}
+                                               "label" : "Color2"}
                                 },
                                 {
                                     "gridPosition" : [0,1],
                                     "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"},
-                                    "marker" : {"opacity" : 0.25,
-                                                "size" : 5}
+                                    "yAxis" : {"columnName" : "J-H"}
                                 },
                                 {
                                     "gridPosition" : [0,2],
                                     "xAxis" : {"columnName" : "J-K",
                                                "range" : [0.85,1.0]},
                                     "yAxis" : {"columnName" : "J-H",
-                                               "range" : [0.55,0.65]},
-                                    "marker" : {"opacity" : 1,
-                                                "size" : 3}
+                                               "range" : [0.55,0.65]}
                                 },
                                 {
                                     "gridPosition" : [0,3],

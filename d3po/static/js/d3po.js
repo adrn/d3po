@@ -48,23 +48,23 @@ function scatter(state, plot, cell) {
         .attr("cy", function(d) { return state.yScaler(d[plot.yCol]); })
         .attr("r", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return plot.markerSpec['selected']['size'];
+                return state.markerSpec['selected']['size'];
             } else {
-                return plot.markerSpec['deselected']["size"];
+                return state.markerSpec['deselected']["size"];
             }
         })
         .style("fill", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.cScaler(d[state['colorAxis']]) || plot.markerSpec['selected']["fill"];
+                return state.cScaler(d[state['colorAxis']]) || state.markerSpec['selected']["color"];
             } else {
-                return plot.markerSpec['deselected']["fill"];
+                return state.markerSpec['deselected']["color"];
             }
         })
         .attr("opacity", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return plot.markerSpec['selected']["opacity"];
+                return state.markerSpec['selected']["opacity"];
             } else {
-                return plot.markerSpec['deselected']["opacity"];
+                return state.markerSpec['deselected']["opacity"];
             }
         })
         .attr("clip-path", "url(#clip)");
@@ -74,7 +74,7 @@ function scatter(state, plot, cell) {
 // TODO: how to support y histograms?
 function histogram(state, plot, cell) {
     var nbins = plot.histogramSpec['bins'] || 10,
-        fill = plot.histogramSpec['fill'] || defaultMarkerSpec['selected']['fill'],
+        fill = plot.histogramSpec['color'] || defaultMarkerSpec['selected']['color'],
         opacity = plot.histogramSpec['opacity'] || defaultMarkerSpec['selected']['opacity'];
 
     var rawData = allPlotData.map(function(d) { return parseFloat(d[plot.xCol]); });
@@ -169,21 +169,7 @@ Plot = function(jsonPlot) {
     this.xLim = xAxis["range"];
     this.yLim = yAxis["range"];
 
-    if (this.type == "scatter") {
-        this.markerSpec = {};
-
-        marker = jsonPlot["marker"] || {};
-        this.markerSpec['selected'] = marker["selected"] || {};
-        this.markerSpec['deselected'] = marker["deselected"] || {};
-
-        for (var key in defaultMarkerSpec["selected"]) {
-            this.markerSpec['selected'][key] = this.markerSpec['selected'][key] ||
-                                               defaultMarkerSpec["selected"][key];
-            this.markerSpec['deselected'][key] = this.markerSpec['deselected'][key] ||
-                                                 defaultMarkerSpec["deselected"][key];
-        }
-
-    } else if (this.type == "histogram") {
+    if (this.type == "histogram") {
         this.histogramSpec = jsonPlot["histogram"] || {};
     }
 
@@ -345,21 +331,45 @@ State = function(jsonState) {
 
     this.caption = jsonState["caption"] || "";
 
+    // marker
+    this.markerSpec = {};
+
+    marker = jsonState["marker"] || {};
+    this.markerSpec['selected'] = marker["selected"] || {};
+    this.markerSpec['deselected'] = marker["deselected"] || {};
+
+    for (var key in defaultMarkerSpec["selected"]) {
+        this.markerSpec['selected'][key] = this.markerSpec['selected'][key] ||
+                                           defaultMarkerSpec["selected"][key];
+        this.markerSpec['deselected'][key] = this.markerSpec['deselected'][key] ||
+                                             defaultMarkerSpec["deselected"][key];
+    }
+
     /*
         brushes
     */
 
     // keep track of what cell is being brushed
-    this.brushCell = undefined;
+    // TODO: bug here with histogram...
+    var brushCell = undefined,
+        brushPlot = undefined;
     state = this;
     this.xyBrush = d3.svg.brush()
                     .x(state.xScaler).y(state.yScaler)
                     .on("brushstart", function(p) {
-                        if (state.brushCell !== this) {
-                            d3.select(state.brushCell).call(state.xyBrush.clear());
-                            state.brushCell = this;
+                        if (brushPlot === undefined) {
+                            brushPlot = p;
+                        }
+                        if (brushCell !== this) {
+                            if (brushPlot.type == "scatter") {
+                                d3.select(brushCell).call(state.xyBrush.clear());
+                            } else if (brushPlot.type == "histogram") {
+                                d3.select(brushCell).call(state.xBrush.clear());
+                            }
+                            brushCell = this;
+                            brushPlot = p;
                         } else {
-                            state.brushCell = this;
+                            //brushCell = this;
                         }
 
                         state.xScaler.domain(p.xLim || columnDomains[p.xCol]);
@@ -374,35 +384,128 @@ State = function(jsonState) {
                         state.selection['range'][p.xCol] = xRange;
                         state.selection['range'][p.yCol] = yRange;
 
-                        svg.selectAll("circle")
+                        svg.selectAll("circle.data")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return p.markerSpec["selected"]["size"];
+                                    return state.markerSpec["selected"]["size"];
                                 } else {
-                                    return p.markerSpec["deselected"]["size"];
+                                    return state.markerSpec["deselected"]["size"];
                                 }
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.cScaler(d[state.colorAxis]) || p.markerSpec["selected"]["fill"];
+                                    return state.cScaler(d[state.colorAxis]) || state.markerSpec["selected"]["color"];
                                 } else {
-                                    return p.markerSpec["deselected"]["fill"];
+                                    return state.markerSpec["deselected"]["color"];
                                 }
                             })
                             .attr("opacity", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return p.markerSpec["selected"]["opacity"];
+                                    return state.markerSpec["selected"]["opacity"];
                                 } else {
-                                    return p.markerSpec["deselected"]["opacity"];
+                                    return state.markerSpec["deselected"]["opacity"];
                                 }
                             })
                     })
-                    .on("brushend", function(p) {
-                        if (state.xyBrush.empty()) {
-                            svg.selectAll("circle").classed("hidden", false);
-                        }
-                    });
 
+    this.xBrush = d3.svg.brush()
+                    .x(state.xScaler).y(state.yScaler)
+                    .on("brushstart", function(p) {
+                        if (brushPlot === undefined) {
+                            brushPlot = p;
+                        }
+                        if (brushPlot.type == "scatter") {
+                            d3.select(brushCell).call(state.xyBrush.clear());
+                        } else if (brushPlot.type == "histogram") {
+                            d3.select(brushCell).call(state.xBrush.clear());
+                        }
+                        brushPlot = p;
+                        brushCell = this;
+
+                        state.xScaler.domain(p.xLim || columnDomains[p.xCol]);
+                    })
+                    .on("brush", function(p) {
+                        var _extent0 = state.xBrush.extent();
+                        var extent1 = _extent0;
+                        var extent0 = [_extent0[0][0], _extent0[1][0]];
+
+                        var rawData = allPlotData.map(function(d) { return parseFloat(d[p.xCol]); });
+                        var data = d3.layout.histogram()
+                                            .bins(p.histogramSpec['bins'] || 10)
+                                            (rawData);
+
+                        var min_d0, min_d1, e0, e1, dx;
+                        for (var ii=0; ii < (data.length+1); ii++) {
+                            if (ii == data.length) {
+                                dx = data[ii-1].x + data[ii-1].dx
+                            } else {
+                                dx = data[ii].x;
+                            }
+
+                            var d0 = Math.abs(dx - extent0[0]),
+                                d1 = Math.abs(dx - extent0[1]);
+
+                            if ((!min_d0) || (d0 < min_d0)) {
+                                min_d0 = d0;
+                                e0 = dx;
+                            }
+
+                            if ((!min_d1) || (d1 < min_d1)) {
+                                min_d1 = d1;
+                                e1 = dx;
+                            }
+                        }
+
+                        extent1[0][0] = e0;
+                        extent1[1][0] = e1;
+                        extent1[0][1] = 0;
+                        extent1[1][1] = d3.max(data, function(d) { return d.y; });
+
+                        d3.select(this).call(state.xBrush.extent(extent1));
+                        d3.select(this).select(".extent")
+                                       .attr("height", state.figure.plotSpec['size']['height'])
+                                       .attr("y", state.figure.plotSpec['spacing']['vertical']/2);
+
+                        state.selection = {'range' : {}}
+                        state.selection['range'][p.xCol] = [e0,e1];
+
+                        svg.selectAll("rect.data")
+                           .style("fill", function(d,ii) {
+                                if ((d.x >= e0) && ((d.x+d.dx) <= e1)) {
+                                    console.log(state.markerSpec["selected"]["color"]);
+                                    return state.markerSpec["selected"]["color"];
+                                }
+                           })
+                           .attr("opacity", function(d,ii) {
+                                if ((d.x >= e0) && ((d.x+d.dx) <= e1)) {
+                                    //return state.markerSpec["selected"]["opacity"];
+                                    return 1.0;
+                                }
+                           })
+
+                        svg.selectAll("circle.data")
+                           .attr("r", function (d,ii) {
+                                if (state.isSelected(d,ii)) {
+                                    return state.markerSpec["selected"]["size"];
+                                } else {
+                                    return state.markerSpec["deselected"]["size"];
+                                }
+                            })
+                            .style("fill", function (d,ii) {
+                                if (state.isSelected(d,ii)) {
+                                    return state.cScaler(d[state.colorAxis]) || state.markerSpec["selected"]["color"];
+                                } else {
+                                    return state.markerSpec["deselected"]["color"];
+                                }
+                            })
+                            .attr("opacity", function (d,ii) {
+                                if (state.isSelected(d,ii)) {
+                                    return state.markerSpec["selected"]["opacity"];
+                                } else {
+                                    return state.markerSpec["deselected"]["opacity"];
+                                }
+                            })
+                    })
 
     this.selection = jsonState['selection'];
     this.isSelected = function(d, ii) {
@@ -557,6 +660,9 @@ function drawState(jsonState) {
 
         if (p.type == "scatter") {
             state.xyBrush(cell);
+        } else if (p.type == "histogram") {
+            // TODO: y histogram?
+            state.xBrush(cell);
         }
     })
 
