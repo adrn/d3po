@@ -620,6 +620,9 @@ function drawState(jsonState) {
     TODO
 */
 
+    // Get the domains in data units for each column in the data file
+    columnDomains = domains(allPlotData, columnNames);
+
     // define a state object which automatically sets defaults
     state = new State(jsonState);
 
@@ -639,9 +642,6 @@ function drawState(jsonState) {
     svg.append("g")
        .attr("transform", "translate(" + state.figure['padding']['left'] + "," +
                                          state.figure['padding']['top'] + ")");
-
-    // Get the domains in data units for each column in the data file
-    columnDomains = domains(allPlotData, columnNames);
 
     // Set up a cell group for each plot window, to then draw points and rectangle over
     var cells = d3.select("svg").selectAll("g.cell").data(state.plots);
