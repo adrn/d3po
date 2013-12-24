@@ -554,7 +554,10 @@ function drawState(jsonState) {
         var cell = d3.select(this);
         p.drawAxes(state, cell);
         p.drawData(state, cell);
-        state.xyBrush(cell);
+
+        if (p.type == "scatter") {
+            state.xyBrush(cell);
+        }
     })
 
     // Finally, update caption
