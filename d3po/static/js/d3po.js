@@ -13,24 +13,31 @@ var defaultFigure = { "padding" : { "top" : 0,
                                      "left" : 0,
                                      "right" : 0,
                                      "bottom" : 50},
-                      "plotSpec" : { "spacing" : { "vertical" : 50,
+                      "plotStyle" : { "spacing" : { "vertical" : 50,
                                                    "horizontal" : 100},
                                      "size" : {"width" : 200,
                                                "height" : 200}
                                    }
                     }
 
-var defaultMarkerSpec = { "selected" : {"opacity" : 0.5,
+var defaultMarkerStyle = { "selected" : {"opacity" : 0.5,
                                         "size" : 3,
                                         "color" : "#333333"},
-                          "deselected" : {"opacity" : 0.25,
+                          "unselected" : {"opacity" : 0.25,
                                           "size" : 3,
                                           "color" : "#cccccc"}
                         }
 
+var defaultHistogramStyle = { "selected" : {"opacity" : 0.5,
+                                            "color" : "#333333"},
+                              "unselected" : {"opacity" : 0.25,
+                                              "color" : "#cccccc"}
+                        }
+
 // Default plot parameters
-var defaultTickSize = 16,
-    defaultColorMap = ["red", "blue"];
+var defaultColorScale = {"map" : ["red", "blue"]};
+var defaultTickSize = 16;
+var defaultNBins = 10;
 
 /*
     Generalized plotting
@@ -48,23 +55,23 @@ function scatter(state, plot, cell) {
         .attr("cy", function(d) { return state.yScaler(d[plot.yCol]); })
         .attr("r", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.markerSpec['selected']['size'];
+                return state.markerStyle['selected']['size'];
             } else {
-                return state.markerSpec['deselected']["size"];
+                return state.markerStyle['unselected']["size"];
             }
         })
         .style("fill", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.cScaler(d[state['colorAxis']]) || state.markerSpec['selected']["color"];
+                return state.cScaler(d[state['colorAxis']]) || state.markerStyle['selected']["color"];
             } else {
-                return state.markerSpec['deselected']["color"];
+                return state.markerStyle['unselected']["color"];
             }
         })
         .attr("opacity", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.markerSpec['selected']["opacity"];
+                return state.markerStyle['selected']["opacity"];
             } else {
-                return state.markerSpec['deselected']["opacity"];
+                return state.markerStyle['unselected']["opacity"];
             }
         })
         .attr("clip-path", "url(#clip)");
@@ -73,9 +80,9 @@ function scatter(state, plot, cell) {
 
 // TODO: how to support y histograms?
 function histogram(state, plot, cell) {
-    var nbins = plot.histogramSpec['bins'] || 10,
-        fill = plot.histogramSpec['color'] || defaultMarkerSpec['selected']['color'],
-        opacity = plot.histogramSpec['opacity'] || defaultMarkerSpec['selected']['opacity'];
+    var nbins = plot.histogramStyle['bins'] || defaultNBins,
+        fill = plot.histogramStyle['color'] || defaultHistogramStyle['selected']['color'],
+        opacity = plot.histogramStyle['opacity'] || defaultHistogramStyle['selected']['opacity'];
 
     var rawData = allPlotData.map(function(d) { return parseFloat(d[plot.xCol]); });
     var data = d3.layout.histogram()
@@ -83,7 +90,7 @@ function histogram(state, plot, cell) {
                         (rawData);
 
     var barWidth = state.xScaler(2*data[0].dx) - state.xScaler(data[0].dx);
-    var height = state.figure.plotSpec['size']['height'];
+    var height = state.figure.plotStyle['size']['height'];
 
     var barHeightScaler = d3.scale.linear()
               .domain([0, d3.max(data, function(d) { return d.y; })])
@@ -102,7 +109,7 @@ function histogram(state, plot, cell) {
             return state.xScaler(d.x);
         })
         .attr("y", function(d) {
-            return barHeightScaler(d.y) + state.figure.plotSpec['spacing']['vertical']/2 + state.figure.padding['top'];
+            return barHeightScaler(d.y) + state.figure.plotStyle['spacing']['vertical']/2 + state.figure.padding['top'];
         })
         .attr("width", barWidth)
         .attr("height", function(d) {
@@ -117,7 +124,7 @@ function histogram(state, plot, cell) {
 
 Figure = function(jsonFigure) {
     var defaultPadding = defaultFigure["padding"],
-        defaultPlotSpec = defaultFigure["plotSpec"],
+        defaultPlotStyle = defaultFigure["plotStyle"],
         figure = jsonFigure || {};
 
     var padding = figure["padding"] || {};
@@ -126,13 +133,13 @@ Figure = function(jsonFigure) {
                     "right" : padding["right"] || defaultPadding["right"],
                     "bottom" : padding["bottom"] || defaultPadding["bottom"]}
 
-    var plotSpec = figure["plotSpec"] || {};
-    var plotSpacing = plotSpec["spacing"] || {},
-        plotSize = plotSpec["size"] || {};
-    this.plotSpec = {"spacing" : { "vertical" : plotSpacing["vertical"] || defaultPlotSpec["spacing"]["vertical"],
-                                   "horizontal" : plotSpacing["horizontal"] || defaultPlotSpec["spacing"]["horizontal"]},
-                     "size" : { "width" : plotSize["width"] || defaultPlotSpec["size"]["width"],
-                                "height" : plotSize["height"] || defaultPlotSpec["size"]["height"]}
+    var plotStyle = figure["plotStyle"] || {};
+    var plotSpacing = plotStyle["spacing"] || {},
+        plotSize = plotStyle["size"] || {};
+    this.plotStyle = {"spacing" : { "vertical" : plotSpacing["vertical"] || defaultPlotStyle["spacing"]["vertical"],
+                                   "horizontal" : plotSpacing["horizontal"] || defaultPlotStyle["spacing"]["horizontal"]},
+                     "size" : { "width" : plotSize["width"] || defaultPlotStyle["size"]["width"],
+                                "height" : plotSize["height"] || defaultPlotStyle["size"]["height"]}
                     }
     }
 
@@ -170,20 +177,20 @@ Plot = function(jsonPlot) {
     this.yLim = yAxis["range"];
 
     if (this.type == "histogram") {
-        this.histogramSpec = jsonPlot["histogram"] || {};
+        this.histogramStyle = jsonPlot["histogram"] || {};
     }
 
     this.translate = function(state) {
         // compute the amount to translate the individual plots by
         // TODO: why are indices flipped??
         var xIndex = this.gridPosition[1],
-            xTrans = xIndex * (state.figure.plotSpec['size']['width'] +
-                               state.figure.plotSpec['spacing']['horizontal']) +
-                               state.figure.plotSpec['spacing']['horizontal']/2.;
+            xTrans = xIndex * (state.figure.plotStyle['size']['width'] +
+                               state.figure.plotStyle['spacing']['horizontal']) +
+                               state.figure.plotStyle['spacing']['horizontal']/2.;
 
         var yIndex = this.gridPosition[0],
-            yTrans = (state.nRows - yIndex - 1) * (state.figure.plotSpec['size']['height'] +
-                                                   state.figure.plotSpec['spacing']['vertical']);
+            yTrans = (state.nRows - yIndex - 1) * (state.figure.plotStyle['size']['height'] +
+                                                   state.figure.plotStyle['spacing']['vertical']);
 
         return [xTrans,yTrans];
     }
@@ -207,7 +214,7 @@ Plot = function(jsonPlot) {
             xAxis.exit().remove();
             xAxis.transition().duration(0).ease('quad-out')
                  .attr("transform", function(p) {
-                    return "translate(0," + (state.figure.plotSpec['size']['height'] + 15) + ")";
+                    return "translate(0," + (state.figure.plotStyle['size']['height'] + 15) + ")";
                 }).each(function(p) {
                     d3.select(this).call(xAxisD3);
                 });
@@ -219,8 +226,8 @@ Plot = function(jsonPlot) {
                   .attr("class", "axis-label x-label");
             xLabel.exit().remove();
             xLabel.text(function(p, i) { return p.xLabel; });
-            xLabel.attr("x", function(p) { return state.figure.plotSpec['spacing']['horizontal']/2 + state.figure.plotSpec['size']['width']/2. - $(this).width()/2.; })
-                  .attr("y", function(p) { return state.figure.plotSpec['spacing']['vertical']/2 + state.figure.plotSpec['size']['height'] + 50; });
+            xLabel.attr("x", function(p) { return state.figure.plotStyle['spacing']['horizontal']/2 + state.figure.plotStyle['size']['width']/2. - $(this).width()/2.; })
+                  .attr("y", function(p) { return state.figure.plotStyle['spacing']['vertical']/2 + state.figure.plotStyle['size']['height'] + 50; });
 
         }
 
@@ -241,7 +248,7 @@ Plot = function(jsonPlot) {
                  .attr("class", "axis y-axis");
             yAxis.transition().duration(0).ease('quad-out')
                 .attr("transform", function(p, i) {
-                    return "translate(" + (state.figure.plotSpec['spacing']['horizontal']/2 + 10) + ",0)";
+                    return "translate(" + (state.figure.plotStyle['spacing']['horizontal']/2 + 10) + ",0)";
                 }).each(function(p) {
                     d3.select(this).call(yAxisD3);
                 });
@@ -253,7 +260,7 @@ Plot = function(jsonPlot) {
                   .attr("class", "axis-label y-label");
             yLabel.exit().remove();
             yLabel.text(function(p,i) { return p.yLabel; });
-            yLabel.attr("x", function(p) { return -((state.figure.plotSpec['spacing']['vertical']/2) + state.figure.plotSpec['size']['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
+            yLabel.attr("x", function(p) { return -((state.figure.plotStyle['spacing']['vertical']/2) + state.figure.plotStyle['size']['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
                   .attr("y", function(p) { return 0.; });
 
         }
@@ -264,18 +271,18 @@ Plot = function(jsonPlot) {
         rect.exit().remove();
         rect.transition().duration(400).ease("quad-out")
             .attr("class", "frame")
-            .attr("x", state.figure.plotSpec['spacing']['horizontal'] / 2)
-            .attr("y", state.figure.plotSpec['spacing']['vertical'] / 2)
-            .attr("width", state.figure.plotSpec['size']['width'])
-            .attr("height", state.figure.plotSpec['size']['height']);
+            .attr("x", state.figure.plotStyle['spacing']['horizontal'] / 2)
+            .attr("y", state.figure.plotStyle['spacing']['vertical'] / 2)
+            .attr("width", state.figure.plotStyle['size']['width'])
+            .attr("height", state.figure.plotStyle['size']['height']);
 
         svg.append("defs").append("clipPath")
                           .attr("id", "clip")
                           .append("rect")
-                          .attr("x", state.figure.plotSpec['spacing']['horizontal'] / 2)
-                          .attr("y", state.figure.plotSpec['spacing']['vertical'] / 2)
-                          .attr("width", state.figure.plotSpec['size']['width'])
-                          .attr("height", state.figure.plotSpec['size']['height']);
+                          .attr("x", state.figure.plotStyle['spacing']['horizontal'] / 2)
+                          .attr("y", state.figure.plotStyle['spacing']['vertical'] / 2)
+                          .attr("width", state.figure.plotStyle['size']['width'])
+                          .attr("height", state.figure.plotStyle['size']['height']);
 
     }
 
@@ -303,10 +310,10 @@ State = function(jsonState) {
 
     // Compute the height / width of the svg element based on the plot size, plot spacing, and figure padding.
     this.height = this.figure['padding']['top'] + this.figure['padding']['bottom'] +
-                  this.nRows * (this.figure.plotSpec['size']['height'] + this.figure.plotSpec['spacing']['vertical']);
+                  this.nRows * (this.figure.plotStyle['size']['height'] + this.figure.plotStyle['spacing']['vertical']);
     this.width = this.figure['padding']['left'] + this.figure['padding']['right'] +
-                  this.nCols * (this.figure.plotSpec['size']['width'] + this.figure.plotSpec['spacing']['horizontal']) +
-                  this.figure.plotSpec['spacing']['horizontal'];
+                  this.nCols * (this.figure.plotStyle['size']['width'] + this.figure.plotStyle['spacing']['horizontal']) +
+                  this.figure.plotStyle['spacing']['horizontal'];
 
     this.plots = [];
     for (var ii=0; ii < jsonState['plots'].length; ii++) {
@@ -316,11 +323,11 @@ State = function(jsonState) {
 
     // Scalers for x / y axes from data space to pixel space relative to each plot cell
     this.xScaler = d3.scale.linear()
-                     .range([this.figure.plotSpec['spacing']['horizontal']/2,
-                             this.figure.plotSpec['size']['width'] + this.figure.plotSpec['spacing']['horizontal']/2]);
+                     .range([this.figure.plotStyle['spacing']['horizontal']/2,
+                             this.figure.plotStyle['size']['width'] + this.figure.plotStyle['spacing']['horizontal']/2]);
     this.yScaler = d3.scale.linear()
-                     .range([this.figure.plotSpec['size']['height'] + this.figure.plotSpec['spacing']['vertical']/2,
-                             this.figure.plotSpec['spacing']['vertical']/2]);
+                     .range([this.figure.plotStyle['size']['height'] + this.figure.plotStyle['spacing']['vertical']/2,
+                             this.figure.plotStyle['spacing']['vertical']/2]);
     this.cScaler = d3.scale.linear();
 
     if ('colorAxis' in jsonState) {
@@ -332,17 +339,17 @@ State = function(jsonState) {
     this.caption = jsonState["caption"] || "";
 
     // marker
-    this.markerSpec = {};
+    this.markerStyle = {};
 
     marker = jsonState["marker"] || {};
-    this.markerSpec['selected'] = marker["selected"] || {};
-    this.markerSpec['deselected'] = marker["deselected"] || {};
+    this.markerStyle['selected'] = marker["selected"] || {};
+    this.markerStyle['unselected'] = marker["unselected"] || {};
 
-    for (var key in defaultMarkerSpec["selected"]) {
-        this.markerSpec['selected'][key] = this.markerSpec['selected'][key] ||
-                                           defaultMarkerSpec["selected"][key];
-        this.markerSpec['deselected'][key] = this.markerSpec['deselected'][key] ||
-                                             defaultMarkerSpec["deselected"][key];
+    for (var key in defaultMarkerStyle["selected"]) {
+        this.markerStyle['selected'][key] = this.markerStyle['selected'][key] ||
+                                           defaultMarkerStyle["selected"][key];
+        this.markerStyle['unselected'][key] = this.markerStyle['unselected'][key] ||
+                                             defaultMarkerStyle["unselected"][key];
     }
 
     /*
@@ -387,23 +394,23 @@ State = function(jsonState) {
                         svg.selectAll("circle.data")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.markerSpec["selected"]["size"];
+                                    return state.markerStyle["selected"]["size"];
                                 } else {
-                                    return state.markerSpec["deselected"]["size"];
+                                    return state.markerStyle["unselected"]["size"];
                                 }
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.cScaler(d[state.colorAxis]) || state.markerSpec["selected"]["color"];
+                                    return state.cScaler(d[state.colorAxis]) || state.markerStyle["selected"]["color"];
                                 } else {
-                                    return state.markerSpec["deselected"]["color"];
+                                    return state.markerStyle["unselected"]["color"];
                                 }
                             })
                             .attr("opacity", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.markerSpec["selected"]["opacity"];
+                                    return state.markerStyle["selected"]["opacity"];
                                 } else {
-                                    return state.markerSpec["deselected"]["opacity"];
+                                    return state.markerStyle["unselected"]["opacity"];
                                 }
                             })
                     })
@@ -431,7 +438,7 @@ State = function(jsonState) {
 
                         var rawData = allPlotData.map(function(d) { return parseFloat(d[p.xCol]); });
                         var data = d3.layout.histogram()
-                                            .bins(p.histogramSpec['bins'] || 10)
+                                            .bins(p.histogramStyle['bins'] || 10)
                                             (rawData);
 
                         var min_d0, min_d1, e0, e1, dx;
@@ -463,8 +470,8 @@ State = function(jsonState) {
 
                         d3.select(this).call(state.xBrush.extent(extent1));
                         d3.select(this).select(".extent")
-                                       .attr("height", state.figure.plotSpec['size']['height'])
-                                       .attr("y", state.figure.plotSpec['spacing']['vertical']/2);
+                                       .attr("height", state.figure.plotStyle['size']['height'])
+                                       .attr("y", state.figure.plotStyle['spacing']['vertical']/2);
 
                         state.selection = {'range' : {}}
                         state.selection['range'][p.xCol] = [e0,e1];
@@ -472,13 +479,13 @@ State = function(jsonState) {
                         svg.selectAll("rect.data")
                            .style("fill", function(d,ii) {
                                 if ((d.x >= e0) && ((d.x+d.dx) <= e1)) {
-                                    console.log(state.markerSpec["selected"]["color"]);
-                                    return state.markerSpec["selected"]["color"];
+                                    console.log(state.markerStyle["selected"]["color"]);
+                                    return state.markerStyle["selected"]["color"];
                                 }
                            })
                            .attr("opacity", function(d,ii) {
                                 if ((d.x >= e0) && ((d.x+d.dx) <= e1)) {
-                                    //return state.markerSpec["selected"]["opacity"];
+                                    //return state.markerStyle["selected"]["opacity"];
                                     return 1.0;
                                 }
                            })
@@ -486,23 +493,23 @@ State = function(jsonState) {
                         svg.selectAll("circle.data")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.markerSpec["selected"]["size"];
+                                    return state.markerStyle["selected"]["size"];
                                 } else {
-                                    return state.markerSpec["deselected"]["size"];
+                                    return state.markerStyle["unselected"]["size"];
                                 }
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.cScaler(d[state.colorAxis]) || state.markerSpec["selected"]["color"];
+                                    return state.cScaler(d[state.colorAxis]) || state.markerStyle["selected"]["color"];
                                 } else {
-                                    return state.markerSpec["deselected"]["color"];
+                                    return state.markerStyle["unselected"]["color"];
                                 }
                             })
                             .attr("opacity", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.markerSpec["selected"]["opacity"];
+                                    return state.markerStyle["selected"]["opacity"];
                                 } else {
-                                    return state.markerSpec["deselected"]["opacity"];
+                                    return state.markerStyle["unselected"]["opacity"];
                                 }
                             })
                     })
