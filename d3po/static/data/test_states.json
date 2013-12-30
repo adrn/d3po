@@ -2,7 +2,7 @@
     "title" : "Something about M dwarfs",
     "states" : [{
                     "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
+                               "nColumns" : 1},
                     "name" : "None selected",
                     "caption" : "test 1",
                     "marker" : {"selected" : {"opacity" : 0.75,
@@ -14,25 +14,6 @@
                                },
                     "plots" : [ {
                                     "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K",
-                                               "label" : "Color1"},
-                                    "yAxis" : {"columnName" : "H-K",
-                                               "label" : "Color2"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-                                    "xAxis" : {"columnName" : "J-K",
-                                               "range" : [0.85,1.0]},
-                                    "yAxis" : {"columnName" : "J-H",
-                                               "range" : [0.55,0.65]}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
                                     "xAxis" : {"columnName" : "H2OK2 Index"},
                                     "histogram" : {"bins" : 5}
                                 }
@@ -40,7 +21,7 @@
                 },
                 {
                     "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
+                               "nColumns" : 2},
                     "name" : "Select a range",
                     "caption" : "Late M dwarfs",
                     "figure" : {"padding" : { "top" : 0,
@@ -53,6 +34,24 @@
                                                          "height" : 100}
                                              }
                                },
+                    "selection" : {"range" : {"H2OK2 Index" : [0.85, 0.9]} },
+                    "plots" : [ {
+                                    "gridPosition" : [0,0],
+                                    "xAxis" : {"columnName" : "H-K"},
+                                    "yAxis" : {"columnName" : "J-K"}
+                                },
+                                {
+                                    "gridPosition" : [0,1],
+                                    "xAxis" : {"columnName" : "H2OK2 Index"},
+                                    "histogram" : {"bins" : 5}
+                               }
+                            ]
+                },
+                {
+                    "grid" : { "nRows" : 1,
+                               "nColumns" : 4},
+                    "name" : "Select a range",
+                    "caption" : "Late M dwarfs",
                     "selection" : {"range" : {"H2OK2 Index" : [0.85, 0.9]} },
                     "plots" : [ {
                                     "gridPosition" : [0,0],
@@ -102,7 +101,7 @@
                                 {
                                     "gridPosition" : [0,3],
                                      "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
+                                     "yAxis" : {"columnName" : "J-H"}
                                 }
                             ]
                 },
