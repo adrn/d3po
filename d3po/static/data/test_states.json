@@ -1,141 +1,85 @@
 {
     "title" : "Something about M dwarfs",
-    "states" : [{
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 1},
-                    "name" : "None selected",
-                    "caption" : "test 1",
-                    "marker" : {"selected" : {"opacity" : 0.75,
-                                              "size" : 3,
-                                              "color" : "#333333"},
-                                "deselected" : {"opacity" : 0.5,
-                                                "size" : 3,
-                                                "color" : "#aaaaaa"}
-                               },
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                                }
-                            ]
+    "states" : [
+        {
+            "grid" : {
+                "nRows" : 1,
+                "nColumns" : 2
+            },
+            "name" : "None selected",
+            "figure" : {
+                "padding" : {
+                    "top" : 0,
+                    "left" : 50,
+                    "right" : 10,
+                    "bottom" : 40
                 },
-                {
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 2},
-                    "name" : "Select a range",
-                    "caption" : "Late M dwarfs",
-                    "figure" : {"padding" : { "top" : 0,
-                                              "left" : 50,
-                                              "right" : 10,
-                                              "bottom" : 40},
-                                "plotSpec" : {"spacing" : { "vertical" : 50,
-                                                            "horizontal" : 100},
-                                              "size" : { "width" : 100,
-                                                         "height" : 100}
-                                             }
-                               },
-                    "selection" : {"range" : {"H2OK2 Index" : [0.85, 0.9]} },
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                               }
-                            ]
+                "plotStyle" : {
+                    "spacing" : {
+                        "vertical" : 50,
+                        "horizontal" : 100
+                    },
+                    "size" : {
+                        "width" : 250,
+                        "height" : 250}
+                    }
+            },
+            "caption" : "test 1",
+            "markerStyle" : {
+                "selected" : {
+                    "opacity" : 0.75,
+                    "size" : 3,
+                    "color" : "#333333"
                 },
-                {
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "Select a range",
-                    "caption" : "Late M dwarfs",
-                    "selection" : {"range" : {"H2OK2 Index" : [0.85, 0.9]} },
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                               }
-                            ]
-                },
-                {
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "Select using a true/false column",
-                    "colorAxis" : "EW NA",
-                    "colorMap" : ["blue", "red"],
-                    "caption" : "testing...",
-                    "selection" : {"booleanColumn" : "testBoolean"},
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "H-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "J-H"},
-                                    "yAxis" : {"columnName" : "H-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 6}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
-                                     "xAxis" : {"columnName" : "J-K"},
-                                     "yAxis" : {"columnName" : "J-H"}
-                                }
-                            ]
-                },
-                {
-                    "grid" : { "nRows" : 2,
-                               "nColumns" : 2},
-                    "name" : "grid",
-                    "colorAxis" : "EW NA",
-                    "colorMap" : ["blue", "red"],
-                    "caption" : "Late M and iron abundance",
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "H-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [1,0],
-                                     "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [1,1],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                                  }
-                            ]
+                "unselected" : {
+                    "opacity" : 0.5,
+                    "size" : 3,
+                    "color" : "#aaaaaa"
                 }
-
-
-
+            },
+            "histogramStyle" : {
+                "selected" : {
+                    "opacity" : 0.75,
+                    "color" : "#333333"
+                },
+                "unselected" : {
+                    "opacity" : 0.5,
+                    "color" : "#aaaaaa"
+                }
+            },
+            "selection" : {
+                "type": "box",
+                "bounds": [
+                    {
+                        "range": [1, 4],
+                        "columnName" : "J-H"
+                    },
+                    {
+                        "range": [1, 4],
+                        "columnName" : "H-K"
+                    }
+                ]
+            },
+            "plots" : [
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index"
+                    },
+                    "histogram" : {
+                        "bins" : 5
+                    }
+                },
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "J-H"
+                    },
+                    "yAxis" : {
+                        "columnName" : "H-K"
+                    }
+                }
             ]
+        },
+    ]
 }
