@@ -10,14 +10,14 @@ var allPlotData,
 
 // all size / padding parameters are specified in pixels
 var defaultFigure = { "padding" : { "top" : 0,
-                                     "left" : 0,
-                                     "right" : 0,
-                                     "bottom" : 50},
+                                    "left" : 0,
+                                    "right" : 0,
+                                    "bottom" : 50},
                       "plotStyle" : { "spacing" : { "vertical" : 50,
-                                                   "horizontal" : 100},
-                                     "size" : {"width" : 200,
-                                               "height" : 200}
-                                   }
+                                                    "horizontal" : 100},
+                                      "size" : {"width" : 200,
+                                                "height" : 200}
+                                    }
                     }
 
 var defaultMarkerStyle = { "selected" : {"opacity" : 0.5,
