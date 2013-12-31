@@ -31,23 +31,23 @@ var defaults = {
     },
     "markerStyle" : {
         "selected" : {
-            "opacity" : 0.5,
+            "opacity" : 0.75,
             "size" : 3,
             "color" : "#333333"
         },
         "unselected" : {
-            "opacity" : 0.25,
+            "opacity" : 0.5,
             "size" : 3,
             "color" : "#cccccc"
         }
     },
     "histogramStyle" : {
         "selected" : {
-            "opacity" : 0.5,
+            "opacity" : 1.,
             "color" : "#333333"
         },
         "unselected" : {
-            "opacity" : 0.25,
+            "opacity" : 1.,
             "color" : "#cccccc"
         }
     },
