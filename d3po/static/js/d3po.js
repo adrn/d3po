@@ -81,7 +81,7 @@ function scatter(state, plot, cell) {
         })
         .style("fill", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.cScaler(d[state['colorAxis']]) || plot.style['selected']["color"];
+                return state.cScaler(d[state.colorColumn]) || plot.style['selected']["color"];
             } else {
                 return plot.style['unselected']['color'];
             }
@@ -370,13 +370,6 @@ State = function(jsonState) {
         }
     }
 
-    this.plots = [];
-    for (var ii=0; ii < jsonState['plots'].length; ii++) {
-        var plot = new Plot(jsonState['plots'][ii]);
-        plot.index = ii;
-        this.plots.push(plot);
-    }
-
     // Scalers for x / y axes from data space to pixel space relative to each plot cell
     this.xScaler = d3.scale.linear()
                      .range([this.figure.plotStyle['spacing']['horizontal']/2,
@@ -384,12 +377,20 @@ State = function(jsonState) {
     this.yScaler = d3.scale.linear()
                      .range([this.figure.plotStyle['size']['height'] + this.figure.plotStyle['spacing']['vertical']/2,
                              this.figure.plotStyle['spacing']['vertical']/2]);
-    this.cScaler = d3.scale.linear();
 
-    if ('colorAxis' in jsonState) {
-        this.colorAxis = jsonState['colorAxis'];
-        this.cScaler.domain(columnDomains[this.colorAxis]);
-        this.cScaler.range(jsonState['colorMap'] || defaults["colorScale"]["map"]);
+    this.cScaler = d3.scale.linear();
+    var colorScale = jsonState['colorScale'] || {};
+    this.colorColumn = colorScale['columnName'] || undefined;
+    if (this.colorColumn) {
+        this.cScaler.domain(columnDomains[this.colorColumn]);
+        this.cScaler.range(colorScale['map'] || defaults["colorScale"]["map"]);
+    }
+
+    this.plots = [];
+    for (var ii=0; ii < jsonState['plots'].length; ii++) {
+        var plot = new Plot(jsonState['plots'][ii]);
+        plot.index = ii;
+        this.plots.push(plot);
     }
 
     // state caption
@@ -453,7 +454,7 @@ State = function(jsonState) {
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.cScaler(d[state.colorAxis]) || state.plots[$(this).attr('plot-index')].style["selected"]["color"];
+                                    return state.cScaler(d[state.colorColumn]) || state.plots[$(this).attr('plot-index')].style["selected"]["color"];
                                 } else {
                                     return state.plots[$(this).attr('plot-index')].style["unselected"]["color"];
                                 }
@@ -559,7 +560,7 @@ State = function(jsonState) {
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.cScaler(d[state.colorAxis]) || state.plots[$(this).attr('plot-index')].style["selected"]["color"];
+                                    return state.cScaler(d[state.colorColumn]) || state.plots[$(this).attr('plot-index')].style["selected"]["color"];
                                 } else {
                                     return state.plots[$(this).attr('plot-index')].style["unselected"]["color"];
                                 }

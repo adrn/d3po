@@ -6,7 +6,7 @@
                 "nRows" : 1,
                 "nColumns" : 3
             },
-            "name" : "None selected",
+            "name" : "Customize all",
             "figure" : {
                 "padding" : {
                     "top" : 0,
@@ -109,6 +109,73 @@
                             "opacity" : 0.2
                         }
                     }
+                }
+            ]
+        },
+        {
+            "grid" : {
+                "nRows" : 1,
+                "nColumns" : 3
+            },
+            "name" : "Defaults, swap panels, and color scale",
+            "figure" : {
+                "padding" : {
+                    "top" : 0,
+                    "left" : 50,
+                    "right" : 10,
+                    "bottom" : 40
+                },
+                "plotStyle" : {
+                    "spacing" : {
+                        "vertical" : 50,
+                        "horizontal" : 100
+                    },
+                    "size" : {
+                        "width" : 250,
+                        "height" : 250
+                    }
+                }
+            },
+            "caption" : "test 2",
+            "selection" : {
+                "type": "box",
+                "bounds": [
+                    {
+                        "range": [0.5, 0.65],
+                        "columnName" : "J-H"
+                    }
+                ]
+            },
+            "colorScale" : {"columnName" : "H-K",
+                            "map" : ["blue", "red"]},
+            "plots" : [
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index",
+                        "bins" : 7
+                    },
+                    "type" : "histogram"
+                },
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "J-H"
+                    },
+                    "yAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "type" : "scatter"
+                },
+                {
+                    "gridPosition" : [0,2],
+                    "xAxis" : {
+                        "columnName" : "J-H"
+                    },
+                    "yAxis" : {
+                        "columnName" : "EW NA"
+                    },
+                    "type" : "scatter"
                 }
             ]
         }
