@@ -61,6 +61,7 @@ var defaults = {
 /*
     Generalized plotting
 */
+// TODO: also pass in 'data' -- list of objects w/ x, y parameters?
 function scatter(state, plot, cell) {
     // remove any histogram
     cell.selectAll("rect.data").data([]).exit().remove();
@@ -317,6 +318,7 @@ Plot = function(jsonPlot) {
 
     }
 
+    // TODO: store cell internally? make an 'overlay' method?
     this.drawData = function(state, cell) {
 
         if (this.type == "scatter") {
