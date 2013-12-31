@@ -116,6 +116,9 @@
                 "map" : ["blue", "red"]
             },
             "caption" : "In this plot, the near-infrared colors of the M dwarfs remain the same. However, now the stars are colored by their Na abundance, which we calibrated as a proxy for metallicity. You can see that a metal-rich star is seen to have a different color than a more metal-poor star of the same spectral type. This allowed us to calibrate a relation for Na abundance (and therefore iron abundance) using 2MASS photometry.",
+            "selection" : {
+                "type": "all"
+            },
             "plots" : [
                 {
                     "gridPosition" : [0,0],

@@ -578,7 +578,7 @@ State = function(jsonState) {
     if (!this.jsonSelection) {
         console.debug("no selection provided");
         this.jsonSelection = {
-            "type" : "null"
+            "type" : "none"
         }
     }
     this.isSelected = function(d,ii) {
@@ -588,8 +588,12 @@ State = function(jsonState) {
 
 selectionFunctionDispatch = {};
 
-selectionFunctionDispatch['null'] = function(state,d,ii) {
+selectionFunctionDispatch['none'] = function(state,d,ii) {
     return false;
+}
+
+selectionFunctionDispatch['all'] = function(state,d,ii) {
+    return true;
 }
 
 selectionFunctionDispatch['box'] = function(state,d,ii) {
