@@ -574,49 +574,23 @@ State = function(jsonState) {
                             })
                     })
 
-    this.jsonSelection = jsonState['selection'] || {};
-    if (!this.jsonSelection ) {
-        this.isSelected = function(d, ii) {
-            return false;
-        }
-    } else {
-        this.isSelected = function(d,ii) {
-            return selectionFunctionDispatch[this.jsonSelection['type']](this,d,ii);
+    this.jsonSelection = jsonState['selection'];
+    if (!this.jsonSelection) {
+        console.debug("no selection provided");
+        this.jsonSelection = {
+            "type" : "null"
         }
     }
-
-    //
-    // this.isSelected = function(d, ii) {
-    //     if (!this.selection) {
-    //         return true;
-    //     }
-
-    //     range_bool = true;
-    //     if ('range' in this.selection) {
-    //         var bools = [];
-    //         for (var colName in this.selection['range']) {
-    //             var r = this.selection['range'][colName];
-    //             if ((d[colName] >= r[0]) && (d[colName] <= r[1])) {
-    //                 bools.push(true);
-    //             } else {
-    //                 bools.push(false);
-    //             }
-    //         }
-    //         range_bool = bools.every(Boolean);
-    //     }
-
-    //     if ('booleanColumn' in this.selection) {
-    //         var boolColName = this.selection['booleanColumn'];
-    //         if (allPlotData[ii][boolColName] == 1) {
-    //             return true && range_bool;
-    //         }
-    //     }
-
-    //     return range_bool;
-    // }
+    this.isSelected = function(d,ii) {
+        return selectionFunctionDispatch[this.jsonSelection['type']](this,d,ii);
+    }
 }
 
 selectionFunctionDispatch = {};
+
+selectionFunctionDispatch['null'] = function(state,d,ii) {
+    return false;
+}
 
 selectionFunctionDispatch['box'] = function(state,d,ii) {
     var boundsList = state.jsonSelection ['bounds'];
