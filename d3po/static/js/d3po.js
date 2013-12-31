@@ -2,42 +2,61 @@
 var allPlotData,
     columnNames,
     columnDomains,
-    svg;
+    svg,
+    stateMarkerStyle, stateHistogramStyle;
 
 /*
     Define some default style parameters
 */
 
 // all size / padding parameters are specified in pixels
-var defaultFigure = { "padding" : { "top" : 0,
-                                    "left" : 0,
-                                    "right" : 0,
-                                    "bottom" : 50},
-                      "plotStyle" : { "spacing" : { "vertical" : 50,
-                                                    "horizontal" : 100},
-                                      "size" : {"width" : 200,
-                                                "height" : 200}
-                                    }
-                    }
-
-var defaultMarkerStyle = { "selected" : {"opacity" : 0.5,
-                                        "size" : 3,
-                                        "color" : "#333333"},
-                          "unselected" : {"opacity" : 0.25,
-                                          "size" : 3,
-                                          "color" : "#cccccc"}
-                        }
-
-var defaultHistogramStyle = { "selected" : {"opacity" : 0.5,
-                                            "color" : "#333333"},
-                              "unselected" : {"opacity" : 0.25,
-                                              "color" : "#cccccc"}
-                        }
-
-// Default plot parameters
-var defaultColorScale = {"map" : ["red", "blue"]};
-var defaultTickSize = 16;
-var defaultNBins = 10;
+var defaults = {
+    "figure" : {
+        "padding" : {
+            "top" : 0,
+            "left" : 0,
+            "right" : 0,
+            "bottom" : 50
+        },
+        "plotStyle" : {
+            "spacing" : {
+                "vertical" : 50,
+                "horizontal" : 100
+            },
+            "size" : {
+                "width" : 200,
+                "height" : 200
+            }
+        }
+    },
+    "markerStyle" : {
+        "selected" : {
+            "opacity" : 0.5,
+            "size" : 3,
+            "color" : "#333333"
+        },
+        "unselected" : {
+            "opacity" : 0.25,
+            "size" : 3,
+            "color" : "#cccccc"
+        }
+    },
+    "histogramStyle" : {
+        "selected" : {
+            "opacity" : 0.5,
+            "color" : "#333333"
+        },
+        "unselected" : {
+            "opacity" : 0.25,
+            "color" : "#cccccc"
+        }
+    },
+    "colorScale" : {
+        "map" : ["red", "blue"]
+    },
+    "bins" : 10,
+    "tickSize" : 16
+};
 
 /*
     Generalized plotting
@@ -55,39 +74,36 @@ function scatter(state, plot, cell) {
         .attr("cy", function(d) { return state.yScaler(d[plot.yCol]); })
         .attr("r", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.markerStyle['selected']['size'];
+                return plot.style['selected']['size'];
             } else {
-                return state.markerStyle['unselected']["size"];
+                return plot.style['unselected']['size'];
             }
         })
         .style("fill", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.cScaler(d[state['colorAxis']]) || state.markerStyle['selected']["color"];
+                return state.cScaler(d[state['colorAxis']]) || plot.style['selected']["color"];
             } else {
-                return state.markerStyle['unselected']["color"];
+                return plot.style['unselected']['color'];
             }
         })
         .attr("opacity", function (d,ii) {
             if (state.isSelected(d,ii)) {
-                return state.markerStyle['selected']["opacity"];
+                return plot.style['selected']['opacity'];
             } else {
-                return state.markerStyle['unselected']["opacity"];
+                return plot.style['unselected']['opacity'];
             }
         })
+        .attr("plot-index", plot.index)
         .attr("clip-path", "url(#clip)");
     circ.exit().remove();
 }
 
 // TODO: how to support y histograms?
 function histogram(state, plot, cell) {
-    var nbins = plot.histogramStyle['bins'] || defaultNBins,
-        fill = plot.histogramStyle['color'] || defaultHistogramStyle['selected']['color'],
-        opacity = plot.histogramStyle['opacity'] || defaultHistogramStyle['selected']['opacity'];
+    var nbins = plot.bins;
 
     var rawData = allPlotData.map(function(d) { return parseFloat(d[plot.xCol]); });
-    var data = d3.layout.histogram()
-                        .bins(nbins)
-                        (rawData);
+    var data = d3.layout.histogram().bins(nbins)(rawData);
 
     var barWidth = state.xScaler(2*data[0].dx) - state.xScaler(data[0].dx);
     var height = state.figure.plotStyle['size']['height'];
@@ -102,8 +118,20 @@ function histogram(state, plot, cell) {
     bar.enter().append("rect")
                .classed("bar", true)
                .classed("data", true);
-    bar.style("fill", fill)
-       .style("opacity", opacity);
+    bar.style("fill", function (d,ii) {
+            if (state.isSelected(d,ii)) {
+                return plot.style['selected']['color'];
+            } else {
+                return plot.style['unselected']['color'];
+            }
+        })
+       .style("opacity", function (d,ii) {
+            if (state.isSelected(d,ii)) {
+                return plot.style['selected']['opacity'];
+            } else {
+                return plot.style['unselected']['opacity'];
+            }
+        });
     bar.transition().duration(400).ease("quad-out")
        .attr("x", function(d) {
             return state.xScaler(d.x);
@@ -123,8 +151,8 @@ function histogram(state, plot, cell) {
 */
 
 Figure = function(jsonFigure) {
-    var defaultPadding = defaultFigure["padding"],
-        defaultPlotStyle = defaultFigure["plotStyle"],
+    var defaultPadding = defaults["figure"]["padding"],
+        defaultPlotStyle = defaults["figure"]["plotStyle"],
         figure = jsonFigure || {};
 
     var padding = figure["padding"] || {};
@@ -146,39 +174,42 @@ Figure = function(jsonFigure) {
 Plot = function(jsonPlot) {
 
     this.gridPosition = jsonPlot["gridPosition"] || [0,0];
-
-    if ("type" in jsonPlot) {
-        this.type = jsonPlot["type"];
-    } else {
-        if (("xAxis" in jsonPlot) && ("yAxis" in jsonPlot)){
-            this.type = "scatter";
-            this.xCol = jsonPlot["xAxis"]["columnName"];
-            this.yCol = jsonPlot["yAxis"]["columnName"];
-        } else if (("xAxis" in jsonPlot) && !("yAxis" in jsonPlot)){
-            this.type = "histogram";
-            this.xCol = jsonPlot["xAxis"]["columnName"];
-            this.yCol = undefined;
-        } else if (!("xAxis" in jsonPlot) && ("yAxis" in jsonPlot)){
-            this.type = "histogram";
-            this.xCol = undefined;
-            this.yCol = jsonPlot["yAxis"]["columnName"];
-        } else {
-            alert("Invalid axis specification.");
-            return false;
-        }
-    }
+    this.type = jsonPlot["type"] || "scatter";
 
     var xAxis = jsonPlot["xAxis"] || {},
         yAxis = jsonPlot["yAxis"] || {};
+
+    // Set column names
+    this.xCol = xAxis["columnName"] || undefined;
+    this.yCol = yAxis["columnName"] || undefined;
 
     this.xLabel = xAxis["label"] || (this.xCol || "");
     this.yLabel = yAxis["label"] || (this.yCol || "");
     this.xLim = xAxis["range"];
     this.yLim = yAxis["range"];
 
-    if (this.type == "histogram") {
-        this.histogramStyle = jsonPlot["histogram"] || {};
+    var defaultStyle,
+        style = jsonPlot["style"] || {};
+    if (this.type == "scatter") {
+        defaultStyle = stateMarkerStyle;
+    } else if (this.type == "histogram") {
+        defaultStyle = stateHistogramStyle;
+        this.bins = xAxis['bins'] || yAxis['bins'] || defaults["bins"];
+        console.debug(this.bins);
+    } else {
+        console.log("Invalid type '" + this.type + "'");
+        return;
     }
+
+    // TODO: modify defaultStyle with state-level styles
+    for (var key in defaultStyle) {
+        var thisStyle = style[key] || {};
+        for (var key2 in defaultStyle[key]) {
+            thisStyle[key2] = thisStyle[key2] || defaultStyle[key][key2];
+        }
+        style[key] = thisStyle;
+    }
+    this.style = style;
 
     this.translate = function(state) {
         // compute the amount to translate the individual plots by
@@ -205,7 +236,7 @@ Plot = function(jsonPlot) {
                             .scale(state.xScaler)
                             .orient("bottom")
                             .ticks(5)
-                            .tickSize(defaultTickSize);
+                            .tickSize(defaults["tickSize"]);
 
             var xAxis = cell.selectAll(".x-axis")
                           .data([this]);
@@ -240,7 +271,7 @@ Plot = function(jsonPlot) {
                         .scale(state.yScaler)
                         .orient("left")
                         .ticks(5)
-                        .tickSize(defaultTickSize);
+                        .tickSize(defaults["tickSize"]);
 
             var yAxis = cell.selectAll(".y-axis")
                           .data([this]);
@@ -291,11 +322,10 @@ Plot = function(jsonPlot) {
         if (this.type == "scatter") {
             scatter(state, this, cell);
         } else if (this.type == "histogram") {
-            // TODO: histogram
             histogram(state, this, cell);
         } else {
             alert("Invalid plot type.");
-            return false;
+            return;
         }
     }
 
@@ -315,9 +345,35 @@ State = function(jsonState) {
                   this.nCols * (this.figure.plotStyle['size']['width'] + this.figure.plotStyle['spacing']['horizontal']) +
                   this.figure.plotStyle['spacing']['horizontal'];
 
+    //// these must go before the plot definitions
+    // state-global marker styling
+    stateMarkerStyle = defaults["markerStyle"];
+    var markerStyle = jsonState["markerStyle"] || {}; // for this particular state
+    for (var key in stateMarkerStyle) {
+        var tmp = markerStyle[key] || {};
+        for (var key2 in tmp) {
+            console.debug("changing state marker " + key + " " + key2 + " from " +
+                          stateMarkerStyle[key][key2] + " to " + tmp[key2]);
+            stateMarkerStyle[key][key2] = tmp[key2];
+        }
+    }
+
+    // state-global histogram styling
+    stateHistogramStyle = defaults["histogramStyle"];
+    var histogramStyle = jsonState["histogramStyle"] || {}; // for this particular state
+    for (var key in stateHistogramStyle) {
+        var tmp = histogramStyle[key] || {};
+        for (var key2 in tmp) {
+            console.debug("changing state histogram " + key + " " + key2 + " from " +
+                          stateHistogramStyle[key][key2] + " to " + tmp[key2]);
+            stateHistogramStyle[key][key2] = tmp[key2];
+        }
+    }
+
     this.plots = [];
     for (var ii=0; ii < jsonState['plots'].length; ii++) {
         var plot = new Plot(jsonState['plots'][ii]);
+        plot.index = ii;
         this.plots.push(plot);
     }
 
@@ -333,29 +389,15 @@ State = function(jsonState) {
     if ('colorAxis' in jsonState) {
         this.colorAxis = jsonState['colorAxis'];
         this.cScaler.domain(columnDomains[this.colorAxis]);
-        this.cScaler.range(jsonState['colorMap'] || defaultColorMap);
+        this.cScaler.range(jsonState['colorMap'] || defaults["colorScale"]["map"]);
     }
 
+    // state caption
     this.caption = jsonState["caption"] || "";
-
-    // marker
-    this.markerStyle = {};
-
-    marker = jsonState["marker"] || {};
-    this.markerStyle['selected'] = marker["selected"] || {};
-    this.markerStyle['unselected'] = marker["unselected"] || {};
-
-    for (var key in defaultMarkerStyle["selected"]) {
-        this.markerStyle['selected'][key] = this.markerStyle['selected'][key] ||
-                                           defaultMarkerStyle["selected"][key];
-        this.markerStyle['unselected'][key] = this.markerStyle['unselected'][key] ||
-                                             defaultMarkerStyle["unselected"][key];
-    }
 
     /*
         brushes
     */
-
     // keep track of what cell is being brushed
     // TODO: bug here with histogram...
     var brushCell = undefined,
@@ -394,23 +436,23 @@ State = function(jsonState) {
                         svg.selectAll("circle.data")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.markerStyle["selected"]["size"];
+                                    return state.plots[$(this).attr('plot-index')].style["selected"]["size"];
                                 } else {
-                                    return state.markerStyle["unselected"]["size"];
+                                    return state.plots[$(this).attr('plot-index')].style["unselected"]["size"];
                                 }
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.cScaler(d[state.colorAxis]) || state.markerStyle["selected"]["color"];
+                                    return state.cScaler(d[state.colorAxis]) || state.plots[$(this).attr('plot-index')].style["selected"]["color"];
                                 } else {
-                                    return state.markerStyle["unselected"]["color"];
+                                    return state.plots[$(this).attr('plot-index')].style["unselected"]["color"];
                                 }
                             })
                             .attr("opacity", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.markerStyle["selected"]["opacity"];
+                                    return state.plots[$(this).attr('plot-index')].style["selected"]["opacity"];
                                 } else {
-                                    return state.markerStyle["unselected"]["opacity"];
+                                    return state.plots[$(this).attr('plot-index')].style["unselected"]["opacity"];
                                 }
                             })
                     })
@@ -437,9 +479,7 @@ State = function(jsonState) {
                         var extent0 = [_extent0[0][0], _extent0[1][0]];
 
                         var rawData = allPlotData.map(function(d) { return parseFloat(d[p.xCol]); });
-                        var data = d3.layout.histogram()
-                                            .bins(p.histogramStyle['bins'] || 10)
-                                            (rawData);
+                        var data = d3.layout.histogram().bins(p.bins)(rawData);
 
                         var min_d0, min_d1, e0, e1, dx;
                         for (var ii=0; ii < (data.length+1); ii++) {
@@ -479,8 +519,9 @@ State = function(jsonState) {
                         svg.selectAll("rect.data")
                            .style("fill", function(d,ii) {
                                 if ((d.x >= e0) && ((d.x+d.dx) <= e1)) {
-                                    console.log(state.markerStyle["selected"]["color"]);
-                                    return state.markerStyle["selected"]["color"];
+                                    return p.style["selected"]["color"];
+                                } else {
+                                    return p.style["unselected"]["color"];
                                 }
                            })
                            .attr("opacity", function(d,ii) {
@@ -493,23 +534,23 @@ State = function(jsonState) {
                         svg.selectAll("circle.data")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.markerStyle["selected"]["size"];
+                                    return state.plots[$(this).attr('plot-index')].style["selected"]["size"];
                                 } else {
-                                    return state.markerStyle["unselected"]["size"];
+                                    return state.plots[$(this).attr('plot-index')].style["unselected"]["size"];
                                 }
                             })
                             .style("fill", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.cScaler(d[state.colorAxis]) || state.markerStyle["selected"]["color"];
+                                    return state.cScaler(d[state.colorAxis]) || state.plots[$(this).attr('plot-index')].style["selected"]["color"];
                                 } else {
-                                    return state.markerStyle["unselected"]["color"];
+                                    return state.plots[$(this).attr('plot-index')].style["unselected"]["color"];
                                 }
                             })
                             .attr("opacity", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
-                                    return state.markerStyle["selected"]["opacity"];
+                                    return state.plots[$(this).attr('plot-index')].style["selected"]["opacity"];
                                 } else {
-                                    return state.markerStyle["unselected"]["opacity"];
+                                    return state.plots[$(this).attr('plot-index')].style["unselected"]["opacity"];
                                 }
                             })
                     })
@@ -557,7 +598,7 @@ function initialize(jsonFilename, csvFilename) {
     d3.json(jsonFilename, function(error, _tmp) {
         if (error) {
             console.warn(error);
-            alert('Unable to find file "' + jsonFilename + '"');
+            alert('Unable to find file or error parsing "' + jsonFilename + '"');
         }
         jsonData = _tmp;
 

@@ -4,7 +4,7 @@
         {
             "grid" : {
                 "nRows" : 1,
-                "nColumns" : 2
+                "nColumns" : 3
             },
             "name" : "None selected",
             "figure" : {
@@ -21,8 +21,9 @@
                     },
                     "size" : {
                         "width" : 250,
-                        "height" : 250}
+                        "height" : 250
                     }
+                }
             },
             "caption" : "test 1",
             "markerStyle" : {
@@ -64,10 +65,17 @@
                 {
                     "gridPosition" : [0,0],
                     "xAxis" : {
-                        "columnName" : "H2OK2 Index"
-                    },
-                    "histogram" : {
+                        "columnName" : "H2OK2 Index",
                         "bins" : 5
+                    },
+                    "type" : "histogram",
+                    "style" : {
+                        "selected" : {
+                            "color" : "#0000ff"
+                        },
+                        "unselected" : {
+                            "color" : "#00ffff"
+                        }
                     }
                 },
                 {
@@ -77,9 +85,28 @@
                     },
                     "yAxis" : {
                         "columnName" : "H-K"
+                    },
+                    "type" : "scatter"
+                },
+                {
+                    "gridPosition" : [0,2],
+                    "xAxis" : {
+                        "columnName" : "J-H"
+                    },
+                    "yAxis" : {
+                        "columnName" : "EW NA"
+                    },
+                    "type" : "scatter",
+                    "style" : {
+                        "selected" : {
+                            "color" : "#ff0000"
+                        },
+                        "unselected" : {
+                            "color" : "#00ff00"
+                        }
                     }
                 }
             ]
-        },
+        }
     ]
 }
