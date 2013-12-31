@@ -429,9 +429,19 @@ State = function(jsonState) {
                         var xRange = [e[0][0], e[1][0]],
                             yRange = [e[0][1], e[1][1]];
 
-                        state.selection = {'range' : {}}
-                        state.selection['range'][p.xCol] = xRange;
-                        state.selection['range'][p.yCol] = yRange;
+                        state.jsonSelection = {
+                            "type" : "box",
+                            "bounds" : [
+                                {
+                                    "range" : xRange,
+                                    "columnName" : p.xCol
+                                },
+                                {
+                                    "range" : yRange,
+                                    "columnName" : p.yCol
+                                }
+                            ]
+                        };
 
                         svg.selectAll("circle.data")
                            .attr("r", function (d,ii) {
@@ -513,8 +523,15 @@ State = function(jsonState) {
                                        .attr("height", state.figure.plotStyle['size']['height'])
                                        .attr("y", state.figure.plotStyle['spacing']['vertical']/2);
 
-                        state.selection = {'range' : {}}
-                        state.selection['range'][p.xCol] = [e0,e1];
+                        state.jsonSelection = {
+                            "type" : "box",
+                            "bounds" : [
+                                {
+                                    "range" : [e0,e1],
+                                    "columnName" : p.xCol
+                                }
+                            ]
+                        };
 
                         svg.selectAll("rect.data")
                            .style("fill", function(d,ii) {
@@ -524,10 +541,11 @@ State = function(jsonState) {
                                     return p.style["unselected"]["color"];
                                 }
                            })
-                           .attr("opacity", function(d,ii) {
+                           .attr("fill-opacity", function(d,ii) {
                                 if ((d.x >= e0) && ((d.x+d.dx) <= e1)) {
-                                    //return state.markerStyle["selected"]["opacity"];
-                                    return 1.0;
+                                    return p.style["selected"]["opacity"];
+                                } else {
+                                    return p.style["unselected"]["opacity"];
                                 }
                            })
 
@@ -555,34 +573,71 @@ State = function(jsonState) {
                             })
                     })
 
-    this.selection = jsonState['selection'];
-    this.isSelected = function(d, ii) {
-        if (!this.selection) {
-            return true;
+    this.jsonSelection = jsonState['selection'] || {};
+    if (!this.jsonSelection ) {
+        this.isSelected = function(d, ii) {
+            return false;
         }
-
-        range_bool = true;
-        if ('range' in this.selection) {
-            var bools = [];
-            for (var colName in this.selection['range']) {
-                var r = this.selection['range'][colName];
-                if ((d[colName] >= r[0]) && (d[colName] <= r[1])) {
-                    bools.push(true);
-                } else {
-                    bools.push(false);
-                }
-            }
-            range_bool = bools.every(Boolean);
+    } else {
+        this.isSelected = function(d,ii) {
+            return selectionFunctionDispatch[this.jsonSelection['type']](this,d,ii);
         }
+    }
 
-        if ('booleanColumn' in this.selection) {
-            var boolColName = this.selection['booleanColumn'];
-            if (allPlotData[ii][boolColName] == 1) {
-                return true && range_bool;
-            }
+    //
+    // this.isSelected = function(d, ii) {
+    //     if (!this.selection) {
+    //         return true;
+    //     }
+
+    //     range_bool = true;
+    //     if ('range' in this.selection) {
+    //         var bools = [];
+    //         for (var colName in this.selection['range']) {
+    //             var r = this.selection['range'][colName];
+    //             if ((d[colName] >= r[0]) && (d[colName] <= r[1])) {
+    //                 bools.push(true);
+    //             } else {
+    //                 bools.push(false);
+    //             }
+    //         }
+    //         range_bool = bools.every(Boolean);
+    //     }
+
+    //     if ('booleanColumn' in this.selection) {
+    //         var boolColName = this.selection['booleanColumn'];
+    //         if (allPlotData[ii][boolColName] == 1) {
+    //             return true && range_bool;
+    //         }
+    //     }
+
+    //     return range_bool;
+    // }
+}
+
+selectionFunctionDispatch = {};
+
+selectionFunctionDispatch['box'] = function(state,d,ii) {
+    var boundsList = state.jsonSelection ['bounds'];
+
+    var bools = [];
+    for (var jj=0; jj < boundsList.length; jj++) {
+        var rng = boundsList[jj]['range'],
+        colName = boundsList[jj]['columnName'];
+
+        if ((d[colName] >= rng[0]) && (d[colName] <= rng[1])) {
+            bools.push(true);
+        } else {
+            bools.push(false);
         }
+    }
+    return bools.every(Boolean);
+}
 
-        return range_bool;
+selectionFunctionDispatch['booleanColumn'] = function(state,d,ii) {
+    var boolColName = state.jsonSelection['columnName'];
+    if (allPlotData[ii][boolColName] == 1) {
+        return true;
     }
 }
 

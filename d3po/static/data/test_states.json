@@ -52,11 +52,11 @@
                 "type": "box",
                 "bounds": [
                     {
-                        "range": [1, 4],
+                        "range": [0.55, 0.6],
                         "columnName" : "J-H"
                     },
                     {
-                        "range": [1, 4],
+                        "range": [0.26,0.3],
                         "columnName" : "H-K"
                     }
                 ]
@@ -71,10 +71,12 @@
                     "type" : "histogram",
                     "style" : {
                         "selected" : {
-                            "color" : "#0000ff"
+                            "color" : "#0000ff",
+                            "opacity" : 0.25
                         },
                         "unselected" : {
-                            "color" : "#00ffff"
+                            "color" : "#00ffff",
+                            "opacity" : 1.0
                         }
                     }
                 },
@@ -99,10 +101,12 @@
                     "type" : "scatter",
                     "style" : {
                         "selected" : {
-                            "color" : "#ff0000"
+                            "color" : "#ff0000",
+                            "opacity" : 1.0
                         },
                         "unselected" : {
-                            "color" : "#00ff00"
+                            "color" : "#00ff00",
+                            "opacity" : 0.2
                         }
                     }
                 }
