@@ -8,17 +8,17 @@
                     "caption" : "Kepler planets discovered in the first 43 days (Borucki et al. 2011a,b).",
                     "colorAxis": "Planet Radius",
                     "colorMap": ["orange","green"],
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
                                     "xAxis" : "Period",
                                     "yAxis" : "Planet Radius"
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
                                     "xAxis" : "Teq",
                                     "yAxis" : "Planet Radius"
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
                                     "xAxis" : "Discovery Quarter",
                                     "yAxis" : "r/R",
@@ -34,17 +34,17 @@
                     "caption" : "Kepler planets discovered in the first 13 months (Borucki et al. 2011b).",
                     "colorAxis": "KOI count",
                     "colorMap": "YlOrRd",
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
                                     "xAxis" : "Period",
                                     "yAxis" : "Planet Radius"
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
                                     "xAxis" : "Teq",
                                     "yAxis" : "Planet Radius"
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
                                     "xAxis" : "Discovery Quarter",
                                     "yAxis" : "r/R",
@@ -60,17 +60,17 @@
                     "caption" : "Kepler planets discovered in the first 16 months (Batalha et al. 2013).",
                     "colorAxis": "KOI count",
                     "colorMap": "YlOrRd",
-                    "plots" : [ { 
+                    "plots" : [ {
                                     "gridPosition" : [0,0],
                                     "xAxis" : "Period",
                                     "yAxis" : "Planet Radius"
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,1],
                                     "xAxis" : "Teq",
                                     "yAxis" : "Planet Radius"
                                 },
-                                { 
+                                {
                                     "gridPosition" : [0,2],
                                     "xAxis" : "Discovery Quarter",
                                     "yAxis" : "r/R",

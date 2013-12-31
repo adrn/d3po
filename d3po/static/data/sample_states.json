@@ -1,219 +1,377 @@
 {
     "title" : "Something about M dwarfs",
-    "states" : [{
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "All stars",
-                    "caption" : "This plot shows the near-infrared 2MASS colors of M dwarfs observed by Newton et al. (2013). One color is plotted on the x-axis and another color is plotted on the y-axis. The stars trace out a main sequence, with some scatter.",
-                    "marker" : {"selected" : {"opacity" : 0.75,
-                                              "size" : 5,
-                                              "color" : "#333333"},
-                                "deselected" : {"opacity" : 0.25,
-                                                "size" : 3,
-                                                "color" : "#cccccc"}
-                               },
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "H-K"},
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-                                    "xAxis" : {"columnName" : "J-K",
-                                               "range" : [0.85,1.0]},
-                                    "yAxis" : {"columnName" : "J-H",
-                                               "range" : [0.55,0.65]}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                                }
-                            ]
-                },
-                {
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "Late M dwarfs",
-                    "caption" : "Late M dwarfs",
-                    "selection" : {"range" : {"H2OK2 Index" : [0.65, 0.83]} },
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 6}
-                               }
-                            ]
-                },
-            	{
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "Colored by Na abundance",
-                    "colorAxis" : "EW NA",
-                    "colorMap" : ["blue", "red"],
-                    "caption" : "In this plot, the near-infrared colors of the M dwarfs remain the same. However, now the stars are colored by their Na abundance, which we calibrated as a proxy for metallicity. You can see that a metal-rich star is seen to have a different color than a more metal-poor star of the same spectral type. This allowed us to calibrate a relation for Na abundance (and therefore iron abundance) using 2MASS photometry.",
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "H-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-               	                     "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                                }
-                            ]
-                },
-                            	{
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "Early M dwarfs colored by Na EW",
-                    "colorAxis" : "EW NA",
-                    "colorMap" : ["blue", "red"],
-                    "caption" : "First we highlight the early M dwarfs, coloring each data point by its Na abundance...",
-                    "selection" : {"range" : {"H2OK2 Index" : [0.9, 1.2]} },
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "H-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-               	                     "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                                  }
-                            ]
-                },
-                            	{
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "Mid M dwarfs colored by Na EW",
-                    "colorAxis" : "EW NA",
-                    "colorMap" : ["blue", "red"],
-                    "caption" : "...and the mid M and their EW Na...",
-                    "selection" : {"range" : {"H2OK2 Index" : [0.83, 0.9]} },
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "H-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-               	                     "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                                  }
-                            ]
-                },
-                {
-                    "grid" : { "nRows" : 1,
-                               "nColumns" : 4},
-                    "name" : "Late M dwarfs colored by Na EW",
-                    "colorAxis" : "EW NA",
-                    "colorMap" : ["blue", "red"],
-                    "caption" : "Late M and iron abundance",
-                    "selection" : {"range" : {"H2OK2 Index" : [0.1, 0.83]} },
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "H-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,2],
-               	                     "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [0,3],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                                  }
-                            ]
-                },
-                {
-                    "grid" : { "nRows" : 2,
-                               "nColumns" : 2},
-                    "name" : "grid",
-                    "colorAxis" : "EW NA",
-                    "colorMap" : ["blue", "red"],
-                    "caption" : "Late M and iron abundance",
-                    "plots" : [ {
-                                    "gridPosition" : [0,0],
-                                    "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "H-K"}
-                                },
-                                {
-                                    "gridPosition" : [0,1],
-                                    "xAxis" : {"columnName" : "H-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [1,0],
-               	                     "xAxis" : {"columnName" : "J-K"},
-                                    "yAxis" : {"columnName" : "J-H"}
-                                },
-                                {
-                                    "gridPosition" : [1,1],
-                                    "xAxis" : {"columnName" : "H2OK2 Index"},
-                                    "histogram" : {"bins" : 5}
-                                  }
-                            ]
+    "states" : [
+        {
+            "grid" : {
+                "nRows" : 1,
+                "nColumns" : 4
+            },
+            "name" : "All stars",
+            "caption" : "This plot shows the near-infrared 2MASS colors of M dwarfs observed by Newton et al. (2013). One color is plotted on the x-axis and another color is plotted on the y-axis. The stars trace out a main sequence, with some scatter.",
+            "markerStyle" : {
+                "selected" : {
+                    "size" : 5
                 }
-
-
-
+            },
+            "plots" : [
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "H-K"
+                    }
+                },
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,2],
+                    "xAxis" : {
+                        "columnName" : "J-K",
+                        "range" : [0.85,1.0]
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H",
+                        "range" : [0.55,0.65]
+                    }
+                },
+                {
+                    "gridPosition" : [0,3],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index",
+                        "bins" : 5
+                    },
+                    "type" : "histogram"
+                }
             ]
+        },
+        {
+            "grid" : {
+                "nRows" : 1,
+                "nColumns" : 4
+            },
+            "name" : "Late M dwarfs",
+            "caption" : "Late M dwarfs",
+            "selection" : {
+                "type": "box",
+                "bounds": [
+                    {
+                        "range": [0.65, 0.83],
+                        "columnName" : "H2OK2 Index"
+                    }
+                ]
+            },
+            "plots" : [
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-K"
+                    }
+                },
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,2],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,3],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index",
+                        "bins" : 9
+                    },
+                    "type" : "histogram"
+               }
+            ]
+        },
+    	{
+            "grid" : { "nRows" : 1,
+                       "nColumns" : 4},
+            "name" : "Colored by Na abundance",
+            "colorScale" : {
+                "columnName" : "EW NA",
+                "map" : ["blue", "red"]
+            },
+            "caption" : "In this plot, the near-infrared colors of the M dwarfs remain the same. However, now the stars are colored by their Na abundance, which we calibrated as a proxy for metallicity. You can see that a metal-rich star is seen to have a different color than a more metal-poor star of the same spectral type. This allowed us to calibrate a relation for Na abundance (and therefore iron abundance) using 2MASS photometry.",
+            "plots" : [
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "H-K"
+                    }
+                },
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,2],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,3],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index",
+                        "bins" : 7
+                    },
+                    "type" : "histogram"
+                }
+            ]
+        },
+        {
+            "grid" : { "nRows" : 1,
+                       "nColumns" : 4},
+            "name" : "Early M dwarfs colored by Na EW",
+            "colorScale" : {
+                "columnName" : "EW NA",
+                "map" : ["blue", "red"]
+            },
+            "caption" : "First we highlight the early M dwarfs, coloring each data point by its Na abundance...",
+            "selection" : {
+                "type": "box",
+                "bounds": [
+                    {
+                        "range": [0.9, 1.2],
+                        "columnName" : "H2OK2 Index"
+                    }
+                ]
+            },
+            "plots" : [
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "H-K"
+                    }
+                },
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,2],
+       	            "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,3],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index",
+                        "bins" : 7
+                    },
+                    "type" : "histogram"
+                }
+            ]
+        },
+                    	{
+            "grid" : { "nRows" : 1,
+                       "nColumns" : 4},
+            "name" : "Mid M dwarfs colored by Na EW",
+            "colorScale" : {
+                "columnName" : "EW NA",
+                "map" : ["blue", "red"]
+            },
+            "caption" : "...and the mid M and their EW Na...",
+            "selection" : {
+                "type": "box",
+                "bounds": [
+                    {
+                        "range": [0.83, 0.9],
+                        "columnName" : "H2OK2 Index"
+                    }
+                ]
+            },
+            "plots" : [
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "H-K"
+                    }
+                },
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,2],
+       	            "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,3],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index",
+                        "bins" : 7
+                    },
+                    "type" : "histogram"
+                }
+            ]
+        },
+        {
+            "grid" : {
+                "nRows" : 1,
+                "nColumns" : 4
+            },
+            "name" : "Late M dwarfs colored by Na EW",
+            "colorScale" : {
+                "columnName" : "EW NA",
+                "map" : ["blue", "red"]
+            },
+            "caption" : "Late M and iron abundance",
+            "selection" : {
+                "type": "box",
+                "bounds": [
+                    {
+                        "range": [0.1, 0.83],
+                        "columnName" : "H2OK2 Index"
+                    }
+                ]
+            },
+            "plots" : [
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "H-K"
+                    }
+                },
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,2],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [0,3],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index",
+                        "bins" : 7
+                    },
+                    "type" : "histogram"
+                }
+            ]
+        },
+        {
+            "grid" : {
+                "nRows" : 2,
+                "nColumns" : 2
+            },
+            "name" : "grid",
+            "colorScale" : {
+                "columnName" : "EW NA",
+                "map" : ["blue", "red"]
+            },
+            "caption" : "Late M and iron abundance",
+            "plots" : [
+                {
+                    "gridPosition" : [0,0],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "H-K"
+                    }
+                },
+                {
+                    "gridPosition" : [0,1],
+                    "xAxis" : {
+                        "columnName" : "H-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [1,0],
+                    "xAxis" : {
+                        "columnName" : "J-K"
+                    },
+                    "yAxis" : {
+                        "columnName" : "J-H"
+                    }
+                },
+                {
+                    "gridPosition" : [1,1],
+                    "xAxis" : {
+                        "columnName" : "H2OK2 Index",
+                        "bins" : 7
+                    },
+                    "type" : "histogram"
+                }
+            ]
+        }
+    ]
 }
