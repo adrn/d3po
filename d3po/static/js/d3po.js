@@ -444,6 +444,11 @@ State = function(jsonState) {
                             ]
                         };
 
+                        // grey out any histogram bars
+                        svg.selectAll("rect.data")
+                           .style("fill", "#cccccc")
+                           .style("fill-opacity", 0.5);
+
                         svg.selectAll("circle.data")
                            .attr("r", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
