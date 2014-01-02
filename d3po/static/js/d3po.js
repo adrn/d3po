@@ -13,18 +13,18 @@ var allPlotData,
 var defaults = {
     "stateStyle" : {
         "padding" : {
-            "top" : 0,
-            "left" : 0,
-            "right" : 0,
+            "top" : 20,
+            "left" : 50,
+            "right" : -20,
             "bottom" : 0
         },
     },
     "plotStyle" : {
         "padding" : {
-            "top" : 0,
-            "left" : 0,
-            "right" : 0,
-            "bottom" : 0
+            "top" : 25,
+            "left" : 20,
+            "right" : 100,
+            "bottom" : 50
         },
         "size" : {
             "width" : 200,
@@ -57,7 +57,8 @@ var defaults = {
         "map" : ["red", "blue"]
     },
     "bins" : 10,
-    "tickSize" : 16
+    "tickSize" : 16,
+    "nTicks" : 5
 };
 
 /*
@@ -109,7 +110,7 @@ function histogram(state, plot, cell) {
     var data = d3.layout.histogram().bins(nbins)(rawData);
 
     var barWidth = state.xScaler(2*data[0].dx) - state.xScaler(data[0].dx);
-    var height = state.figure.plotStyle['size']['height'];
+    var height = state.plotStyle['size']['height'];
 
     var barHeightScaler = d3.scale.linear()
               .domain([0, d3.max(data, function(d) { return d.y; })])
@@ -136,11 +137,11 @@ function histogram(state, plot, cell) {
             }
         });
     bar.transition().duration(400).ease("quad-out")
-       .attr("x", function(d) {
+        .attr("x", function(d) {
             return state.xScaler(d.x);
         })
         .attr("y", function(d) {
-            return barHeightScaler(d.y) + state.figure.plotStyle['spacing']['vertical']/2 + state.figure.padding['top'];
+            return barHeightScaler(d.y) + state.plotStyle['padding']['top'];
         })
         .attr("width", barWidth)
         .attr("height", function(d) {
@@ -170,6 +171,9 @@ Plot = function(jsonPlot) {
     this.xLim = xAxis["range"];
     this.yLim = yAxis["range"];
 
+    this.nXTicks = xAxis["xTicks"] || defaults["nTicks"];
+    this.nYTicks = xAxis["yTicks"] || defaults["nTicks"];
+
     var defaultStyle,
         style = jsonPlot["style"] || {};
     if (this.type == "scatter") {
@@ -183,7 +187,6 @@ Plot = function(jsonPlot) {
         return;
     }
 
-    // TODO: modify defaultStyle with state-level styles
     for (var key in defaultStyle) {
         var thisStyle = style[key] || {};
         for (var key2 in defaultStyle[key]) {
@@ -196,13 +199,14 @@ Plot = function(jsonPlot) {
     this.translate = function(state) {
         // compute the amount to translate the individual plots by
         // TODO: why are indices flipped??
-        var xIndex = this.gridPosition[1],
-            xTrans = xIndex * (state.figure.plotStyle['size']['width'] +
-                               state.figure.plotStyle['spacing']['horizontal']);
 
-        var yIndex = this.gridPosition[0],
-            yTrans = (state.nRows - yIndex - 1) * (state.figure.plotStyle['size']['height'] +
-                                                   state.figure.plotStyle['spacing']['vertical']);
+        var xIndex = this.gridPosition[1],
+            yIndex = this.gridPosition[0];
+
+        xTrans = xIndex * (state.plotStyle['padding']['left'] + state.plotStyle['padding']['right'] +
+                           state.plotStyle['size']['width']);
+        yTrans = yIndex *(state.plotStyle['padding']['top'] + state.plotStyle['padding']['bottom'] +
+                          state.plotStyle['size']['height']);
 
         return [xTrans,yTrans];
     }
@@ -216,8 +220,16 @@ Plot = function(jsonPlot) {
             xAxisD3 = d3.svg.axis()
                             .scale(state.xScaler)
                             .orient("bottom")
-                            .ticks(5)
-                            .tickSize(defaults["tickSize"]);
+                            .ticks(this.nXTicks)
+                            .tickSize(defaults["tickSize"])
+                            .tickFormat(function (d) {
+                                if (d > 1e4) {
+                                    var x = d3.format('e');
+                                    return x(d);
+                                } else {
+                                    return d;
+                                }
+                            });
 
             var xAxis = cell.selectAll(".x-axis")
                           .data([this]);
@@ -226,7 +238,7 @@ Plot = function(jsonPlot) {
             xAxis.exit().remove();
             xAxis.transition().duration(0).ease('quad-out')
                  .attr("transform", function(p) {
-                    return "translate(0," + (state.figure.plotStyle['size']['height']  + state.figure.plotStyle['spacing']['vertical']/2 - 10) + ")";
+                    return "translate(0," + (state.plotStyle['size']['height'] + state.plotStyle['padding']['top'] - 10) + ")";
                 }).each(function(p) {
                     d3.select(this).call(xAxisD3);
                 });
@@ -239,10 +251,10 @@ Plot = function(jsonPlot) {
             xLabel.exit().remove();
             xLabel.text(function(p, i) { return p.xLabel; });
             xLabel.attr("x", function(p) {
-                return state.figure.plotStyle['size']['width']/2. - $(this).width()/2.;
+                return state.plotStyle['padding']['left'] + state.plotStyle['size']['width']/2. - $(this).width()/2.;
             });
             xLabel.attr("y", function(p) {
-                return state.figure.plotStyle['size']['height'] + $(this).height();
+                return state.plotStyle['padding']['top'] + state.plotStyle['size']['height'] + $(this).height() + 15;
             });
 
         }
@@ -255,8 +267,16 @@ Plot = function(jsonPlot) {
             yAxisD3 = d3.svg.axis()
                         .scale(state.yScaler)
                         .orient("left")
-                        .ticks(5)
-                        .tickSize(defaults["tickSize"]);
+                        .ticks(this.nYTicks)
+                        .tickSize(defaults["tickSize"])
+                        .tickFormat(function (d) {
+                                if (d > 1e4) {
+                                    var x = d3.format('e');
+                                    return x(d);
+                                } else {
+                                    return d;
+                                }
+                        });
 
             var yAxis = cell.selectAll(".y-axis")
                           .data([this]);
@@ -264,7 +284,7 @@ Plot = function(jsonPlot) {
                  .attr("class", "axis y-axis");
             yAxis.transition().duration(0).ease('quad-out')
                 .attr("transform", function(p, i) {
-                    return "translate(" + (state.figure.plotStyle['spacing']['horizontal']/2 + 10) + ",0)";
+                    return "translate(" + (state.plotStyle['padding']['left'] + 10) + ",0)";
                 }).each(function(p) {
                     d3.select(this).call(yAxisD3);
                 });
@@ -276,8 +296,12 @@ Plot = function(jsonPlot) {
                   .attr("class", "axis-label y-label");
             yLabel.exit().remove();
             yLabel.text(function(p,i) { return p.yLabel; });
-            yLabel.attr("x", function(p) { return -((state.figure.plotStyle['spacing']['vertical']/2) + state.figure.plotStyle['size']['height']/2. + $(this).width()/2.); }) // deliberately backwards cause rotated
-                  .attr("y", function(p) { return 0.; });
+            yLabel.attr("x", function(p) {
+                return -((state.plotStyle['padding']['top']) + state.plotStyle['size']['height']/2. + $(this).width()/2.);// deliberately backwards cause rotated
+            })
+            .attr("y", function(p) {
+                return -(state.plotStyle['padding']['left']);
+            });
 
         }
 
@@ -287,18 +311,20 @@ Plot = function(jsonPlot) {
         rect.exit().remove();
         rect.transition().duration(400).ease("quad-out")
             .attr("class", "frame")
-            .attr("x", state.figure.plotStyle['spacing']['horizontal'] / 2)
-            .attr("y", state.figure.plotStyle['spacing']['vertical'] / 2)
-            .attr("width", state.figure.plotStyle['size']['width'])
-            .attr("height", state.figure.plotStyle['size']['height']);
+            .attr("x", state.plotStyle['padding']['left'])
+            .attr("y", state.plotStyle['padding']['top'])
+            .attr("width", state.plotStyle['size']['width'])
+            .attr("height", state.plotStyle['size']['height']);
 
-        svg.append("defs").append("clipPath")
+        // TODO: fix clippath
+        svg.select("g.state-g")
+           .append("defs").append("clipPath")
                           .attr("id", "clip")
                           .append("rect")
-                          .attr("x", state.figure.plotStyle['spacing']['horizontal'] / 2)
-                          .attr("y", state.figure.plotStyle['spacing']['vertical'] / 2)
-                          .attr("width", state.figure.plotStyle['size']['width'])
-                          .attr("height", state.figure.plotStyle['size']['height']);
+                          .attr("x", state.plotStyle['padding']['left'])
+                          .attr("y", state.plotStyle['padding']['top'])
+                          .attr("width", state.plotStyle['size']['width'])
+                          .attr("height", state.plotStyle['size']['height']);
 
     }
 
@@ -334,19 +360,19 @@ State = function(jsonState) {
         "bottom" : statePadding["bottom"] || defaultPadding["bottom"]
     };
 
-    var defaultPlotStyle = defaults["plotStyle"],
-        plotStyle = jsonState["plotStyle"] || {};
-    this.plotStyle = {};
-
-    for (var key in defaultPlotStyle) {
+    //// these must go before the plot definitions
+    // state-global plot padding / size
+    this.plotStyle = JSON.parse(JSON.stringify(defaults["plotStyle"]));
+    var plotStyle = jsonState["plotStyle"] || {}; // for this particular state
+    for (var key in this.plotStyle) {
         var tmp = plotStyle[key] || {};
-        this.plotStyle[key] = {};
-        for (var key2 in defaultPlotStyle[key]) {
-            this.plotStyle[key][key2] = tmp[key2] || defaultPlotStyle[key][key2];
+        for (var key2 in tmp) {
+            console.debug("changing state plot " + key + " " + key2 + " from " +
+                          this.plotStyle[key][key2] + " to " + tmp[key2]);
+            this.plotStyle[key][key2] = tmp[key2];
         }
     }
 
-    //// these must go before the plot definitions
     // state-global marker styling
     stateMarkerStyle = defaults["markerStyle"];
     var markerStyle = jsonState["markerStyle"] || {}; // for this particular state
@@ -372,27 +398,30 @@ State = function(jsonState) {
     }
 
     // Compute the height / width of the svg element based on the plot size, plot spacing, and figure padding.
-    this.height = this.padding['top'] + this.padding['bottom'];
-    this.width = this.padding['left'] + this.padding['right'];;
+    var plotHeight = this.plotStyle['padding']['top'] + this.plotStyle['padding']['bottom'] +
+                     this.plotStyle['size']['height'],
+        plotWidth  = this.plotStyle['padding']['left'] + this.plotStyle['padding']['right'] +
+                     this.plotStyle['size']['width'];
+
+    this.height = this.padding['top'] + this.padding['bottom'] + this.nRows * plotHeight;
+    this.width = this.padding['left'] + this.padding['right'] + this.nCols * plotWidth;
+    console.log(this.height);
 
     this.plots = [];
     for (var ii=0; ii < jsonState['plots'].length; ii++) {
         var plot = new Plot(jsonState['plots'][ii]);
         plot.index = ii;
         this.plots.push(plot);
-
-        this.width = this.width + plot.width;
-        this.height = this.height + plot.height;
     }
 
     // Scalers for x / y axes from data space to pixel space relative to each plot cell
     // -- must go after height, width
     this.xScaler = d3.scale.linear()
-                     .range([this.figure.plotStyle['spacing']['horizontal']/2,
-                             this.figure.plotStyle['size']['width'] + this.figure.plotStyle['spacing']['horizontal']/2]);
+                     .range([this.plotStyle['padding']['left'],
+                             this.plotStyle['padding']['left'] + this.plotStyle['size']['width']]);
     this.yScaler = d3.scale.linear()
-                     .range([this.figure.plotStyle['size']['height'] + this.figure.plotStyle['spacing']['vertical']/2,
-                             this.figure.plotStyle['spacing']['vertical']/2]);
+                     .range([this.plotStyle['size']['height'] + this.plotStyle['padding']['top'],
+                             this.plotStyle['padding']['top']]);
 
     this.cScaler = d3.scale.linear();
     var colorScale = jsonState['colorScale'] || {};
@@ -536,8 +565,8 @@ State = function(jsonState) {
 
                         d3.select(this).call(state.xBrush.extent(extent1));
                         d3.select(this).select(".extent")
-                                       .attr("height", state.figure.plotStyle['size']['height'])
-                                       .attr("y", state.figure.plotStyle['spacing']['vertical']/2);
+                                       .attr("height", state.plotStyle['size']['height'])
+                                       .attr("y", state.plotStyle['padding']['top']);
 
                         state.jsonSelection = {
                             "type" : "box",
@@ -722,8 +751,6 @@ function drawState(jsonState) {
 
     // define a state object which automatically sets defaults
     state = new State(jsonState);
-    console.log(jsonState);
-    return;
 
     // Define top level svg tag
     svg = d3.select("#svg svg");
@@ -739,17 +766,20 @@ function drawState(jsonState) {
 
     // move the plot container group to account for figure padding
     svg.append("g")
-       .attr("transform", "translate(" + state.figure['padding']['left'] + "," +
-                                         state.figure['padding']['top'] + ")");
+       .attr("class", "state-g")
+       .attr("transform", "translate(" + state.padding['left'] + "," +
+                                         state.padding['top'] + ")");
 
     // Set up a cell group for each plot window, to then draw points and rectangle over
-    var cells = d3.select("svg").selectAll("g.cell").data(state.plots);
+    var cells = d3.select("g.state-g").selectAll("g.cell").data(state.plots);
     cells.enter().append("g")
          .attr("class", "cell");
     cells.exit().remove();
     cells.transition().duration(400).ease('quad-out')
-         .attr("transform", function(p) { return "translate(" + p.translate(state)[0] + ","
-                                                              + p.translate(state)[1] + ")"; });
+         .attr("transform", function(p) {
+            var xy = p.translate(state);
+            return "translate(" + xy[0] + "," + xy[1] + ")";
+        });
 
     // Add axes to the plots
     cells.each(function(p,ii) {
