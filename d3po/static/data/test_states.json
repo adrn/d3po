@@ -7,22 +7,21 @@
                 "nColumns" : 3
             },
             "name" : "Customize all",
-            "figure" : {
+            "stateStyle" : {
                 "padding" : {
                     "top" : 0,
                     "left" : 50,
                     "right" : 10,
                     "bottom" : 40
+                }
+            },
+            "plotStyle" : {
+                "padding" : {
+                    "bottom" : 40
                 },
-                "plotStyle" : {
-                    "spacing" : {
-                        "vertical" : 50,
-                        "horizontal" : 100
-                    },
-                    "size" : {
-                        "width" : 250,
-                        "height" : 250
-                    }
+                "size" : {
+                    "width" : 250,
+                    "height" : 250
                 }
             },
             "caption" : "test 1",

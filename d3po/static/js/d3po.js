@@ -11,22 +11,24 @@ var allPlotData,
 
 // all size / padding parameters are specified in pixels
 var defaults = {
-    "figure" : {
+    "stateStyle" : {
         "padding" : {
             "top" : 0,
             "left" : 0,
             "right" : 0,
-            "bottom" : 50
+            "bottom" : 0
         },
-        "plotStyle" : {
-            "spacing" : {
-                "vertical" : 50,
-                "horizontal" : 100
-            },
-            "size" : {
-                "width" : 200,
-                "height" : 200
-            }
+    },
+    "plotStyle" : {
+        "padding" : {
+            "top" : 0,
+            "left" : 0,
+            "right" : 0,
+            "bottom" : 0
+        },
+        "size" : {
+            "width" : 200,
+            "height" : 200
         }
     },
     "markerStyle" : {
@@ -151,27 +153,6 @@ function histogram(state, plot, cell) {
     Classes for parsing JSON and defaults
 */
 
-Figure = function(jsonFigure) {
-    var defaultPadding = defaults["figure"]["padding"],
-        defaultPlotStyle = defaults["figure"]["plotStyle"],
-        figure = jsonFigure || {};
-
-    var padding = figure["padding"] || {};
-    this.padding = {"top" : padding["top"] || defaultPadding["top"],
-                    "left" : padding["left"] || defaultPadding["left"],
-                    "right" : padding["right"] || defaultPadding["right"],
-                    "bottom" : padding["bottom"] || defaultPadding["bottom"]}
-
-    var plotStyle = figure["plotStyle"] || {};
-    var plotSpacing = plotStyle["spacing"] || {},
-        plotSize = plotStyle["size"] || {};
-    this.plotStyle = {"spacing" : { "vertical" : plotSpacing["vertical"] || defaultPlotStyle["spacing"]["vertical"],
-                                   "horizontal" : plotSpacing["horizontal"] || defaultPlotStyle["spacing"]["horizontal"]},
-                     "size" : { "width" : plotSize["width"] || defaultPlotStyle["size"]["width"],
-                                "height" : plotSize["height"] || defaultPlotStyle["size"]["height"]}
-                    }
-    }
-
 Plot = function(jsonPlot) {
 
     this.gridPosition = jsonPlot["gridPosition"] || [0,0];
@@ -217,8 +198,7 @@ Plot = function(jsonPlot) {
         // TODO: why are indices flipped??
         var xIndex = this.gridPosition[1],
             xTrans = xIndex * (state.figure.plotStyle['size']['width'] +
-                               state.figure.plotStyle['spacing']['horizontal']) +
-                               state.figure.plotStyle['spacing']['horizontal']/2.;
+                               state.figure.plotStyle['spacing']['horizontal']);
 
         var yIndex = this.gridPosition[0],
             yTrans = (state.nRows - yIndex - 1) * (state.figure.plotStyle['size']['height'] +
@@ -246,7 +226,7 @@ Plot = function(jsonPlot) {
             xAxis.exit().remove();
             xAxis.transition().duration(0).ease('quad-out')
                  .attr("transform", function(p) {
-                    return "translate(0," + (state.figure.plotStyle['size']['height'] + 15) + ")";
+                    return "translate(0," + (state.figure.plotStyle['size']['height']  + state.figure.plotStyle['spacing']['vertical']/2 - 10) + ")";
                 }).each(function(p) {
                     d3.select(this).call(xAxisD3);
                 });
@@ -258,8 +238,12 @@ Plot = function(jsonPlot) {
                   .attr("class", "axis-label x-label");
             xLabel.exit().remove();
             xLabel.text(function(p, i) { return p.xLabel; });
-            xLabel.attr("x", function(p) { return state.figure.plotStyle['spacing']['horizontal']/2 + state.figure.plotStyle['size']['width']/2. - $(this).width()/2.; })
-                  .attr("y", function(p) { return state.figure.plotStyle['spacing']['vertical']/2 + state.figure.plotStyle['size']['height'] + 50; });
+            xLabel.attr("x", function(p) {
+                return state.figure.plotStyle['size']['width']/2. - $(this).width()/2.;
+            });
+            xLabel.attr("y", function(p) {
+                return state.figure.plotStyle['size']['height'] + $(this).height();
+            });
 
         }
 
@@ -338,14 +322,29 @@ State = function(jsonState) {
 
     this.nRows = grid['nRows'] || 1;
     this.nCols = grid['nColumns'] || 1;
-    this.figure = new Figure(jsonState['figure']);
 
-    // Compute the height / width of the svg element based on the plot size, plot spacing, and figure padding.
-    this.height = this.figure['padding']['top'] + this.figure['padding']['bottom'] +
-                  this.nRows * (this.figure.plotStyle['size']['height'] + this.figure.plotStyle['spacing']['vertical']);
-    this.width = this.figure['padding']['left'] + this.figure['padding']['right'] +
-                  this.nCols * (this.figure.plotStyle['size']['width'] + this.figure.plotStyle['spacing']['horizontal']) +
-                  this.figure.plotStyle['spacing']['horizontal'];
+    var stateStyle = jsonState["stateStyle"] || {};
+    var defaultPadding = defaults["stateStyle"]["padding"],
+        statePadding = stateStyle["padding"] || {};
+
+    this.padding = {
+        "top" : statePadding["top"] || defaultPadding["top"],
+        "left" : statePadding["left"] || defaultPadding["left"],
+        "right" : statePadding["right"] || defaultPadding["right"],
+        "bottom" : statePadding["bottom"] || defaultPadding["bottom"]
+    };
+
+    var defaultPlotStyle = defaults["plotStyle"],
+        plotStyle = jsonState["plotStyle"] || {};
+    this.plotStyle = {};
+
+    for (var key in defaultPlotStyle) {
+        var tmp = plotStyle[key] || {};
+        this.plotStyle[key] = {};
+        for (var key2 in defaultPlotStyle[key]) {
+            this.plotStyle[key][key2] = tmp[key2] || defaultPlotStyle[key][key2];
+        }
+    }
 
     //// these must go before the plot definitions
     // state-global marker styling
@@ -372,7 +371,22 @@ State = function(jsonState) {
         }
     }
 
+    // Compute the height / width of the svg element based on the plot size, plot spacing, and figure padding.
+    this.height = this.padding['top'] + this.padding['bottom'];
+    this.width = this.padding['left'] + this.padding['right'];;
+
+    this.plots = [];
+    for (var ii=0; ii < jsonState['plots'].length; ii++) {
+        var plot = new Plot(jsonState['plots'][ii]);
+        plot.index = ii;
+        this.plots.push(plot);
+
+        this.width = this.width + plot.width;
+        this.height = this.height + plot.height;
+    }
+
     // Scalers for x / y axes from data space to pixel space relative to each plot cell
+    // -- must go after height, width
     this.xScaler = d3.scale.linear()
                      .range([this.figure.plotStyle['spacing']['horizontal']/2,
                              this.figure.plotStyle['size']['width'] + this.figure.plotStyle['spacing']['horizontal']/2]);
@@ -388,13 +402,6 @@ State = function(jsonState) {
         this.cScaler.range(colorScale['map'] || defaults["colorScale"]["map"]);
     }
 
-    this.plots = [];
-    for (var ii=0; ii < jsonState['plots'].length; ii++) {
-        var plot = new Plot(jsonState['plots'][ii]);
-        plot.index = ii;
-        this.plots.push(plot);
-    }
-
     // state caption
     this.caption = jsonState["caption"] || "";
 
@@ -407,7 +414,8 @@ State = function(jsonState) {
         brushPlot = undefined;
     state = this;
     this.xyBrush = d3.svg.brush()
-                    .x(state.xScaler).y(state.yScaler)
+                    .x(state.xScaler)
+                    .y(state.yScaler)
                     .on("brushstart", function(p) {
                         if (brushPlot === undefined) {
                             brushPlot = p;
@@ -714,6 +722,8 @@ function drawState(jsonState) {
 
     // define a state object which automatically sets defaults
     state = new State(jsonState);
+    console.log(jsonState);
+    return;
 
     // Define top level svg tag
     svg = d3.select("#svg svg");
