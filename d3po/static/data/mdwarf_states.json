@@ -9,8 +9,15 @@
             "name" : "All stars",
             "caption" : "This plot shows the near-infrared 2MASS colors of M dwarfs observed by Newton et al. (2013). One color is plotted on the x-axis and another color is plotted on the y-axis. The stars trace out a main sequence, with some scatter.",
             "markerStyle" : {
+                "unselected" : {
+                    "size" : 3,
+                    "opacity" : 0.5,
+                    "color" : "#333333"
+                },
                 "selected" : {
-                    "size" : 5
+                    "size" : 3,
+                    "opacity" : 1,
+                    "color" : "#000"
                 }
             },
             "plots" : [
