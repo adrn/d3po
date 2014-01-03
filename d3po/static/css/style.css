@@ -195,7 +195,8 @@ input[type="submit"] {
 }
 
 .wrapper p {
-    font-size: 135%;
+    font-size: 125%;
+    font-weight: 300;
 }
 
 .gistURLInput {
