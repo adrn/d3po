@@ -16,7 +16,7 @@ var defaults = {
             "top" : 20,
             "left" : 50,
             "right" : -20,
-            "bottom" : 0
+            "bottom" : 20
         },
     },
     "plotStyle" : {
@@ -29,6 +29,10 @@ var defaults = {
         "size" : {
             "width" : 200,
             "height" : 200
+        },
+        "brush" : {
+            "color" : "#000000",
+            "opacity" : 0.2
         }
     },
     "markerStyle" : {
@@ -538,6 +542,10 @@ State = function(jsonState) {
                         brushPlot = p;
                         brushCell = this;
 
+                        d3.select(this).selectAll(".extent")
+                                       .style("fill", state.plotStyle['brush']['color'])
+                                       .style("fill-opacity", state.plotStyle['brush']['opacity']);
+
                         state.xScaler.domain(p.xLim || columnDomains[p.xCol]);
                     })
                     .on("brush", function(p) {
@@ -706,7 +714,6 @@ function initialize(jsonFilename, csvFilename) {
 
             var presets = d3.select("#controls .navigation").selectAll("li")
                             .data(jsonData['states']);
-            console.log(presets);
 
             presets.enter().append("li")
                    .on("click", function(e,i) {
