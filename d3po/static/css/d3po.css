@@ -45,11 +45,6 @@ svg {
   zorder: -1;
 }
 
-.hidden {
-  fill: #ccc !important;
-  opacity: 0.5;
-}
-
 .extent {
   fill: #000;
   fill-opacity: .125;

@@ -42,9 +42,9 @@ var defaults = {
             "color" : "#333333"
         },
         "unselected" : {
-            "opacity" : 0.5,
+            "opacity" : 0.25,
             "size" : 3,
-            "color" : "#cccccc"
+            "color" : "#333333"
         }
     },
     "histogramStyle" : {
@@ -77,7 +77,7 @@ function scatter(state, plot, cell) {
                    .data(allPlotData);
     circ.enter().append("circle")
                 .classed("data",true);
-    circ.transition().duration(400).ease("quad-out")
+    circ.transition().duration(500).ease("quad-in")
         .attr("cx", function(d) { return state.xScaler(d[plot.xCol]); })
         .attr("cy", function(d) { return state.yScaler(d[plot.yCol]); })
         .attr("r", function (d,ii) {
@@ -94,7 +94,7 @@ function scatter(state, plot, cell) {
                 return plot.style['unselected']['color'];
             }
         })
-        .attr("opacity", function (d,ii) {
+        .style("opacity", function (d,ii) {
             if (state.isSelected(d,ii)) {
                 return plot.style['selected']['opacity'];
             } else {
@@ -122,6 +122,7 @@ function histogram(state, plot, cell) {
 
     // remove any data points
     cell.selectAll("circle.data").data([]).exit().remove();
+
     var bar = cell.selectAll("rect.data").data(data);
     bar.enter().append("rect")
                .classed("bar", true)
@@ -140,7 +141,7 @@ function histogram(state, plot, cell) {
                 return plot.style['unselected']['opacity'];
             }
         });
-    bar.transition().duration(400).ease("quad-out")
+    bar.transition().duration(500).ease("quad-in")
         .attr("x", function(d) {
             return state.xScaler(d.x);
         })
@@ -306,7 +307,7 @@ Plot = function(jsonPlot) {
                           .data([this]);
             yAxis.enter().append("g")
                  .attr("class", "axis y-axis");
-            yAxis.transition().duration(0).ease('quad-out')
+            yAxis.transition().duration(0).ease('quad-in')
                 .attr("transform", function(p, i) {
                     return "translate(" + (state.plotStyle['padding']['left'] + 10) + ",0)";
                 }).each(function(p) {
@@ -320,7 +321,7 @@ Plot = function(jsonPlot) {
                   .attr("class", "axis-label y-label");
             yLabel.exit().remove();
             yLabel.text(function(p,i) { return p.yLabel; })
-                .transition().duration(0).ease('quad-out')
+                .transition().duration(0).ease('quad-in')
                 .attr("x", function(p) {
                     return -((state.plotStyle['padding']['top']) + state.plotStyle['size']['height']/2. + $(this).width()/2.);// deliberately backwards cause rotated
                 }).attr("y", function(p) {
@@ -340,7 +341,7 @@ Plot = function(jsonPlot) {
         var rect = cell.selectAll("rect.frame").data([1]);
         rect.enter().append("rect");
         rect.exit().remove();
-        rect.transition().duration(400).ease("quad-out")
+        rect.transition().duration(500).ease("quad-in")
             .attr("class", "frame")
             .attr("x", state.plotStyle['padding']['left'])
             .attr("y", state.plotStyle['padding']['top'])
@@ -404,7 +405,7 @@ State = function(jsonState) {
     }
 
     // state-global marker styling
-    stateMarkerStyle = defaults["markerStyle"];
+    stateMarkerStyle = JSON.parse(JSON.stringify(defaults["markerStyle"]));
     var markerStyle = jsonState["markerStyle"] || {}; // for this particular state
     for (var key in stateMarkerStyle) {
         var tmp = markerStyle[key] || {};
@@ -416,7 +417,7 @@ State = function(jsonState) {
     }
 
     // state-global histogram styling
-    stateHistogramStyle = defaults["histogramStyle"];
+    stateHistogramStyle = JSON.parse(JSON.stringify(defaults["histogramStyle"]));
     var histogramStyle = jsonState["histogramStyle"] || {}; // for this particular state
     for (var key in stateHistogramStyle) {
         var tmp = histogramStyle[key] || {};
@@ -540,7 +541,7 @@ State = function(jsonState) {
                                     return state.plots[$(this).attr('plot-index')].style["unselected"]["color"];
                                 }
                             })
-                            .attr("opacity", function (d,ii) {
+                            .style("opacity", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
                                     return state.plots[$(this).attr('plot-index')].style["selected"]["opacity"];
                                 } else {
@@ -651,7 +652,7 @@ State = function(jsonState) {
                                     return state.plots[$(this).attr('plot-index')].style["unselected"]["color"];
                                 }
                             })
-                            .attr("opacity", function (d,ii) {
+                            .style("opacity", function (d,ii) {
                                 if (state.isSelected(d,ii)) {
                                     return state.plots[$(this).attr('plot-index')].style["selected"]["opacity"];
                                 } else {
@@ -798,7 +799,7 @@ function drawState(jsonState) {
     svg = d3.select("#svg svg");
     svg.transition()
        .duration(0)
-       .ease('quad-out')
+       .ease('quad-in')
        .attr("width", state.width)
        .attr("height", state.height)
        .each("end", function () {
@@ -817,7 +818,7 @@ function drawState(jsonState) {
     cells.enter().append("g")
          .attr("class", "cell");
     cells.exit().remove();
-    cells.transition().duration(0).ease('quad-out')
+    cells.transition().duration(0).ease('quad-in')
          .attr("transform", function(p) {
             var xy = p.translate(state);
             return "translate(" + xy[0] + "," + xy[1] + ")";
