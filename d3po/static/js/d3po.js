@@ -231,7 +231,14 @@ Plot = function(jsonPlot) {
                                     var x = d3.format('e');
                                     return x(d);
                                 } else {
-                                    return d;
+                                    var dd = state.xScaler.domain();
+                                    var hack = -parseInt(Math.round(Math.log(dd[1]-dd[0]) / 2.302585092994046)) + 1;
+                                    if (hack < 1) {
+                                        var x = d3.format('d');
+                                    } else {
+                                        var x = d3.format('.' + hack + 'f');
+                                    }
+                                    return x(d);
                                 }
                             });
 
@@ -476,6 +483,10 @@ State = function(jsonState) {
                         } else {
                             //brushCell = this;
                         }
+
+                        d3.select(this).selectAll(".extent")
+                                       .style("fill", state.plotStyle['brush']['color'])
+                                       .style("fill-opacity", state.plotStyle['brush']['opacity']);
 
                         state.xScaler.domain(p.xLim || columnDomains[p.xCol]);
                         state.yScaler.domain(p.yLim || columnDomains[p.yCol]);
