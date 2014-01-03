@@ -235,8 +235,7 @@ Plot = function(jsonPlot) {
                           .data([this]);
             xAxis.enter().append("g")
                  .attr("class", "axis x-axis");
-            xAxis.transition().duration(400).ease('quad-out')
-                .attr("transform", function(p) {
+            xAxis.attr("transform", function(p) {
                     return "translate(0," + (state.plotStyle['size']['height'] + state.plotStyle['padding']['top'] - 10) + ")";
                 }).each(function(p) {
                     d3.select(this).call(xAxisD3);
@@ -250,7 +249,6 @@ Plot = function(jsonPlot) {
                   .attr("class", "axis-label x-label");
             xLabel.exit().remove();
             xLabel.text(function(p, i) { return p.xLabel; })
-                .transition().duration(400).ease('quad-out')
                 .attr("x", function(p) {
                     return state.plotStyle['padding']['left'] + state.plotStyle['size']['width']/2. - $(this).width()/2.;
                 }).attr("y", function(p) {
@@ -289,7 +287,7 @@ Plot = function(jsonPlot) {
                           .data([this]);
             yAxis.enter().append("g")
                  .attr("class", "axis y-axis");
-            yAxis.transition().duration(400).ease('quad-out')
+            yAxis.transition().duration(0).ease('quad-out')
                 .attr("transform", function(p, i) {
                     return "translate(" + (state.plotStyle['padding']['left'] + 10) + ",0)";
                 }).each(function(p) {
@@ -303,7 +301,7 @@ Plot = function(jsonPlot) {
                   .attr("class", "axis-label y-label");
             yLabel.exit().remove();
             yLabel.text(function(p,i) { return p.yLabel; })
-                .transition().duration(400).ease('quad-out')
+                .transition().duration(0).ease('quad-out')
                 .attr("x", function(p) {
                     return -((state.plotStyle['padding']['top']) + state.plotStyle['size']['height']/2. + $(this).width()/2.);// deliberately backwards cause rotated
                 }).attr("y", function(p) {
@@ -708,6 +706,7 @@ function initialize(jsonFilename, csvFilename) {
 
             var presets = d3.select("#controls .navigation").selectAll("li")
                             .data(jsonData['states']);
+            console.log(presets);
 
             presets.enter().append("li")
                    .on("click", function(e,i) {
@@ -769,7 +768,7 @@ function drawState(jsonState) {
     // Define top level svg tag
     svg = d3.select("#svg svg");
     svg.transition()
-       .duration(400)
+       .duration(0)
        .ease('quad-out')
        .attr("width", state.width)
        .attr("height", state.height)
@@ -789,7 +788,7 @@ function drawState(jsonState) {
     cells.enter().append("g")
          .attr("class", "cell");
     cells.exit().remove();
-    cells.transition().duration(400).ease('quad-out')
+    cells.transition().duration(0).ease('quad-out')
          .attr("transform", function(p) {
             var xy = p.translate(state);
             return "translate(" + xy[0] + "," + xy[1] + ")";
