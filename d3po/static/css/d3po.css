@@ -74,6 +74,8 @@ svg {
 .navigation {
     list-style: none;
     display: inline;
+    margin: 0px;
+    padding: 0px;
 }
 .navigation li {
   color: #999;
@@ -84,7 +86,7 @@ svg {
   border-bottom: solid 1px #CCC;
   border-left: solid 1px #CCC;
   background: #f9f9f9;
-  margin: 0 0;
+  margin: 0;
   white-space: nowrap;
   display:inline-block;
 }
@@ -93,7 +95,6 @@ svg {
   border-radius: 4px 0 0 4px;
 }
 .navigation li:last-of-type{
-
   border-right: solid 1px #CCC;
   border-radius: 0 4px 4px 0;
 }
