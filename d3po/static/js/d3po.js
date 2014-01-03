@@ -22,7 +22,7 @@ var defaults = {
     "plotStyle" : {
         "padding" : {
             "top" : 25,
-            "left" : 20,
+            "left" : 25,
             "right" : 100,
             "bottom" : 50
         },
@@ -235,13 +235,13 @@ Plot = function(jsonPlot) {
                           .data([this]);
             xAxis.enter().append("g")
                  .attr("class", "axis x-axis");
-            xAxis.exit().remove();
-            xAxis.transition().duration(0).ease('quad-out')
-                 .attr("transform", function(p) {
+            xAxis.transition().duration(400).ease('quad-out')
+                .attr("transform", function(p) {
                     return "translate(0," + (state.plotStyle['size']['height'] + state.plotStyle['padding']['top'] - 10) + ")";
                 }).each(function(p) {
                     d3.select(this).call(xAxisD3);
                 });
+            xAxis.exit().remove();
 
             // Add axis labels
             var xLabel = cell.selectAll(".x-label")
@@ -249,14 +249,21 @@ Plot = function(jsonPlot) {
             xLabel.enter().append("text")
                   .attr("class", "axis-label x-label");
             xLabel.exit().remove();
-            xLabel.text(function(p, i) { return p.xLabel; });
-            xLabel.attr("x", function(p) {
-                return state.plotStyle['padding']['left'] + state.plotStyle['size']['width']/2. - $(this).width()/2.;
-            });
-            xLabel.attr("y", function(p) {
-                return state.plotStyle['padding']['top'] + state.plotStyle['size']['height'] + $(this).height() + 15;
-            });
+            xLabel.text(function(p, i) { return p.xLabel; })
+                .transition().duration(400).ease('quad-out')
+                .attr("x", function(p) {
+                    return state.plotStyle['padding']['left'] + state.plotStyle['size']['width']/2. - $(this).width()/2.;
+                }).attr("y", function(p) {
+                    return state.plotStyle['padding']['top'] + state.plotStyle['size']['height'] + $(this).height() + 15;
+                });
 
+        } else {
+            var xAxis = cell.selectAll(".x-axis")
+                          .data([]);
+            xAxis.exit().remove();
+            var xLabel = cell.selectAll(".x-label")
+                            .data([]);
+            xLabel.exit().remove();
         }
 
         // y axis ticks and label
@@ -282,7 +289,7 @@ Plot = function(jsonPlot) {
                           .data([this]);
             yAxis.enter().append("g")
                  .attr("class", "axis y-axis");
-            yAxis.transition().duration(0).ease('quad-out')
+            yAxis.transition().duration(400).ease('quad-out')
                 .attr("transform", function(p, i) {
                     return "translate(" + (state.plotStyle['padding']['left'] + 10) + ",0)";
                 }).each(function(p) {
@@ -295,14 +302,21 @@ Plot = function(jsonPlot) {
             yLabel.enter().append("text")
                   .attr("class", "axis-label y-label");
             yLabel.exit().remove();
-            yLabel.text(function(p,i) { return p.yLabel; });
-            yLabel.attr("x", function(p) {
-                return -((state.plotStyle['padding']['top']) + state.plotStyle['size']['height']/2. + $(this).width()/2.);// deliberately backwards cause rotated
-            })
-            .attr("y", function(p) {
-                return -(state.plotStyle['padding']['left']);
-            });
+            yLabel.text(function(p,i) { return p.yLabel; })
+                .transition().duration(400).ease('quad-out')
+                .attr("x", function(p) {
+                    return -((state.plotStyle['padding']['top']) + state.plotStyle['size']['height']/2. + $(this).width()/2.);// deliberately backwards cause rotated
+                }).attr("y", function(p) {
+                    return -(state.plotStyle['padding']['left']);
+                });
 
+        } else {
+            var yAxis = cell.selectAll(".y-axis")
+                          .data([]);
+            yAxis.exit().remove();
+            var yLabel = cell.selectAll(".y-label")
+                            .data([]);
+            yLabel.exit().remove();
         }
 
         // plot background
