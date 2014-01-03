@@ -151,6 +151,7 @@ function histogram(state, plot, cell) {
         .attr("height", function(d) {
             return height - barHeightScaler(d.y);
         })
+        .attr("clip-path", "url(#clip)");
     bar.exit().remove();
 }
 
@@ -290,7 +291,14 @@ Plot = function(jsonPlot) {
                                     var x = d3.format('e');
                                     return x(d);
                                 } else {
-                                    return d;
+                                    var dd = state.xScaler.domain();
+                                    var hack = -parseInt(Math.round(Math.log(dd[1]-dd[0]) / 2.302585092994046)) + 1;
+                                    if (hack < 1) {
+                                        var x = d3.format('d');
+                                    } else {
+                                        var x = d3.format('.' + hack + 'f');
+                                    }
+                                    return x(d);
                                 }
                         });
 
@@ -340,10 +348,9 @@ Plot = function(jsonPlot) {
             .attr("height", state.plotStyle['size']['height']);
 
         // TODO: fix clippath
-        svg.select("g.state-g")
-           .append("defs").append("clipPath")
+        d3.select("g.state-g").append("defs").append("svg:clipPath")
                           .attr("id", "clip")
-                          .append("rect")
+                          .append("svg:rect")
                           .attr("x", state.plotStyle['padding']['left'])
                           .attr("y", state.plotStyle['padding']['top'])
                           .attr("width", state.plotStyle['size']['width'])
@@ -486,7 +493,8 @@ State = function(jsonState) {
 
                         d3.select(this).selectAll(".extent")
                                        .style("fill", state.plotStyle['brush']['color'])
-                                       .style("fill-opacity", state.plotStyle['brush']['opacity']);
+                                       .style("fill-opacity", state.plotStyle['brush']['opacity'])
+                                       .attr("clip-path", "url(#clip)");
 
                         state.xScaler.domain(p.xLim || columnDomains[p.xCol]);
                         state.yScaler.domain(p.yLim || columnDomains[p.yCol]);
@@ -495,6 +503,8 @@ State = function(jsonState) {
                         var e = state.xyBrush.extent();
                         var xRange = [e[0][0], e[1][0]],
                             yRange = [e[0][1], e[1][1]];
+
+                        console.log(xRange, yRange);
 
                         state.jsonSelection = {
                             "type" : "box",
@@ -597,7 +607,8 @@ State = function(jsonState) {
                         d3.select(this).call(state.xBrush.extent(extent1));
                         d3.select(this).select(".extent")
                                        .attr("height", state.plotStyle['size']['height'])
-                                       .attr("y", state.plotStyle['padding']['top']);
+                                       .attr("y", state.plotStyle['padding']['top'])
+                                       .attr("clip-path", "url(#clip)");;
 
                         state.jsonSelection = {
                             "type" : "box",
