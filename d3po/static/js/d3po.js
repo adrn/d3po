@@ -177,8 +177,8 @@ Plot = function(jsonPlot) {
     this.xLim = xAxis["range"];
     this.yLim = yAxis["range"];
 
-    this.nXTicks = xAxis["xTicks"] || defaults["nTicks"];
-    this.nYTicks = xAxis["yTicks"] || defaults["nTicks"];
+    this.nXTicks = xAxis["nTicks"] || defaults["nTicks"];
+    this.nYTicks = yAxis["nTicks"] || defaults["nTicks"];
 
     var defaultStyle,
         style = jsonPlot["style"] || {};

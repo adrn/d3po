@@ -65,10 +65,12 @@
                 {
                     "gridPosition" : [0,1],
                     "xAxis" : {
-                        "columnName" : "J-H"
+                        "columnName" : "J-H",
+                        "nTicks" : 3
                     },
                     "yAxis" : {
-                        "columnName" : "H-K"
+                        "columnName" : "H-K",
+                        "nTicks" : 7
                     },
                     "type" : "scatter"
                 },
