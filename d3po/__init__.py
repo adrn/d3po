@@ -13,4 +13,4 @@ app = Flask(__name__)
 github_client = GithubClient()
 github_client.authenticate()
 
-import views
+from . import views
